@@ -1,0 +1,24 @@
+@use './functions' as *;
+@use './mixins' as *;
+
+:root,
+body,
+#__nuxt {
+    width: 100vw;
+    height: 100vh;
+}
+
+:root {
+    background: #{c('main')};
+    --container-padding: 20px;
+
+    @media (width < 768px) {
+        --container-padding: 10px;
+    }
+
+    @include t(16px, 1, 'default', 400);
+}
+
+.container {
+    padding: var(--container-padding);
+}

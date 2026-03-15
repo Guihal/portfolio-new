@@ -1,0 +1,9 @@
+@use './vars' as *;
+@use 'sass:map' as map;
+
+@function c($name) {
+    @if not map.has-key($colors, $name) {
+        @error "Color `#{$name}` does not exist in $colors map.";
+    }
+    @return map.get($colors, $name);
+}
