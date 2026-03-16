@@ -17,6 +17,7 @@ function findDir(name: string, dir: string, depth = 0): string | null {
             }
             try {
                 const full = join(dir, item);
+                console.log(`[path] full`);
                 if (statSync(full).isDirectory()) {
                     const result = findDir(name, full, depth + 1);
                     if (result) return result;
