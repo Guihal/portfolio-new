@@ -7,7 +7,7 @@ const __dirname = fileURLToPath(new URL('.', import.meta.url));
 
 function getBasePath() {
     console.log('[CWD]', process.cwd());
-    console.log('[chunks]', readdirSync('/var/task/chunks'));
+    console.log('[chunks/_]', readdirSync('/var/task/chunks/_'));
     console.log('[__dirname]', __dirname);
     console.log('[CWD contents]', readdirSync(process.cwd()));
     console.log('[__dirname contents]', readdirSync(__dirname));
