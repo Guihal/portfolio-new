@@ -1,5 +1,9 @@
 import { readdirSync } from 'fs';
 import { join } from 'path';
+import { fileURLToPath } from 'node:url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = fileURLToPath(new URL('.', import.meta.url));
 
 function getBasePath() {
     console.log('[CWD]', process.cwd());
