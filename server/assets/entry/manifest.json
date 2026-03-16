@@ -1,0 +1,71 @@
+{
+  "generatedAt": "2026-03-16T18:23:51.430Z",
+  "rootEntity": {
+    "name": "Рабочий стол",
+    "programType": "explorer"
+  },
+  "tree": [
+    {
+      "name": "about-me",
+      "path": "/about-me",
+      "entity": {
+        "name": "Обо мне",
+        "programType": "explorer"
+      },
+      "children": []
+    },
+    {
+      "name": "projects",
+      "path": "/projects",
+      "entity": {
+        "name": "Проекты",
+        "programType": "explorer"
+      },
+      "children": [
+        {
+          "name": "u24",
+          "path": "/projects/u24",
+          "entity": {
+            "name": "u24",
+            "programType": "explorer"
+          },
+          "children": []
+        }
+      ]
+    }
+  ],
+  "flatIndex": {
+    "/about-me": {
+      "name": "about-me",
+      "path": "/about-me",
+      "entity": {
+        "name": "Обо мне",
+        "programType": "explorer"
+      }
+    },
+    "/projects": {
+      "name": "projects",
+      "path": "/projects",
+      "entity": {
+        "name": "Проекты",
+        "programType": "explorer"
+      }
+    },
+    "/projects/u24": {
+      "name": "u24",
+      "path": "/projects/u24",
+      "entity": {
+        "name": "u24",
+        "programType": "explorer"
+      }
+    },
+    "/": {
+      "name": "/",
+      "path": "/",
+      "entity": {
+        "name": "Рабочий стол",
+        "programType": "explorer"
+      }
+    }
+  }
+}

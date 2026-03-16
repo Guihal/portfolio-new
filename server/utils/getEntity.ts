@@ -1,21 +1,13 @@
-import { Entity } from '~~/shared/types/Entity';
-import { getProtectedPath } from './getProtectedPath';
-import { normalize } from 'path';
-import { readFile } from 'node:fs/promises';
+import type { Entity } from '~~/shared/types/Entity';
+import { getManifest } from './getManifest';
 
 export async function getEntity(path: string): Promise<null | Entity> {
     if (!path) return null;
-    const fullPath = normalize(getProtectedPath(path) + '/entity.json');
 
-    try {
-        const fileContent = await readFile(fullPath, 'utf-8');
-        const entity = JSON.parse(fileContent);
-        return entity;
-    } catch (er) {
-        if (er instanceof SyntaxError) {
-            console.error('Невалидный JSON:', fullPath, er);
-        }
-        console.error('Ошибка чтения entity по пути:', fullPath, er);
-        return null;
-    }
+    const manifest = await getManifest();
+
+    const entry = manifest.flatIndex[path];
+    if (!entry?.entity) return null;
+
+    return entry.entity as Entity;
 }

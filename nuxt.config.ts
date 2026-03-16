@@ -10,7 +10,7 @@ export default defineNuxtConfig({
         serverAssets: [
             {
                 baseName: 'entry',
-                dir: resolve('./server/assets/entry'),
+                dir: './server/assets/entry',
             },
         ],
     },
