@@ -4,7 +4,7 @@ export default defineNuxtConfig({
     devtools: { enabled: false },
     modules: ['@nuxt/eslint', '@nuxt/image', '@pinia/nuxt'],
     nitro: {
-        preset: 'bun',
+        preset: 'vercel',
     },
     pages: false,
 
