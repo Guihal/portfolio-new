@@ -5,20 +5,28 @@ import { fileURLToPath } from 'node:url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = fileURLToPath(new URL('.', import.meta.url));
 
-function getBasePath() {
-    console.log('[CWD]', process.cwd());
-    console.log('[chunks/_]', readdirSync('/var/task/chunks/_'));
-    console.log('[__dirname]', __dirname);
-    console.log('[CWD contents]', readdirSync(process.cwd()));
-    console.log('[__dirname contents]', readdirSync(__dirname));
-
-    if (!import.meta.dev) {
-        const prodPath = join(process.cwd(), 'entry');
-        return prodPath;
-    } else {
-        return join(process.cwd(), 'public/entry');
-    }
-    //сука
+function findDir(name: string, dir: string, depth = 0): string | null {
+    if (depth > 5) return null;
+    try {
+        const items = readdirSync(dir);
+        for (const item of items) {
+            if (item === name) {
+                const found = join(dir, item);
+                console.log(`[FOUND] ${found}`);
+                return found;
+            }
+            try {
+                const full = join(dir, item);
+                if (statSync(full).isDirectory()) {
+                    const result = findDir(name, full, depth + 1);
+                    if (result) return result;
+                }
+            } catch {}
+        }
+    } catch {}
+    return null;
 }
 
-export const BASEPATH = getBasePath();
+console.log('[SEARCH]', findDir('entry', '/var/task'));
+
+export const BASEPATH = findDir('entry', '/var/task');
