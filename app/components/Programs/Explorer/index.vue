@@ -7,7 +7,7 @@
     }>();
 
     const { data, pending } = await useAsyncData(
-        `explorer-list-${windowOb.targetFile}`,
+        () => `explorer-list-${windowOb.targetFile}`,
         () => {
             return $fetch('/api/filesystem/list', {
                 body: {
@@ -15,6 +15,9 @@
                 },
                 method: 'POST',
             });
+        },
+        {
+            watch: [() => windowOb.targetFile],
         },
     );
 

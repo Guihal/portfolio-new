@@ -14,6 +14,7 @@
     const onClick = getClickShortcutEvent(() => {
         // @ts-ignore
         windowOb.file = file;
+        windowOb.targetFile = file.path;
     });
 </script>
 

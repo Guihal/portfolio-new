@@ -1,4 +1,5 @@
 import { readdir } from 'node:fs/promises';
+import { getProtectedPath } from './getProtectedPath';
 
 export async function getFilesArrayByPath(path: string) {
     try {

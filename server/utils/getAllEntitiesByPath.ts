@@ -1,6 +1,9 @@
 import path from 'node:path';
 import { getFilesArrayByPath } from './getFilesArrayByPath';
 import { FsFile } from '~~/shared/types/FsFile';
+import { getProtectedPath } from './getProtectedPath';
+import { BASEPATH } from './BASEPATH';
+import { getEntity } from './getEntity';
 
 export async function getAllEntitiesByPath(dirPath: string) {
     const files = await getFilesArrayByPath(dirPath);

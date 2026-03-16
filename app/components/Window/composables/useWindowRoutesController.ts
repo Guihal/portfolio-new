@@ -85,6 +85,10 @@ export async function useWindowRoutesController(windowOb: WindowOb) {
     watch(
         () => windowOb.targetFile,
         async () => {
+            if (windowOb.states.focused) {
+                useSetPath(windowOb.targetFile, router, route);
+            }
+
             if (
                 windowOb.file === null ||
                 windowOb.targetFile !== windowOb.file.path
