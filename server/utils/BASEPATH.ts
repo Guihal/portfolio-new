@@ -2,7 +2,6 @@ import { join } from 'path';
 import { existsSync } from 'node:fs';
 
 function getBasePath() {
-    // Продакшн (Vercel) — .output/server/assets/entry
     const prodPath = join(process.cwd(), 'entry');
     console.log('Проверяем продакшн путь:', prodPath);
     if (existsSync(prodPath)) return prodPath;
