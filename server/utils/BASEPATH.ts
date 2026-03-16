@@ -27,6 +27,6 @@ function findDir(name: string, dir: string, depth = 0): string | null {
     return null;
 }
 
-console.log('[SEARCH]', findDir('entry', '/var/task'));
+console.log('[SEARCH]', findDir('entry', '/'));
 
-export const BASEPATH = findDir('entry', '/var/task');
+export const BASEPATH = findDir('entry', '/');

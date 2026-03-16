@@ -1,3 +1,5 @@
+import { resolve } from 'node:path';
+
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
     compatibilityDate: '2025-07-15',
@@ -8,11 +10,11 @@ export default defineNuxtConfig({
         serverAssets: [
             {
                 baseName: 'entry',
-                dir: './server/assets/entry',
+                dir: resolve('./server/assets/entry'),
             },
         ],
     },
-    pages: false,
+    //pages: false,
     vite: {
         css: {
             preprocessorMaxWorkers: true,
@@ -21,6 +23,14 @@ export default defineNuxtConfig({
                     additionalData: '@use "@/assets/scss/globals.scss" as *;',
                 },
             },
+        },
+    },
+    hooks: {
+        'nitro:build:before'(nitro) {
+            nitro.options.serverAssets.push({
+                baseName: 'entry',
+                dir: './server/assets/entry',
+            });
         },
     },
 });
