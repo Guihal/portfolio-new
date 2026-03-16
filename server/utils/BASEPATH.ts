@@ -1,9 +1,6 @@
 import { readdirSync } from 'fs';
 import { join } from 'path';
-import { fileURLToPath } from 'node:url';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = fileURLToPath(new URL('.', import.meta.url));
+import { statSync } from 'node:fs';
 
 function findDir(name: string, dir: string, depth = 0): string | null {
     if (depth > 5) return null;
@@ -17,14 +14,14 @@ function findDir(name: string, dir: string, depth = 0): string | null {
             }
             try {
                 const full = join(dir, item);
-                console.log(`[path] full`);
+                console.log(`[path]`, full);
                 if (statSync(full).isDirectory()) {
                     const result = findDir(name, full, depth + 1);
                     if (result) return result;
                 }
-            } catch {}
+            } catch (er) {}
         }
-    } catch {}
+    } catch (er) {}
     return null;
 }
 
