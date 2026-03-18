@@ -69,6 +69,7 @@
         class="window"
         :class="windowOb.states"
         :id="`window-${windowOb.id}`"
+        :data-id="windowOb.id"
         @click="focusWindow">
         <div class="pixel-box window__wrapper">
             <WindowLoader :windowOb />

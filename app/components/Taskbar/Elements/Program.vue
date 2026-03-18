@@ -37,9 +37,9 @@
 <template>
     <button class="taskbar__el" @click="onClick">
         <div class="taskbar__el_img" v-html="icon"></div>
-        <div class="taskbar__el_number">
+        <!-- <div class="taskbar__el_number">
             {{ windowObs.length }}
-        </div>
+        </div> -->
     </button>
 </template>
 
