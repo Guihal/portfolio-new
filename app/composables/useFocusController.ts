@@ -50,7 +50,7 @@ export function useFocusWindowController() {
                 // Если клик по окну — ничего не делаем
                 if (
                     target.closest(
-                        `.window[data-id="${focusedWindowId.value}"], .taskbar__el, .loader`,
+                        `.window[id="window-${focusedWindowId.value}"], .taskbar__el, .loader`,
                     )
                 ) {
                     return;
