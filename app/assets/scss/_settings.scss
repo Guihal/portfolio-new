@@ -9,7 +9,7 @@ body,
 }
 
 :root {
-    background: #{c('main')};
+    background: #{c('default')};
     --container-padding: 20px;
 
     @media (width < 768px) {
