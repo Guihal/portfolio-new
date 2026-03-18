@@ -1,0 +1,127 @@
+{
+  "generatedAt": "2026-03-18T17:21:39.696Z",
+  "tree": [
+    {
+      "name": "about-me",
+      "path": "/about-me",
+      "type": "directory",
+      "entity": {
+        "name": "Обо мне",
+        "programType": "explorer"
+      },
+      "children": [
+        {
+          "name": "entity.json",
+          "path": "/about-me/entity.json",
+          "type": "file",
+          "ext": ".json",
+          "size": 63
+        }
+      ]
+    },
+    {
+      "name": "entity.json",
+      "path": "/entity.json",
+      "type": "file",
+      "ext": ".json",
+      "size": 73
+    },
+    {
+      "name": "projects",
+      "path": "/projects",
+      "type": "directory",
+      "entity": {
+        "name": "Проекты",
+        "programType": "explorer"
+      },
+      "children": [
+        {
+          "name": "entity.json",
+          "path": "/projects/entity.json",
+          "type": "file",
+          "ext": ".json",
+          "size": 64
+        },
+        {
+          "name": "u24",
+          "path": "/projects/u24",
+          "type": "directory",
+          "entity": {
+            "name": "u24",
+            "programType": "explorer"
+          },
+          "children": [
+            {
+              "name": "entity.json",
+              "path": "/projects/u24/entity.json",
+              "type": "file",
+              "ext": ".json",
+              "size": 53
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "flatIndex": {
+    "/about-me": {
+      "name": "about-me",
+      "path": "/about-me",
+      "type": "directory",
+      "entity": {
+        "name": "Обо мне",
+        "programType": "explorer"
+      }
+    },
+    "/about-me/entity.json": {
+      "name": "entity.json",
+      "path": "/about-me/entity.json",
+      "type": "file",
+      "ext": ".json",
+      "size": 63
+    },
+    "/entity.json": {
+      "name": "entity.json",
+      "path": "/entity.json",
+      "type": "file",
+      "ext": ".json",
+      "size": 73
+    },
+    "/projects": {
+      "name": "projects",
+      "path": "/projects",
+      "type": "directory",
+      "entity": {
+        "name": "Проекты",
+        "programType": "explorer"
+      }
+    },
+    "/projects/entity.json": {
+      "name": "entity.json",
+      "path": "/projects/entity.json",
+      "type": "file",
+      "ext": ".json",
+      "size": 64
+    },
+    "/projects/u24": {
+      "name": "u24",
+      "path": "/projects/u24",
+      "type": "directory",
+      "entity": {
+        "name": "u24",
+        "programType": "explorer"
+      }
+    },
+    "/projects/u24/entity.json": {
+      "name": "entity.json",
+      "path": "/projects/u24/entity.json",
+      "type": "file",
+      "ext": ".json",
+      "size": 53
+    }
+  },
+  "stats": {
+    "totalFiles": 4,
+    "totalDirectories": 3
+  }
+}

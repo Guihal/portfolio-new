@@ -64,6 +64,7 @@
         gap: 10px;
         align-items: center;
         max-width: 100%;
+        width: 100%;
 
         &-icon {
             aspect-ratio: 1 / 1;

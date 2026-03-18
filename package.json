@@ -3,10 +3,12 @@
     "type": "module",
     "private": true,
     "scripts": {
-        "build": "bun run generate:manifest && nuxt build",
+        "build": "bun run generate:manifests && nuxt build",
         "generate:manifest": "bun scripts/generate-manifest.ts",
-        "dev": "bun run generate:manifest && nuxt dev",
-        "generate": "bun run generate:manifest && nuxt generate",
+        "generate:file-manifest": "bun scripts/generate-file-manifest.ts",
+        "generate:manifests": "bun run generate:manifest && bun run generate:file-manifest",
+        "dev": "bun run generate:manifests && nuxt dev",
+        "generate": "bun run generate:manifests && nuxt generate",
         "preview": "nuxt preview",
         "postinstall": "nuxt prepare"
     },

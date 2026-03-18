@@ -6,6 +6,11 @@
         windowOb: WindowOb;
     }>();
 
+    const { register } = useWindowLoading();
+    const isLoading = ref(true);
+
+    register(windowOb.id, isLoading);
+
     const { data, pending } = await useAsyncData(
         () => `explorer-list-${windowOb.targetFile}`,
         () => {
@@ -18,12 +23,19 @@
         },
         {
             watch: [() => windowOb.targetFile],
+            server: import.meta.server ? true : false,
         },
     );
 
-    const { register } = useWindowLoading();
-
-    register(windowOb.id, pending);
+    watch(
+        pending,
+        () => {
+            isLoading.value = pending.value;
+        },
+        {
+            immediate: true,
+        },
+    );
 </script>
 <template>
     <div class="explorer">

@@ -32,8 +32,24 @@
         padding: 10px;
         box-sizing: border-box;
 
+        --color: #{c('default')};
+
         gap: 10px;
         width: 100%;
+        transition: opacity 0.3s ease-in-out;
+
+        @media (hover: hover) {
+            &:hover {
+                opacity: 0.9;
+
+                // --color: #{c('accent')};
+            }
+        }
+
+        &:active {
+            opacity: 0.9;
+            // --color: #{c('accent')};
+        }
 
         &_text {
             max-width: 100%;
@@ -43,11 +59,12 @@
             font-size: 16px;
             line-height: 1;
             font-weight: 700;
-            color: c('default');
+            color: var(--color);
             letter-spacing: 0.02em;
             flex-shrink: 0;
             white-space: nowrap;
             text-align: center;
+            transition: color 0.3s ease-in-out;
         }
 
         &_img {
@@ -59,7 +76,13 @@
                 width: 100%;
                 height: 100%;
 
-                --icon-color: #{c('default')};
+                --icon-color: #{var(--color)};
+
+                path {
+                    transition:
+                        fill 0.3s ease-in-out,
+                        stroke 0.3s ease-in-out;
+                }
             }
         }
     }

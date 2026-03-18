@@ -5,7 +5,13 @@
     setTaskbarObserver(taskbar);
 </script>
 <template>
-    <div ref="taskbar" class="taskbar"></div>
+    <nav ref="taskbar" class="taskbar pixel-box">
+        <ul class="taskbar__list">
+            <TaskbarElementsAbout />
+            <TaskbarAllPrograms />
+        </ul>
+        <div class="taskbar__list taskbar__list--left"></div>
+    </nav>
 </template>
 <style lang="scss">
     .taskbar {
@@ -15,7 +21,18 @@
         bottom: 0;
         left: 0;
         background: rgba(c('default'), 0.8);
-        backdrop-filter: blur(5px);
+        display: flex;
+        justify-content: space-between;
+
         z-index: 2;
+
+        &__list {
+            width: fit-content;
+            display: flex;
+
+            &--left {
+                justify-content: end;
+            }
+        }
     }
 </style>

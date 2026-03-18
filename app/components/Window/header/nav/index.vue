@@ -14,6 +14,9 @@
 </template>
 <style lang="scss">
     .window__nav {
+        z-index: 1000;
+        position: relative;
+
         &_el {
             --line-width: 2px;
             --offset: 10px;

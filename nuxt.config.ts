@@ -7,12 +7,6 @@ export default defineNuxtConfig({
     modules: ['@nuxt/eslint', '@nuxt/image', '@pinia/nuxt'],
     nitro: {
         preset: 'vercel',
-        serverAssets: [
-            {
-                baseName: 'entry',
-                dir: './server/assets/entry',
-            },
-        ],
     },
     //pages: false,
     vite: {

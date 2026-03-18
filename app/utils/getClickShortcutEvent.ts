@@ -10,39 +10,35 @@
  */
 export const getClickShortcutEvent = (callback: () => void) => {
     const isMobile = useIsMobile();
-    const TIMEOUTTIME = 400; // Время ожидания второго клика (мс)
+    // const TIMEOUTTIME = 400; // Время ожидания второго клика (мс)
 
-    let timeout: any = null;
-    let clicksCounter = 0;
+    // let timeout: any = null;
+    // let clicksCounter = 0;
 
     // Обработка второго клика
     const onDoubleClick = () => {
-        clicksCounter++;
+        // clicksCounter++;
 
-        if (clicksCounter < 2) {
-            // Первый клик — ждём второй
-            timeout = setTimeout(() => {
-                clicksCounter = 0;
-            }, TIMEOUTTIME);
-            return;
-        }
+        // if (clicksCounter < 2) {
+        //     // Первый клик — ждём второй
+        //     timeout = setTimeout(() => {
+        //         clicksCounter = 0;
+        //     }, TIMEOUTTIME);
+        //     return;
+        // }
 
         // Второй клик — вызываем callback
         callback();
-        clicksCounter = 0;
+        // clicksCounter = 0;
     };
 
     // Главный обработчик клика
     const click = () => {
-        if (isMobile) {
-            // На мобильных — сразу вызываем callback
-            callback();
-            return;
-        }
+        callback();
 
         // Сбрасываем предыдущий таймаут
-        clearTimeout(timeout);
-        onDoubleClick();
+        // // clearTimeout(timeout);
+        // onDoubleClick();
     };
 
     return (ev: MouseEvent) => {

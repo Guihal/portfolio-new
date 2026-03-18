@@ -48,7 +48,11 @@ export function useFocusWindowController() {
                 const target = ev.target as HTMLElement;
 
                 // Если клик по окну — ничего не делаем
-                if (target.closest('.window')) {
+                if (
+                    target.closest(
+                        `.window[id="${focusedWindowId.value}"], .taskbar__el`,
+                    )
+                ) {
                     return;
                 }
 

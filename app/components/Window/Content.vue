@@ -22,7 +22,15 @@
         return componentReal;
     };
 
-    component.value = callback();
+    watch(
+        () => windowOb.file,
+        () => {
+            component.value = callback();
+        },
+        {
+            immediate: true,
+        },
+    );
 </script>
 
 <template>

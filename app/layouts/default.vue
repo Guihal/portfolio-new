@@ -1,7 +1,10 @@
 <script setup lang="ts"></script>
 <template>
-    <Background> </Background>
-    <FullscreenPreffered />
-    <slot />
+    <template>
+        <Background> </Background>
+        <FullscreenPreffered />
+        <Loader />
+        <slot />
+    </template>
 </template>
 <style lang="scss"></style>

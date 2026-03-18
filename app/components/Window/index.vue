@@ -11,6 +11,9 @@
     const { windowOb } = defineProps<{
         windowOb: WindowOb;
     }>();
+    const { getIsLoading, initWindowLoading } = useWindowLoading();
+
+    const isLoading = getIsLoading(windowOb.id);
 
     // === Инициализация систем окна ===
 
@@ -37,9 +40,7 @@
 
     const { focusWindow } = useFocusOnClick(windowOb);
 
-    const { getIsLoading } = useWindowLoading();
-
-    const isLoading = getIsLoading(windowOb.id);
+    initWindowLoading(windowOb.id);
 
     watch(
         isLoading,
@@ -69,7 +70,8 @@
         :class="windowOb.states"
         :id="`window-${windowOb.id}`"
         @click="focusWindow">
-        <div class="window__wrapper">
+        <div class="pixel-box window__wrapper">
+            <WindowLoader :windowOb />
             <WindowHeader :windowOb />
             <WindowContent :windowOb />
         </div>
@@ -91,7 +93,7 @@
         // transform: translate3d(var(--left-tr), var(--top-tr), 0);
 
         will-change: translate, width, height;
-        background: c('default');
+
         transform-origin: bottom;
 
         z-index: 4;
@@ -101,27 +103,16 @@
             height: 100%;
             display: flex;
             flex-direction: column;
+            background: c('default');
         }
 
-        &::after {
-            content: '';
-            backdrop-filter: blur(1px);
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            background: rgba(c('default'), 0.1);
-            transition: opacity 0.3s ease-in-out;
-            opacity: 1;
+        &.loading {
+            &::after {
+                opacity: 1;
+            }
         }
 
         &.focused {
-            &::after {
-                opacity: 0;
-            }
-
             z-index: 10;
         }
 

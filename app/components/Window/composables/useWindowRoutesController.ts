@@ -57,8 +57,6 @@ export async function useWindowRoutesController(windowOb: WindowOb) {
         },
     );
 
-    onBeforeUnmount(() => {});
-
     const { data, pending, refresh } = await useAsyncData(
         () => `window-entity-${windowOb.targetFile}`,
         async () => {
@@ -78,6 +76,7 @@ export async function useWindowRoutesController(windowOb: WindowOb) {
     );
 
     if (data.value) {
+        console.log(data.value);
         windowOb.file = { path: windowOb.targetFile, ...data.value };
     }
 
@@ -96,6 +95,9 @@ export async function useWindowRoutesController(windowOb: WindowOb) {
                 await refresh();
             }
         },
+        {
+            immediate: true,
+        },
     );
 
     register(windowOb.id, pending);
@@ -105,6 +107,7 @@ export async function useWindowRoutesController(windowOb: WindowOb) {
             windowOb.file = null;
             return;
         }
+
         windowOb.file = { path: windowOb.targetFile, ...data.value };
     });
 }
