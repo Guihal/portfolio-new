@@ -7,8 +7,8 @@ import {
 } from 'fs';
 import { join, normalize } from 'path';
 
-const ENTRY_DIR = join(process.cwd(), 'server', 'assets', 'entry');
-const OUT_FILE = join(ENTRY_DIR, 'manifest.json');
+const ENTRY_DIR = join(process.cwd(), 'public', 'entry');
+const OUT_FILE = join(process.cwd(), 'server', 'assets', 'manifest.json');
 
 type ManifestNode = {
     name: string;

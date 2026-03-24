@@ -1,18 +1,16 @@
 <script setup lang="ts">
     import type { WindowOb } from '../Window';
 
-    const { windowOb } = defineProps<{
-        windowOb: WindowOb;
-    }>();
+    const windowOb = inject('windowOb') as WindowOb;
 </script>
 <template>
-    <WindowResizeTop :windowOb />
-    <WindowResizeBottom :windowOb />
-    <WindowResizeLeft :windowOb />
-    <WindowResizeRight :windowOb />
-    <WindowResizeLeftBottom :windowOb />
-    <WindowResizeRightBottom :windowOb />
-    <WindowResizeLeftTop :windowOb />
-    <WindowResizeRightTop :windowOb />
+    <WindowResizeTop />
+    <WindowResizeBottom />
+    <WindowResizeLeft />
+    <WindowResizeRight />
+    <WindowResizeLeftBottom />
+    <WindowResizeRightBottom />
+    <WindowResizeLeftTop />
+    <WindowResizeRightTop />
 </template>
 <style lang="scss"></style>

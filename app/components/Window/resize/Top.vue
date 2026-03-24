@@ -3,9 +3,7 @@
     import type { WindowOb } from '../Window';
     const directions: [ChainedKey] = ['top'];
 
-    const { windowOb } = defineProps<{
-        windowOb: WindowOb;
-    }>();
+    const windowOb = inject('windowOb') as WindowOb;
 </script>
 <template>
     <WindowResize :directions="directions" :windowOb />

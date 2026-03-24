@@ -14,12 +14,15 @@ export const focusedWindowId: Ref<null | string> = ref(null);
  * - setDocumentEvent() — обработчик клика на документ для снятия фокуса
  */
 export function useFocusWindowController() {
+    const { allWindows } = useAllWindows();
+
     /**
      * Снимает фокус с текущего окна.
      * @param ev - Если передано событие — проверяет, был ли клик вне окон
      */
     const unFocus = () => {
         focusedWindowId.value = null;
+        navigateTo('/');
     };
 
     // Установить фокус на окно по ID
@@ -36,41 +39,5 @@ export function useFocusWindowController() {
         return computed(() => windowOb.id === focusedWindowId.value);
     };
 
-    /**
-     * Устанавливает обработчик клика на документ.
-     * При клике вне окон — снимает фокус и переходит на '/'.
-     */
-    const setDocumentEvent = () => {
-        const router = useRouter();
-        const route = useRoute();
-        onMounted(() => {
-            document.addEventListener('click', (ev) => {
-                const target = ev.target as HTMLElement;
-
-                // Если клик по окну — ничего не делаем
-                if (
-                    target.closest(
-                        `[id="window-${focusedWindowId.value}"], .taskbar__el, .loader`,
-                    )
-                ) {
-                    return;
-                }
-
-                // Клик вне окон — снимаем фокус и переходим на главную
-                focusedWindowId.value = null;
-                useSetPath('/', router, route);
-            });
-        });
-
-        watch(
-            () => route.path,
-            () => {
-                if (route.path === '/') {
-                    focusedWindowId.value = null;
-                }
-            },
-        );
-    };
-
-    return { setDocumentEvent, focus, unFocus, getIsFocusedState };
+    return { focus, unFocus, getIsFocusedState };
 }

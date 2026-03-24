@@ -1,9 +1,7 @@
 <script setup lang="ts">
     import type { WindowOb } from './Window';
 
-    const { windowOb } = defineProps<{
-        windowOb: WindowOb;
-    }>();
+    const windowOb = inject('windowOb') as WindowOb;
 
     const isVisible = computed(() => {
         return (

@@ -2,10 +2,7 @@
     import type { WindowOb } from '../Window';
     import { useMove } from './useMove';
 
-    const { windowOb } = defineProps<{
-        windowOb: WindowOb;
-    }>();
-
+    const windowOb = inject('windowOb') as WindowOb;
     // Обработчик pointerdown для перетаскивания окна
     const pointerdown = useMove(windowOb);
 </script>
@@ -13,10 +10,10 @@
     <div class="window__header">
         <!-- Область для перетаскивания (занимает всю ширину за исключением кнопок навигации) -->
         <div class="window__header__wrapper" @pointerdown="pointerdown">
-            <WindowHeaderName :windowOb />
+            <WindowHeaderName />
         </div>
         <!-- Кнопки управления: свернуть, fullscreen, закрыть -->
-        <WindowHeaderNav :windowOb />
+        <WindowHeaderNav />
     </div>
 </template>
 <style lang="scss">

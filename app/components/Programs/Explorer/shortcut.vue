@@ -2,19 +2,16 @@
     import type { WindowOb } from '~/components/Window/Window';
     import { useGetShortcut } from '~/components/Workbench/Shortcut/useGetShortcut';
 
-    import type { FsFile } from '~~/shared/types/FsFile';
+    const windowOb = inject('windowOb') as WindowOb;
 
-    const { windowOb, file } = defineProps<{
-        windowOb: WindowOb;
+    const { file } = defineProps<{
         file: FsFile;
     }>();
 
     const { nameText, icon } = useGetShortcut(file);
 
     const onClick = getClickShortcutEvent(() => {
-        // @ts-ignore
-        windowOb.file = file;
-        windowOb.targetFile = file.path;
+        windowOb.targetFile.value = file.path;
     });
 </script>
 
@@ -30,13 +27,20 @@
 <style lang="scss">
     .explorer__shortcut {
         padding: 10px;
-        --border: 1px solid #{rgba(c('default-contrast'), 0.5)};
+        --border: 1px solid #{rgba(c('default-contrast'), 0.2)};
 
         border-bottom: var(--border);
         display: flex;
         gap: 10px;
         align-items: center;
         box-sizing: border-box;
+        background: c('default-2');
+
+        &:nth-child(2n) {
+            background: c('default-1');
+        }
+
+        width: calc(100%);
 
         &:first-child {
             border-top: var(--border);

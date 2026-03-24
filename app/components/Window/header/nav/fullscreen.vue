@@ -2,9 +2,7 @@
     import { OFFSET } from '~/utils/constants/OFFSET';
     import type { WindowOb } from '../../Window';
     import { setSize } from '../../utils/setSize';
-    const { windowOb } = defineProps<{
-        windowOb: WindowOb;
-    }>();
+    const windowOb = inject('windowOb') as WindowOb;
 
     const onclick = () => {
         if (windowOb.states.fullscreen) {

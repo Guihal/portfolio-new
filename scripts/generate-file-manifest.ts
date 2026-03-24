@@ -7,8 +7,8 @@ import {
 } from 'fs';
 import { join, normalize, extname } from 'path';
 
-const ENTRY_DIR = join(process.cwd(), 'server', 'assets', 'entry');
-const OUT_FILE = join(ENTRY_DIR, 'file-manifest.json');
+const ENTRY_DIR = join(process.cwd(), 'public', 'entry');
+const OUT_FILE = join(process.cwd(), 'server', 'assets', 'file-manifest.json');
 
 type FileEntry = {
     name: string;
@@ -127,9 +127,8 @@ const manifest = {
     tree,
     flatIndex,
     stats: {
-        totalFiles: Object.values(flatIndex).filter(
-            (e) => e.type === 'file',
-        ).length,
+        totalFiles: Object.values(flatIndex).filter((e) => e.type === 'file')
+            .length,
         totalDirectories: Object.values(flatIndex).filter(
             (e) => e.type === 'directory',
         ).length,

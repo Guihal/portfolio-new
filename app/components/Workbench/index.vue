@@ -39,9 +39,11 @@
         },
         {},
     );
+
+    const { unFocus } = useFocusWindowController();
 </script>
 <template>
-    <div ref="workbench" class="workbench">
+    <div ref="workbench" class="workbench" @click="unFocus">
         <WorkbenchShortcut :key="file.path" :file v-for="file in data" />
     </div>
 </template>
@@ -50,13 +52,14 @@
         position: fixed;
         left: 0;
         top: 0;
-        width: calc(v-bind(width) * 1px);
-        height: calc(v-bind(height) * 1px);
+        --offset: 10px;
+        width: calc(v-bind(width) * 1px - var(--offset) * 2);
+        height: calc(v-bind(height) * 1px - var(--offset) * 2);
         display: grid;
         grid-template-columns: v-bind(columns);
         grid-template-rows: v-bind(rows);
         box-sizing: border-box;
-        padding: 10px;
+        margin: var(--offset);
         z-index: 1;
     }
 </style>

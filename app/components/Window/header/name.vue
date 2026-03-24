@@ -2,9 +2,7 @@
     import { PROGRAMS } from '~/utils/constants/PROGRAMS';
     import type { WindowOb } from '../Window';
 
-    const { windowOb } = defineProps<{
-        windowOb: WindowOb;
-    }>();
+    const windowOb = inject('windowOb') as WindowOb;
 
     const icon = computed(() => {
         if (windowOb.file === null) return '';

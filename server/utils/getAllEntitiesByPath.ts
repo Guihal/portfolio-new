@@ -11,7 +11,7 @@ type ManifestNode = {
 function findNode(tree: ManifestNode[], path: string): ManifestNode | null {
     if (path === '/') {
         // Корень — возвращаем виртуальный узел с children = tree
-        return { name: '/', path: '/', children: tree };
+        return { name: 'Рабочий стол', path: '/', children: tree };
     }
 
     for (const node of tree) {
@@ -33,6 +33,7 @@ export async function getAllEntitiesByPath(dirPath: string): Promise<FsFile[]> {
     const result: FsFile[] = [];
 
     for (const child of node.children) {
+        console.log('child:', child.path, '| has entity:', !!child.entity);
         if (!child.entity) continue;
         result.push({
             ...child.entity,

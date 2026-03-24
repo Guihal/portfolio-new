@@ -1,19 +1,10 @@
 {
-  "generatedAt": "2026-03-18T17:21:39.677Z",
+  "generatedAt": "2026-03-24T07:01:19.802Z",
   "rootEntity": {
     "name": "Рабочий стол",
     "programType": "explorer"
   },
   "tree": [
-    {
-      "name": "about-me",
-      "path": "/about-me",
-      "entity": {
-        "name": "Обо мне",
-        "programType": "explorer"
-      },
-      "children": []
-    },
     {
       "name": "projects",
       "path": "/projects",
@@ -22,6 +13,15 @@
         "programType": "explorer"
       },
       "children": [
+        {
+          "name": "griboyedov",
+          "path": "/projects/griboyedov",
+          "entity": {
+            "name": "Фонд имени Грибоедова",
+            "programType": "explorer"
+          },
+          "children": []
+        },
         {
           "name": "u24",
           "path": "/projects/u24",
@@ -32,17 +32,18 @@
           "children": []
         }
       ]
-    }
-  ],
-  "flatIndex": {
-    "/about-me": {
+    },
+    {
       "name": "about-me",
       "path": "/about-me",
       "entity": {
         "name": "Обо мне",
         "programType": "explorer"
-      }
-    },
+      },
+      "children": []
+    }
+  ],
+  "flatIndex": {
     "/projects": {
       "name": "projects",
       "path": "/projects",
@@ -51,11 +52,27 @@
         "programType": "explorer"
       }
     },
+    "/projects/griboyedov": {
+      "name": "griboyedov",
+      "path": "/projects/griboyedov",
+      "entity": {
+        "name": "Фонд имени Грибоедова",
+        "programType": "explorer"
+      }
+    },
     "/projects/u24": {
       "name": "u24",
       "path": "/projects/u24",
       "entity": {
         "name": "u24",
+        "programType": "explorer"
+      }
+    },
+    "/about-me": {
+      "name": "about-me",
+      "path": "/about-me",
+      "entity": {
+        "name": "Обо мне",
         "programType": "explorer"
       }
     },

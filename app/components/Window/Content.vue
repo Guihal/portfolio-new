@@ -2,9 +2,7 @@
     import { PROGRAMS } from '~/utils/constants/PROGRAMS';
     import type { WindowOb } from './Window';
 
-    const { windowOb } = defineProps<{
-        windowOb: WindowOb;
-    }>();
+    const windowOb = inject('windowOb') as WindowOb;
 
     const component: Ref<Component | null> = shallowRef(null);
 
@@ -35,9 +33,11 @@
 
 <template>
     <div class="window__content">
-        <template v-if="component">
-            <component :is="component" :windowOb />
-        </template>
+        <div class="window__content__wrapper">
+            <template v-if="component">
+                <component :is="component" :windowOb />
+            </template>
+        </div>
     </div>
 </template>
 
@@ -45,7 +45,15 @@
     .window__content {
         width: 100%;
         height: 100%;
-        overflow: auto;
-        scrollbar-width: thin;
+        box-sizing: border-box;
+
+        &__wrapper {
+            width: 100%;
+            height: 100%;
+            max-width: 100%;
+            max-height: 100%;
+            overflow: auto;
+            scrollbar-width: thin;
+        }
     }
 </style>

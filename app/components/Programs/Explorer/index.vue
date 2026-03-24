@@ -2,9 +2,7 @@
     import { useWindowLoading } from '~/components/Window/composables/useWindowLoading';
     import type { WindowOb } from '~/components/Window/Window';
 
-    const { windowOb } = defineProps<{
-        windowOb: WindowOb;
-    }>();
+    const windowOb = inject('windowOb') as WindowOb;
 
     const { register } = useWindowLoading();
     const isLoading = ref(true);
@@ -12,11 +10,10 @@
     register(windowOb.id, isLoading);
 
     const { data, pending } = await useAsyncData(
-        () => `explorer-list-${windowOb.targetFile}`,
         () => {
             return $fetch('/api/filesystem/list', {
                 body: {
-                    path: windowOb.targetFile,
+                    path: windowOb.targetFile.value,
                 },
                 method: 'POST',
             });
@@ -24,6 +21,7 @@
         {
             watch: [() => windowOb.targetFile],
             server: import.meta.server ? true : false,
+            getCachedData: () => undefined,
         },
     );
 
@@ -43,8 +41,7 @@
             <ProgramsExplorerShortcut
                 v-for="file in data"
                 :key="file.path"
-                :file
-                :windowOb />
+                :file />
         </template>
         <template v-else>
             <div class="explorer__empty">Тут ничего нет :(</div>

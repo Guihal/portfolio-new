@@ -3,9 +3,11 @@
     const { setTaskbarObserver } = useContentArea();
 
     setTaskbarObserver(taskbar);
+
+    const { unFocus } = useFocusWindowController();
 </script>
 <template>
-    <nav ref="taskbar" class="taskbar pixel-box">
+    <nav ref="taskbar" class="taskbar pixel-box" @click="unFocus">
         <ul class="taskbar__list">
             <TaskbarElementsAbout />
             <TaskbarAllPrograms />

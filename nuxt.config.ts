@@ -26,5 +26,14 @@ export default defineNuxtConfig({
                 dir: './server/assets/entry',
             });
         },
+        'builder:watch': async (event, path) => {
+            if (path.includes('public/entry')) {
+                console.log('[manifest] Regenerating...');
+
+                const { execSync } = await import('child_process');
+                execSync('bun run generate:file-manifest');
+                execSync('bun run generate-manifest');
+            }
+        },
     },
 });

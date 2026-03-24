@@ -72,12 +72,14 @@
     // Реактивная перерисовка при изменении размеров
     watchEffect(draw);
 
+    const { unFocus } = useFocusWindowController();
+
     onMounted(() => {
         subscribe();
     });
 </script>
 <template>
-    <div class="background" ref="element">
+    <div class="background" ref="element" @click="unFocus">
         <canvas class="background__canvas" ref="canvas" />
     </div>
 </template>

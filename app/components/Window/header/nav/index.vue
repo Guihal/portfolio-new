@@ -1,15 +1,13 @@
 <script setup lang="ts">
     import type { WindowOb } from '../../Window';
 
-    const { windowOb } = defineProps<{
-        windowOb: WindowOb;
-    }>();
+    const windowOb = inject('windowOb') as WindowOb;
 </script>
 <template>
     <div class="window__nav__wrapper">
-        <WindowHeaderNavCollapse :windowOb />
-        <WindowHeaderNavFullscreen :windowOb />
-        <WindowHeaderNavClose :windowOb />
+        <WindowHeaderNavCollapse />
+        <WindowHeaderNavFullscreen />
+        <WindowHeaderNavClose />
     </div>
 </template>
 <style lang="scss">

@@ -23,9 +23,9 @@ let _manifest: Manifest | null = null;
 const isDev = process.env.NODE_ENV === 'development';
 
 export async function getManifest(): Promise<Manifest> {
-    if (!isDev && _manifest) return _manifest;
+    if (_manifest) return _manifest;
 
-    const storage = useStorage('assets:entry');
+    const storage = useStorage('assets:server');
     const raw = await storage.getItem<string>('manifest.json');
 
     if (!raw) {

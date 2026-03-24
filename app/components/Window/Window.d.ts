@@ -30,7 +30,9 @@ export type WindowOb = {
         calculated: WindowBounds;
     };
     states: WindowStates;
-    targetFile: string;
+    targetFile: {
+        value: string;
+    };
     file: WindowFile;
     // content: ProgramInstance;
 };

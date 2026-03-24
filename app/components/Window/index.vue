@@ -2,6 +2,7 @@
     import { useFocusOnClick } from './composables/useFocusOnClick';
     import { useSetFocusState } from './composables/useSetFocusState';
     import { useSetFullscreenObserver } from './composables/useSetFullscreenObserver';
+    import { useSetLoadingState } from './composables/useSetLoadingState';
     import { useWindowFullscreenAutoSet } from './composables/useWindowFullscreenAutoSet';
     import { useWindowLoading } from './composables/useWindowLoading';
     import { useWindowLoop } from './composables/useWindowLoop/useWindowLoop';
@@ -11,6 +12,9 @@
     const { windowOb } = defineProps<{
         windowOb: WindowOb;
     }>();
+
+    provide('windowOb', windowOb);
+
     const { getIsLoading, initWindowLoading } = useWindowLoading();
 
     const isLoading = getIsLoading(windowOb.id);
@@ -41,20 +45,7 @@
     const { focusWindow } = useFocusOnClick(windowOb);
 
     initWindowLoading(windowOb.id);
-
-    watch(
-        isLoading,
-        () => {
-            if (isLoading.value) {
-                windowOb.states.loading = true;
-            } else {
-                delete windowOb.states.loading;
-            }
-        },
-        {
-            immediate: true,
-        },
-    );
+    useSetLoadingState(windowOb, isLoading);
 
     // При монтировании — сразу фокусируем окно
     onMounted(() => {
@@ -66,16 +57,16 @@
 </script>
 <template>
     <div
+        :id="`window-${windowOb.id}`"
         class="window"
         :class="windowOb.states"
-        :id="`window-${windowOb.id}`"
         @click="focusWindow">
         <div class="pixel-box window__wrapper">
-            <WindowLoader :windowOb />
-            <WindowHeader :windowOb />
-            <WindowContent :windowOb />
+            <WindowLoader />
+            <WindowHeader />
+            <WindowContent />
         </div>
-        <WindowResizeAll :windowOb />
+        <WindowResizeAll />
     </div>
 </template>
 <style lang="scss">

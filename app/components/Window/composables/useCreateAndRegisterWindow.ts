@@ -75,7 +75,9 @@ export function useCreateAndRegisterWindow(
             calculated,
         },
         states,
-        targetFile: path,
+        targetFile: {
+            value: path,
+        },
         file: realFile,
     };
 

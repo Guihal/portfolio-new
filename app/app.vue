@@ -13,10 +13,6 @@
         useCreateAndRegisterWindow(route.fullPath);
     }
 
-    const { setDocumentEvent } = useFocusWindowController();
-
-    setDocumentEvent();
-
     onMounted(() => {
         const nuxtApp = useNuxtApp();
         nuxtApp.vueApp.config.warnHandler = (msg, instance, trace) => {

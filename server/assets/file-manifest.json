@@ -1,6 +1,60 @@
 {
-  "generatedAt": "2026-03-18T17:21:39.696Z",
+  "generatedAt": "2026-03-24T07:01:19.821Z",
   "tree": [
+    {
+      "name": "projects",
+      "path": "/projects",
+      "type": "directory",
+      "entity": {
+        "name": "Проекты",
+        "programType": "explorer"
+      },
+      "children": [
+        {
+          "name": "entity.json",
+          "path": "/projects/entity.json",
+          "type": "file",
+          "ext": ".json",
+          "size": 64
+        },
+        {
+          "name": "griboyedov",
+          "path": "/projects/griboyedov",
+          "type": "directory",
+          "entity": {
+            "name": "Фонд имени Грибоедова",
+            "programType": "explorer"
+          },
+          "children": [
+            {
+              "name": "entity.json",
+              "path": "/projects/griboyedov/entity.json",
+              "type": "file",
+              "ext": ".json",
+              "size": 90
+            }
+          ]
+        },
+        {
+          "name": "u24",
+          "path": "/projects/u24",
+          "type": "directory",
+          "entity": {
+            "name": "u24",
+            "programType": "explorer"
+          },
+          "children": [
+            {
+              "name": "entity.json",
+              "path": "/projects/u24/entity.json",
+              "type": "file",
+              "ext": ".json",
+              "size": 53
+            }
+          ]
+        }
+      ]
+    },
     {
       "name": "about-me",
       "path": "/about-me",
@@ -25,45 +79,57 @@
       "type": "file",
       "ext": ".json",
       "size": 73
-    },
-    {
+    }
+  ],
+  "flatIndex": {
+    "/projects": {
       "name": "projects",
       "path": "/projects",
       "type": "directory",
       "entity": {
         "name": "Проекты",
         "programType": "explorer"
-      },
-      "children": [
-        {
-          "name": "entity.json",
-          "path": "/projects/entity.json",
-          "type": "file",
-          "ext": ".json",
-          "size": 64
-        },
-        {
-          "name": "u24",
-          "path": "/projects/u24",
-          "type": "directory",
-          "entity": {
-            "name": "u24",
-            "programType": "explorer"
-          },
-          "children": [
-            {
-              "name": "entity.json",
-              "path": "/projects/u24/entity.json",
-              "type": "file",
-              "ext": ".json",
-              "size": 53
-            }
-          ]
-        }
-      ]
-    }
-  ],
-  "flatIndex": {
+      }
+    },
+    "/projects/entity.json": {
+      "name": "entity.json",
+      "path": "/projects/entity.json",
+      "type": "file",
+      "ext": ".json",
+      "size": 64
+    },
+    "/projects/griboyedov": {
+      "name": "griboyedov",
+      "path": "/projects/griboyedov",
+      "type": "directory",
+      "entity": {
+        "name": "Фонд имени Грибоедова",
+        "programType": "explorer"
+      }
+    },
+    "/projects/griboyedov/entity.json": {
+      "name": "entity.json",
+      "path": "/projects/griboyedov/entity.json",
+      "type": "file",
+      "ext": ".json",
+      "size": 90
+    },
+    "/projects/u24": {
+      "name": "u24",
+      "path": "/projects/u24",
+      "type": "directory",
+      "entity": {
+        "name": "u24",
+        "programType": "explorer"
+      }
+    },
+    "/projects/u24/entity.json": {
+      "name": "entity.json",
+      "path": "/projects/u24/entity.json",
+      "type": "file",
+      "ext": ".json",
+      "size": 53
+    },
     "/about-me": {
       "name": "about-me",
       "path": "/about-me",
@@ -86,42 +152,10 @@
       "type": "file",
       "ext": ".json",
       "size": 73
-    },
-    "/projects": {
-      "name": "projects",
-      "path": "/projects",
-      "type": "directory",
-      "entity": {
-        "name": "Проекты",
-        "programType": "explorer"
-      }
-    },
-    "/projects/entity.json": {
-      "name": "entity.json",
-      "path": "/projects/entity.json",
-      "type": "file",
-      "ext": ".json",
-      "size": 64
-    },
-    "/projects/u24": {
-      "name": "u24",
-      "path": "/projects/u24",
-      "type": "directory",
-      "entity": {
-        "name": "u24",
-        "programType": "explorer"
-      }
-    },
-    "/projects/u24/entity.json": {
-      "name": "entity.json",
-      "path": "/projects/u24/entity.json",
-      "type": "file",
-      "ext": ".json",
-      "size": 53
     }
   },
   "stats": {
-    "totalFiles": 4,
-    "totalDirectories": 3
+    "totalFiles": 5,
+    "totalDirectories": 4
   }
 }

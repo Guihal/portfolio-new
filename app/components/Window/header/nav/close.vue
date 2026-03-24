@@ -2,9 +2,7 @@
     import { useRemoveWindow } from '../../utils/removeWindow';
     import type { WindowOb } from '../../Window';
 
-    const { windowOb } = defineProps<{
-        windowOb: WindowOb;
-    }>();
+    const windowOb = inject('windowOb') as WindowOb;
 
     const onclick = () => {
         useRemoveWindow(windowOb);
