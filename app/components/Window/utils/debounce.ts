@@ -1,8 +1,8 @@
-export function debounce(callback: () => void, time = 100) {
+export function debounce(callback: (...args: any) => void, time = 100) {
     let timeout: any = null;
 
-    return () => {
+    return (...args: any) => {
         clearTimeout(timeout);
-        timeout = setTimeout(callback, time);
+        timeout = setTimeout(() => callback(...args), time);
     };
 }

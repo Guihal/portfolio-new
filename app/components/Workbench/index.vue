@@ -27,17 +27,26 @@
 
     const { data } = await useAsyncData(
         'workbench',
-        () => {
-            const data = $fetch('/api/filesystem/list', {
-                body: {
-                    path: '/',
-                },
-                method: 'POST',
-            });
+        async () => {
+            let data = undefined;
+            try {
+                data = await $fetch('/api/filesystem/list', {
+                    body: {
+                        path: '/',
+                    },
+                    method: 'POST',
+                });
+            } catch (err) {
+                console.error(err);
+            }
 
             return data;
         },
-        {},
+        {
+            transform: (data) => {
+                return data?.filter((entity) => !entity?.hidden);
+            },
+        },
     );
 
     const { unFocus } = useFocusWindowController();

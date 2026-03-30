@@ -1,64 +1,92 @@
 <script setup lang="ts">
-    import { useWindowLoading } from '~/components/Window/composables/useWindowLoading';
     import type { WindowOb } from '~/components/Window/Window';
 
     const windowOb = inject('windowOb') as WindowOb;
+    const windowRoute = inject('windowRoute') as Ref<string>;
+    watchEffect(() => console.log(windowRoute.value));
+    const { windowFetch } = useWindowFetch(windowOb.id);
 
-    const { register } = useWindowLoading();
-    const isLoading = ref(true);
+    const { data } = await useAsyncData(
+        () => `explorer-${windowRoute.value}f`,
+        async () => {
+            console.log(windowRoute.value);
+            if (!windowRoute.value) return [];
 
-    register(windowOb.id, isLoading);
-
-    const { data, pending } = await useAsyncData(
-        () => {
-            return $fetch('/api/filesystem/list', {
-                body: {
-                    path: windowOb.targetFile.value,
-                },
-                method: 'POST',
-            });
+            const result = await windowFetch(async () =>
+                $fetch<FsFile[]>('/api/filesystem/list', {
+                    body: { path: windowRoute.value },
+                    method: 'POST',
+                }),
+            );
+            return result ?? [];
         },
         {
-            watch: [() => windowOb.targetFile],
             server: import.meta.server ? true : false,
-            getCachedData: () => undefined,
-        },
-    );
-
-    watch(
-        pending,
-        () => {
-            isLoading.value = pending.value;
-        },
-        {
             immediate: true,
         },
     );
 </script>
 <template>
     <div class="explorer">
-        <template v-if="data?.length">
-            <ProgramsExplorerShortcut
-                v-for="file in data"
-                :key="file.path"
-                :file />
-        </template>
-        <template v-else>
-            <div class="explorer__empty">Тут ничего нет :(</div>
-        </template>
+        <div
+            class="explorer__left"
+            v-if="windowOb.bounds.calculated.width > 768">
+            <ProgramsExplorerNav />
+            <ProgramsExplorerNavFacts />
+        </div>
+        <div class="explorer__content pixel-box">
+            <template v-if="data?.length > 0">
+                <ProgramsExplorerShortcut
+                    v-for="file in data"
+                    :key="file.path"
+                    :file />
+            </template>
+            <template v-else>
+                <div class="explorer__empty">Тут ничего нет :(</div>
+            </template>
+        </div>
     </div>
 </template>
 <style lang="scss">
     .explorer {
         box-sizing: border-box;
-        width: 100%;
-        height: 100%;
+        width: calc(100% - 20px);
+        height: calc(100% - 10px);
         min-height: fit-content;
+        margin: 10px;
+        margin-top: 0;
+        display: flex;
+        gap: 10px;
+
+        * {
+            scrollbar-color: c('default-contrast') c('default-3');
+        }
+
+        &__left {
+            width: 200px;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        &__content {
+            background: c('default-3');
+            height: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+            overflow-y: auto;
+            overflow-x: hidden;
+            max-height: 100%;
+            width: 100%;
+        }
 
         &:has(.explorer__empty) {
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            .explorer__content {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
         }
 
         &__empty {

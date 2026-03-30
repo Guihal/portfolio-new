@@ -22,7 +22,10 @@ export default defineCachedEventHandler(
             });
         }
 
-        return entity;
+        return {
+            ...entity,
+            path: path,
+        };
     },
     {
         maxAge: CACHE_LIFETIME,

@@ -1,4 +1,3 @@
-import { useSetPath } from '~/components/Window/utils/setPath';
 import type { WindowOb } from '~/components/Window/Window';
 
 // Глобальное состояние: ID окна в фокусе
@@ -15,6 +14,7 @@ export const focusedWindowId: Ref<null | string> = ref(null);
  */
 export function useFocusWindowController() {
     const { allWindows } = useAllWindows();
+    const { queuedPush } = useQueuedRouter();
 
     /**
      * Снимает фокус с текущего окна.
@@ -22,11 +22,13 @@ export function useFocusWindowController() {
      */
     const unFocus = () => {
         focusedWindowId.value = null;
-        navigateTo('/');
+        queuedPush('/');
     };
 
     // Установить фокус на окно по ID
     const focus = (idWindow: string) => {
+        if (focusedWindowId.value === idWindow) return;
+
         focusedWindowId.value = idWindow;
     };
 

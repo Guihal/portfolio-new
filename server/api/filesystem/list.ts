@@ -13,6 +13,5 @@ export default defineEventHandler(async (event) => {
     }
 
     const fsFiles = await getAllEntitiesByPath(path);
-    console.log(fsFiles, 'файлиуки');
     return fsFiles;
 });

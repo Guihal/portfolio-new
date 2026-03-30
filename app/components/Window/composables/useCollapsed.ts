@@ -12,15 +12,47 @@ import type { WindowOb } from '../Window';
  */
 export function useCollapsed(windowOb: WindowOb) {
     const { contentArea } = useContentArea();
+    const { unFocus } = useFocusWindowController();
 
-    // Chained watcher: при изменении contentArea обновляет позицию свёрнутого окна
+    const beforeCollapsedBounds = ref({
+        width: 0,
+        height: 0,
+        top: 0,
+        left: 0,
+    });
+
+    watch(
+        () => windowOb.states.collapsed === true,
+        (value, lastValue) => {
+            if (lastValue === false && value === true) {
+                beforeCollapsedBounds.value = { ...windowOb.bounds.target };
+            }
+
+            if (value === false) {
+                windowOb.bounds.target = { ...beforeCollapsedBounds.value };
+            }
+
+            console.log(
+                value,
+                lastValue,
+                beforeCollapsedBounds.value,
+                windowOb.bounds.target,
+            );
+        },
+        {
+            immediate: true,
+        },
+    );
+
     useSetChainedWatchers(
         () => windowOb.states.collapsed === true,
         () => contentArea,
         () => {
-            // Перемещаем окно вниз за пределы видимости (в 1.5 раза ниже контента)
-            windowOb.bounds.target.top = contentArea.value.height * 1.5;
-            windowOb.bounds.target.left = 0;
+            setTimeout(() => {
+                if (windowOb.states.collapsed) {
+                    windowOb.bounds.target.top = contentArea.value.height * 1.5;
+                }
+            });
         },
         {
             immediate: true,
@@ -29,10 +61,16 @@ export function useCollapsed(windowOb: WindowOb) {
 
     // Функция сворачивания окна
     return () => {
-        windowOb.states.collapsed = true;
-        // Удаляем несовместимые состояния
-        delete windowOb.states.fullscreen;
-        delete windowOb.states.resize;
-        delete windowOb.states.drag;
+        setTimeout(() => {
+            unFocus();
+
+            setTimeout(() => {
+                windowOb.states.collapsed = true;
+
+                delete windowOb.states.fullscreen;
+                delete windowOb.states.resize;
+                delete windowOb.states.drag;
+            });
+        });
     };
 }

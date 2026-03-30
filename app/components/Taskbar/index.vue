@@ -7,7 +7,8 @@
     const { unFocus } = useFocusWindowController();
 </script>
 <template>
-    <nav ref="taskbar" class="taskbar pixel-box" @click="unFocus">
+    <nav ref="taskbar" class="taskbar pixel-box">
+        <div class="taskbar__bg" @click="unFocus"></div>
         <ul class="taskbar__list">
             <TaskbarElementsAbout />
             <TaskbarAllPrograms />
@@ -22,11 +23,20 @@
         position: fixed;
         bottom: 0;
         left: 0;
-        background: rgba(c('default'), 0.8);
+
         display: flex;
         justify-content: space-between;
 
-        z-index: 2;
+        z-index: 100;
+
+        &__bg {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(c('default'), 0.8);
+        }
 
         &__list {
             width: fit-content;

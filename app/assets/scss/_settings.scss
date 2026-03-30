@@ -16,7 +16,13 @@ body,
         --container-padding: 10px;
     }
 
-    @include t(16px, 1, 'default', 400);
+    @include t(16px, 1, 'second', 400);
+    font-family: Pix;
+}
+
+* {
+    scrollbar-width: thin;
+    scrollbar-color: c('default-contrast') c('default');
 }
 
 .container {

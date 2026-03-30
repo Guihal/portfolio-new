@@ -1,11 +1,14 @@
 <script setup lang="ts">
+    import { useWindowEntityFetcher } from './composables/useFetchWindowEntity';
     import { useFocusOnClick } from './composables/useFocusOnClick';
+    import { useSeoWindow } from './composables/useSeoWindow';
     import { useSetFocusState } from './composables/useSetFocusState';
     import { useSetFullscreenObserver } from './composables/useSetFullscreenObserver';
     import { useSetLoadingState } from './composables/useSetLoadingState';
     import { useWindowFullscreenAutoSet } from './composables/useWindowFullscreenAutoSet';
     import { useWindowLoading } from './composables/useWindowLoading';
     import { useWindowLoop } from './composables/useWindowLoop/useWindowLoop';
+    import { useWindowRoute } from './composables/useWindowRoute';
     import { useWindowRoutesController } from './composables/useWindowRoutesController';
     import type { WindowOb } from './Window';
 
@@ -13,6 +16,12 @@
         windowOb: WindowOb;
     }>();
 
+    // Установка состояния focused при изменении focusedWindowId
+    useSetFocusState(windowOb);
+
+    const windowRoute = useWindowRoute(windowOb);
+
+    provide('windowRoute', windowRoute);
     provide('windowOb', windowOb);
 
     const { getIsLoading, initWindowLoading } = useWindowLoading();
@@ -30,9 +39,6 @@
     // Авто-переход в fullscreen при перетаскивании за границы
     useWindowFullscreenAutoSet(windowOb);
 
-    // Установка состояния focused при изменении focusedWindowId
-    useSetFocusState(windowOb);
-
     // === Вычисляемые значения для CSS (в пикселях) ===
 
     const width = computed(() => windowOb.bounds.calculated.width);
@@ -43,17 +49,25 @@
     // === Обработчики событий ===
 
     const { focusWindow } = useFocusOnClick(windowOb);
+    const { unFocus } = useFocusWindowController();
 
     initWindowLoading(windowOb.id);
     useSetLoadingState(windowOb, isLoading);
+
+    useSeoWindow(windowOb);
+
+    await useWindowEntityFetcher(windowOb, windowRoute);
 
     // При монтировании — сразу фокусируем окно
     onMounted(() => {
         focusWindow();
     });
 
-    // Роутинг
-    await useWindowRoutesController(windowOb);
+    watchEffect(() => console.log(Object.keys(windowOb.states).join(' ')));
+
+    onUnmounted(() => {
+        unFocus();
+    });
 </script>
 <template>
     <div
@@ -76,12 +90,14 @@
         height: calc(v-bind(height) * 1px);
         --left-tr: calc(v-bind(left) * 1px);
         --top-tr: calc(v-bind(top) * 1px);
-        left: var(--left-tr);
-        top: var(--top-tr);
+        // left: var(--left-tr);
+        // top: var(--top-tr);
+        container-type: inline-size;
+        container-name: window;
 
-        // left: 0;
-        // top: 0;
-        // transform: translate3d(var(--left-tr), var(--top-tr), 0);
+        left: 0;
+        top: 0;
+        transform: translate3d(var(--left-tr), var(--top-tr), 0);
 
         will-change: translate, width, height;
 

@@ -3,6 +3,7 @@
     import type { WindowOb } from '~/components/Window/Window';
     import { PROGRAMS } from '~/utils/constants/PROGRAMS';
     import type { ProgramType } from '~~/shared/types/Program';
+    import { useTooltipContainer } from './useTooltipContainer';
 
     const { programType, windowObs } = defineProps<{
         programType: ProgramType;
@@ -18,6 +19,9 @@
 
     const currentIndex = ref(0);
 
+    const { container, containerBounds, isShow, mouseover, mouseout } =
+        useTooltipContainer();
+
     watch(currentIndex, () => {
         if (currentIndex.value > windowObs.length - 1) {
             currentIndex.value = 0;
@@ -25,7 +29,6 @@
         }
 
         const windowOb = windowObs[currentIndex.value];
-        console.log(windowOb?.id);
         if (!windowOb) return;
 
         focus(windowOb.id);
@@ -35,7 +38,18 @@
 </script>
 
 <template>
-    <button class="taskbar__el" @click="onClick">
+    <button
+        ref="container"
+        class="taskbar__el"
+        @click="onClick"
+        @mouseover="mouseover"
+        @mouseout="mouseout">
+        <TaskbarElementsProgramTooltip
+            :mouseover
+            :mouseout
+            :containerBounds
+            :isShow
+            :windowObs />
         <div class="taskbar__el_img" v-html="icon"></div>
         <!-- <div class="taskbar__el_number">
             {{ windowObs.length }}

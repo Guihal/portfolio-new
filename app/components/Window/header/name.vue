@@ -14,34 +14,14 @@
         return iconString;
     });
 
-    const label = computed(() => {
-        if (!windowOb.file) return '';
-        const labelString = PROGRAMS[windowOb.file.programType].label;
-        if (!labelString) return;
-
-        return labelString;
-    });
-
-    const name = computed(() => {
-        if (!windowOb.file) return '';
-        const nameString = windowOb.file.name;
-        if (!nameString) return;
-
-        return nameString;
-    });
-
-    const totalText = computed(() => {
-        const total = [label.value, name.value].filter(Boolean);
-
-        return total.join(' - ');
-    });
+    const { title } = useWindowTitle(computed(() => windowOb.file));
 </script>
 
 <template>
-    <div class="window__name" v-if="windowOb.file">
+    <div v-if="windowOb.file" class="window__name">
         <div class="window__name-icon" v-html="icon"></div>
         <div class="window__name-text">
-            {{ totalText }}
+            {{ title }}
         </div>
     </div>
 </template>

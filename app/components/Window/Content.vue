@@ -35,7 +35,7 @@
     <div class="window__content">
         <div class="window__content__wrapper">
             <template v-if="component">
-                <component :is="component" :windowOb />
+                <component :is="component" />
             </template>
         </div>
     </div>
@@ -45,6 +45,7 @@
     .window__content {
         width: 100%;
         height: 100%;
+        max-height: calc(100% - var(--header-height));
         box-sizing: border-box;
 
         &__wrapper {

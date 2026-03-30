@@ -13,8 +13,6 @@
         useCreateAndRegisterWindow(route.fullPath);
     }
 
-    useSeoUnfocus();
-
     onMounted(() => {
         const nuxtApp = useNuxtApp();
         nuxtApp.vueApp.config.warnHandler = (msg, instance, trace) => {

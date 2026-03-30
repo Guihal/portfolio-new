@@ -26,36 +26,53 @@
 
 <style lang="scss">
     .explorer__shortcut {
-        padding: 10px;
-        --border: 1px solid #{rgba(c('default-contrast'), 0.2)};
+        padding: 5px 0;
+        --shortcut-color: #{c('default-contrast')};
 
-        border-bottom: var(--border);
+        --border: 1px solid #{c('default-contrast')};
+        // border-bottom: var(--border);
         display: flex;
         gap: 10px;
         align-items: center;
         box-sizing: border-box;
-        background: c('default-2');
+        background: transparent;
+        transition: border 0.3s ease-in-out;
 
         &:nth-child(2n) {
-            background: c('default-1');
+            //background: rgba(c('default-contrast'), 0.1);
+        }
+
+        &:nth-child(1) {
+            padding-top: 0;
         }
 
         width: calc(100%);
 
-        &:first-child {
-            border-top: var(--border);
+        @media (hover: hover) {
+            &:hover {
+                --shortcut-color: #{c('accent')};
+            }
+        }
+
+        &:active {
+            --shortcut-color: #{c('accent')};
         }
 
         &-text {
-            color: c('default-contrast');
+            color: var(--shortcut-color);
             letter-spacing: 0.02em;
             line-height: 100%;
             max-width: 100%;
+            font-size: 15px;
             overflow: hidden;
+            text-overflow: ellipsis;
+            transition: color 0.3s ease-in-out;
+            height: fit-content;
+            white-space: nowrap;
         }
 
         &-icon {
-            --icon-color: #{c('default-contrast')};
+            --icon-color: var(--shortcut-color);
             aspect-ratio: 1 / 1;
             width: 20px;
             height: 20px;
@@ -63,6 +80,10 @@
             svg {
                 width: 100%;
                 height: 100%;
+
+                path {
+                    transition: fill 0.3s ease-in-out;
+                }
             }
         }
     }

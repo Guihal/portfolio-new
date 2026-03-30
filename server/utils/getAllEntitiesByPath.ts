@@ -33,7 +33,6 @@ export async function getAllEntitiesByPath(dirPath: string): Promise<FsFile[]> {
     const result: FsFile[] = [];
 
     for (const child of node.children) {
-        console.log('child:', child.path, '| has entity:', !!child.entity);
         if (!child.entity) continue;
         result.push({
             ...child.entity,

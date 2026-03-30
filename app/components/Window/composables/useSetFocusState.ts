@@ -1,7 +1,7 @@
 import type { WindowOb } from '../Window';
 
 export function useSetFocusState(windowOb: WindowOb) {
-    const { getIsFocusedState } = useFocusWindowController();
+    const { getIsFocusedState, focus } = useFocusWindowController();
 
     const isFocused = getIsFocusedState(windowOb);
 
@@ -20,11 +20,23 @@ export function useSetFocusState(windowOb: WindowOb) {
     );
 
     watch(
+        () => windowOb.states.focused === true,
+        (v) => {
+            if (v) {
+                delete windowOb.states.collapsed;
+            }
+        },
+        {
+            immediate: true,
+        },
+    );
+
+    watch(
         () => windowOb.states.fullscreen,
         (st) => {
             setTimeout(() => {
                 if (st) {
-                    windowOb.states.focused = true;
+                    focus(windowOb.id);
                 }
             });
         },

@@ -31,7 +31,7 @@
                     allWindows.value[typedId],
                 );
             }
-        }, 200),
+        }, 100),
         {
             immediate: true,
             deep: true,

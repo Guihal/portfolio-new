@@ -1,11 +1,6 @@
 import type { File } from '~~/shared/types/File';
 import { useGetId } from '../utils/useGetId';
-import type {
-    WindowBounds,
-    WindowFile,
-    WindowOb,
-    WindowStates,
-} from '../Window';
+import type { WindowBounds, WindowOb, WindowStates } from '../Window';
 
 interface UseCreateAndRegisterWindowOptions {
     isForce?: boolean; // Игнорировать проверку на дубликаты
@@ -85,6 +80,6 @@ export function useCreateAndRegisterWindow(
     allWindows.value[id] = windowOb;
 
     // Фокусируем новое окно
-    focus(windowOb.id);
+    // focus(windowOb.id);
     return windowOb;
 }

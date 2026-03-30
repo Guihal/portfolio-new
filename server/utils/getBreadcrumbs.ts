@@ -2,23 +2,23 @@ export async function getBreadcrumbs(path: string) {
     if (!path.includes('/')) return null;
 
     const segments = path.split('/').filter(Boolean);
-
+    segments.unshift('');
     const breadcrumbs = [];
-    const manifest = await getManifest();
 
-    let currentPath = '';
+    const currentSegments: string[] = [];
 
     for (const segment of segments) {
-        currentPath += `/${segment}`;
-        const entityNotFormatted = manifest.flatIndex[currentPath];
-        if (!entityNotFormatted) return null;
+        currentSegments.push(segment);
+        let currentPath = `${currentSegments.join('/')}`;
+        if (!currentPath) currentPath = '/';
 
-        const entity = {
+        const entity = await getEntity(currentPath);
+        if (!entity) return null;
+
+        breadcrumbs.push({
             path: currentPath,
-            ...entityNotFormatted.entity,
-        };
-
-        breadcrumbs.push(entity);
+            ...entity,
+        });
     }
 
     return breadcrumbs;
