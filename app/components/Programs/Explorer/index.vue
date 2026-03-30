@@ -28,9 +28,7 @@
 </script>
 <template>
     <div class="explorer">
-        <div
-            class="explorer__left"
-            v-if="windowOb.bounds.calculated.width > 768">
+        <div class="explorer__left">
             <ProgramsExplorerNav />
             <ProgramsExplorerNavFacts />
         </div>
@@ -68,6 +66,10 @@
             display: flex;
             flex-direction: column;
             gap: 10px;
+
+            @container window (width < 768px) {
+                display: none;
+            }
         }
 
         &__content {

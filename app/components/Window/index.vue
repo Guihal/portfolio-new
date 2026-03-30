@@ -39,13 +39,6 @@
     // Авто-переход в fullscreen при перетаскивании за границы
     useWindowFullscreenAutoSet(windowOb);
 
-    // === Вычисляемые значения для CSS (в пикселях) ===
-
-    const width = computed(() => windowOb.bounds.calculated.width);
-    const height = computed(() => windowOb.bounds.calculated.height);
-    const left = computed(() => windowOb.bounds.calculated.left);
-    const top = computed(() => windowOb.bounds.calculated.top);
-
     // === Обработчики событий ===
 
     const { focusWindow } = useFocusOnClick(windowOb);
@@ -74,6 +67,12 @@
         :id="`window-${windowOb.id}`"
         class="window"
         :class="windowOb.states"
+        :style="{
+            '--w-width': windowOb.bounds.calculated.width + 'px',
+            '--w-height': windowOb.bounds.calculated.height + 'px',
+            '--w-left': windowOb.bounds.calculated.left + 'px',
+            '--w-top': windowOb.bounds.calculated.top + 'px',
+        }"
         @click="focusWindow">
         <div class="pixel-box window__wrapper">
             <WindowLoader />
@@ -86,10 +85,14 @@
 <style lang="scss">
     .window {
         position: fixed;
-        width: calc(v-bind(width) * 1px);
-        height: calc(v-bind(height) * 1px);
-        --left-tr: calc(v-bind(left) * 1px);
-        --top-tr: calc(v-bind(top) * 1px);
+        --w-top: 0;
+        --w-left: 0;
+        --w-width: 0;
+        --w-height: 0;
+        width: var(--w-width);
+        height: var(--w-height);
+        --left-tr: var(--w-left);
+        --top-tr: var(--w-top);
         // left: var(--left-tr);
         // top: var(--top-tr);
         container-type: inline-size;
