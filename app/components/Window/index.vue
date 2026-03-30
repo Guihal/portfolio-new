@@ -9,7 +9,6 @@
     import { useWindowLoading } from './composables/useWindowLoading';
     import { useWindowLoop } from './composables/useWindowLoop/useWindowLoop';
     import { useWindowRoute } from './composables/useWindowRoute';
-    import { useWindowRoutesController } from './composables/useWindowRoutesController';
     import type { WindowOb } from './Window';
 
     const { windowOb } = defineProps<{
