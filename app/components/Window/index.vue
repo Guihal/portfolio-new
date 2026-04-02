@@ -10,6 +10,7 @@
     import { useWindowLoop } from './composables/useWindowLoop/useWindowLoop';
     import { useWindowRoute } from './composables/useWindowRoute';
     import type { WindowOb } from './Window';
+    import { useFrameObserver } from '~/composables/useFrameObserver';
 
     const { windowOb } = defineProps<{
         windowOb: WindowOb;
@@ -29,9 +30,6 @@
 
     // === Инициализация систем окна ===
 
-    // Плавная анимация границ (RAF-цикл для left/top/width/height)
-    useWindowLoop(windowOb);
-
     // Автоматический fullscreen при монтировании + реакция на changes contentArea
     useSetFullscreenObserver(windowOb);
 
@@ -48,30 +46,32 @@
 
     useSeoWindow(windowOb);
 
-    await useWindowEntityFetcher(windowOb, windowRoute);
+    const windowNode = ref<HTMLElement | null>(null);
+
+    // Плавная анимация границ (RAF-цикл) + прямая запись CSS-переменных в DOM
+    useWindowLoop(windowOb, windowNode);
 
     // При монтировании — сразу фокусируем окно
+    const { createObserver, destroyObserver } = useFrameObserver();
+
     onMounted(() => {
         focusWindow();
+        createObserver(windowOb);
     });
-
-    watchEffect(() => console.log(Object.keys(windowOb.states).join(' ')));
 
     onUnmounted(() => {
         unFocus();
+        destroyObserver(windowOb.id);
     });
+
+    await useWindowEntityFetcher(windowOb, windowRoute);
 </script>
 <template>
     <div
         :id="`window-${windowOb.id}`"
+        ref="windowNode"
         class="window"
         :class="windowOb.states"
-        :style="{
-            '--w-width': windowOb.bounds.calculated.width + 'px',
-            '--w-height': windowOb.bounds.calculated.height + 'px',
-            '--w-left': windowOb.bounds.calculated.left + 'px',
-            '--w-top': windowOb.bounds.calculated.top + 'px',
-        }"
         @click="focusWindow">
         <div class="pixel-box window__wrapper">
             <WindowLoader />
@@ -84,28 +84,21 @@
 <style lang="scss">
     .window {
         position: fixed;
-        --w-top: 0;
-        --w-left: 0;
-        --w-width: 0;
-        --w-height: 0;
-        width: var(--w-width);
-        height: var(--w-height);
-        --left-tr: var(--w-left);
-        --top-tr: var(--w-top);
-        // left: var(--left-tr);
-        // top: var(--top-tr);
-        container-type: inline-size;
-        container-name: window;
-
+        width: 100vw;
+        height: 100vh;
         left: 0;
         top: 0;
-        transform: translate3d(var(--left-tr), var(--top-tr), 0);
-
-        will-change: translate, width, height;
-
+        translate: 0 0;
+        container-type: size;
+        container-name: window;
+        contain: strict;
+        will-change: translate;
         transform-origin: bottom;
-
         z-index: 4;
+
+        transition-property: opacity;
+        transition-duration: 0.3s;
+        transition-timing-function: ease-in-out;
 
         &__wrapper {
             width: 100%;
@@ -113,6 +106,7 @@
             display: flex;
             flex-direction: column;
             background: c('default');
+            contain: strict;
         }
 
         &.loading {
@@ -136,6 +130,12 @@
         &-leave-to {
             opacity: 0 !important;
             scale: 0.9;
+        }
+    }
+
+    :root:has(.window.preview) {
+        .window:not(.preview) {
+            opacity: 0;
         }
     }
 </style>

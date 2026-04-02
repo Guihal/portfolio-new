@@ -1,157 +1,147 @@
 import type { WatchHandle } from 'vue';
-import type { WindowBounds, WindowOb } from '../../Window';
+import type { WindowOb } from '../../Window';
 import { Preprocessor } from './Preprocessor';
-
-// Хранит состояние анимационного цикла для одного свойства (left/top/width/height)
-export type WindowLoopByProp = {
-    clearWatcher: WatchHandle | null; // Функция очистки watcher'а
-    rafId: number | null; // ID requestAnimationFrame
-    lastTimestamp: number; // Время последнего кадра для расчёта deltaTime
-};
-
-export type WindowLoop = Record<string, WindowLoopByProp>;
-export type WindowBoundsKey = keyof WindowBounds;
+import {
+    getTargetBounds,
+    getCalculatedBounds,
+    CSS_VAR_KEYS,
+    type WindowBoundsKey,
+} from '~/composables/useWindowBounds';
 
 /**
  * Контроллер анимационного цикла для плавного изменения границ окна.
- * Создаёт 4 независимых цикла (left, top, height, width), каждый работает через RAF.
- * Использует интерполяцию для плавного перехода от calculated к target значениям.
+ * Использует один RAF-цикл для всех свойств (left, top, height, width).
+ * Пишет CSS-переменные напрямую в DOM, минуя Vue reactivity.
  */
 export class WindowLoopController {
     windowOb: WindowOb;
-    loops: WindowLoop = {};
     preprocessor: Preprocessor;
-    // 4 свойства для анимации
     keys: WindowBoundsKey[] = ['left', 'top', 'height', 'width'];
-    mainWatcher: null | WatchHandle = null;
+
+    activeKeys = new Set<WindowBoundsKey>();
+    watchers: WatchHandle[] = [];
+    rafId: number | null = null;
+    lastTimestamp = 0;
+    element: HTMLElement | null = null;
+    prevBounds: {
+        width: number;
+        height: number;
+        left: number;
+        top: number;
+    } | null = null;
 
     constructor(windowOb: WindowOb) {
         this.windowOb = windowOb;
         this.preprocessor = new Preprocessor(this);
     }
 
+    setElement(el: HTMLElement) {
+        this.element = el;
+    }
+
     start() {
-        this.createLoops();
-    }
-
-    // Создаёт 4 цикла анимации для каждого свойства границ
-    createLoops() {
         for (const key of this.keys) {
-            const typedKey = key as WindowBoundsKey;
-            this.createLoop(typedKey);
+            const target = getTargetBounds(this.windowOb.id);
+            const wh = watch(
+                () => target[key],
+                () => {
+                    this.activeKeys.add(key);
+                    this.ensureRunning();
+                },
+                { immediate: true },
+            );
+            this.watchers.push(wh);
         }
     }
 
-    // Удаляет все циклы и очищает ресурсы
-    destroyLoops() {
-        for (const key of this.keys) {
-            const typedKey = key as WindowBoundsKey;
-            this.destroyLoop(typedKey);
-        }
+    ensureRunning() {
+        if (this.rafId !== null) return;
+        this.lastTimestamp = performance.now();
+        this.rafId = requestAnimationFrame(this.tick);
     }
 
-    /**
-     * Создаёт watcher для отслеживания изменения bounds.target[key].
-     * При изменении запускает анимацию через RAF.
-     */
-    createLoop(key: WindowBoundsKey) {
-        if (this.loops[key] !== undefined) return;
+    /** Пишет CSS-переменные напрямую в element */
+    flushToDOM(isForce = false) {
+        if (!this.element) return;
+        const calculated = getCalculatedBounds(this.windowOb.id);
+        const prev = this.prevBounds;
+        const threshold = 1; // Порог для предотвращения мелких обновлений
+        if (
+            !isForce &&
+            prev &&
+            Math.abs(calculated.width - prev.width) < threshold &&
+            Math.abs(calculated.height - prev.height) < threshold &&
+            Math.abs(calculated.left - prev.left) < threshold &&
+            Math.abs(calculated.top - prev.top) < threshold
+        )
+            return;
 
-        this.loops[key] = {
-            clearWatcher: null,
-            rafId: null,
-            lastTimestamp: performance.now(),
+        this.prevBounds = {
+            width: calculated.width,
+            height: calculated.height,
+            left: calculated.left,
+            top: calculated.top,
         };
-
-        // Следим за целевым значением — при изменении запускаем анимацию
-        this.loops[key].clearWatcher = watch(
-            () => this.windowOb.bounds.target[key],
-            () => {
-                this.startAnimation(key);
-            },
-            {
-                immediate: true,
-            },
-        );
+        this.element.style.cssText = `translate:${calculated.left}px ${calculated.top}px;width:${calculated.width}px;height:${calculated.height}px`;
     }
 
-    // Останавливает анимацию и удаляет watcher для свойства
-    destroyLoop(key: WindowBoundsKey) {
-        this.stopAnimation(key);
-        this.clearWatcher(key);
-        delete this.loops[key];
-    }
+    tick = () => {
+        const now = performance.now();
+        const deltaTime = now - this.lastTimestamp;
+        this.lastTimestamp = now;
 
-    /**
-     * Запускает анимационный цикл для свойства.
-     * Использует RAF для плавности, рассчитывает deltaTime для независимости от FPS.
-     */
-    startAnimation = (key: WindowBoundsKey) => {
-        if (this.loops[key]?.rafId !== null) return;
+        const target = getTargetBounds(this.windowOb.id);
+        const calculated = getCalculatedBounds(this.windowOb.id);
 
-        this.loops[key].lastTimestamp = performance.now();
+        for (const key of this.keys) {
+            if (!this.activeKeys.has(key)) continue;
 
-        const animation = () => {
-            const currentTime = performance.now();
-            // Время, прошедшее с последнего кадра (для плавности при разном FPS)
-            const deltaTime = currentTime - this.loops[key]!.lastTimestamp;
-            this.loops[key]!.lastTimestamp = currentTime;
-
-            // Вычисляем приращение с easing и применяем к calculated
             this.preprocessor.calculate(key, deltaTime);
 
-            // Если разница < 0.1 пикселя — считаем достигнутым, останавливаем
-            if (
-                Math.abs(
-                    this.windowOb.bounds.calculated[key] -
-                        this.windowOb.bounds.target[key],
-                ) < 0.1
-            ) {
-                this.windowOb.bounds.calculated[key] =
-                    this.windowOb.bounds.target[key];
-                this.stopAnimation(key);
-                return;
+            if (Math.abs(calculated[key] - target[key]) < 0.1) {
+                calculated[key] = target[key];
+                this.activeKeys.delete(key);
             }
+        }
 
-            this.loops[key]!.rafId = requestAnimationFrame(animation);
-        };
+        this.flushToDOM();
 
-        this.loops[key].rafId = requestAnimationFrame(animation);
+        if (this.activeKeys.size > 0) {
+            this.rafId = requestAnimationFrame(this.tick);
+        } else {
+            this.rafId = null;
+            this.flushToDOM(true);
+        }
     };
 
-    // Останавливает RAF для свойства
-    stopAnimation = (key: WindowBoundsKey) => {
-        if (!this.loops[key]?.rafId) return;
-        cancelAnimationFrame(this.loops[key]!.rafId);
-        this.loops[key]!.rafId = null;
-    };
-
-    // Очищает watcher свойства
-    clearWatcher(key: WindowBoundsKey) {
-        if (!this.loops[key]?.clearWatcher) return;
-        this.loops[key]?.clearWatcher();
-    }
-
-    // Полная очистка контроллера
     destroy() {
-        this.destroyLoops();
-        if (!this.mainWatcher) return;
-        this.mainWatcher();
+        if (this.rafId !== null) {
+            cancelAnimationFrame(this.rafId);
+            this.rafId = null;
+        }
+        for (const wh of this.watchers) {
+            wh();
+        }
+        this.watchers = [];
     }
 }
 
-/**
- * Composable для плавной анимации границ окна.
- * Создаёт WindowLoopController при монтировании, уничтожает при unmount.
- */
-export function useWindowLoop(windowOb: WindowOb) {
+export function useWindowLoop(
+    windowOb: WindowOb,
+    element: Ref<HTMLElement | null>,
+) {
     const loopController = new WindowLoopController(windowOb);
 
     onMounted(() => {
+        if (element.value) {
+            loopController.setElement(element.value);
+        }
         loopController.start();
     });
 
     onBeforeUnmount(() => {
         loopController.destroy();
     });
+
+    return loopController;
 }

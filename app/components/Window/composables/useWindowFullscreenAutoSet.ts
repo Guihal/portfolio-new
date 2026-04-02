@@ -1,4 +1,5 @@
 import type { WindowOb } from '../Window';
+import { getTargetBounds } from '~/composables/useWindowBounds';
 import { OFFSET } from '~/utils/constants/OFFSET';
 
 /**
@@ -13,25 +14,34 @@ import { OFFSET } from '~/utils/constants/OFFSET';
  */
 export function useWindowFullscreenAutoSet(windowOb: WindowOb) {
     const { contentArea } = useContentArea();
+    const target = getTargetBounds(windowOb.id);
 
     /**
      * Проверяет, вышло ли окно за границы рабочей области.
      * Использует OFFSET для создания "мёртвой зоны" у краёв.
      */
     const isOutOfBounds = () => {
-        const bounds = windowOb.bounds.target;
+        const left = target.left;
+        const top = target.top;
+        const width = target.width;
+        const height = target.height;
         return (
-            bounds.left < OFFSET ||
-            bounds.top < OFFSET ||
-            bounds.left + bounds.width > contentArea.value.width - OFFSET ||
-            bounds.top + bounds.height > contentArea.value.height - OFFSET
+            left < OFFSET ||
+            top < OFFSET ||
+            left + width > contentArea.value.width - OFFSET ||
+            top + height > contentArea.value.height - OFFSET
         );
     };
 
     // Chained watcher: следит за bounds только во время drag
     useSetChainedWatchers(
         () => windowOb.states.drag === true,
-        () => windowOb.bounds.target,
+        () => ({
+            left: target.left,
+            top: target.top,
+            width: target.width,
+            height: target.height,
+        }),
         () => {
             if (isOutOfBounds()) {
                 windowOb.states['fullscreen-ready'] = true;

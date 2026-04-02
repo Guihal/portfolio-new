@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-30T22:11:20.625Z",
+  "generatedAt": "2026-04-02T01:00:33.787Z",
   "tree": [
     {
       "name": "projects",
@@ -56,29 +56,29 @@
       ]
     },
     {
-      "name": "about-me",
-      "path": "/about-me",
-      "type": "directory",
-      "entity": {
-        "name": "Обо мне",
-        "programType": "explorer"
-      },
-      "children": [
-        {
-          "name": "entity.json",
-          "path": "/about-me/entity.json",
-          "type": "file",
-          "ext": ".json",
-          "size": 63
-        }
-      ]
-    },
-    {
       "name": "entity.json",
       "path": "/entity.json",
       "type": "file",
       "ext": ".json",
       "size": 73
+    },
+    {
+      "name": "about",
+      "path": "/about",
+      "type": "directory",
+      "entity": {
+        "name": "Обо мне",
+        "programType": "about"
+      },
+      "children": [
+        {
+          "name": "entity.json",
+          "path": "/about/entity.json",
+          "type": "file",
+          "ext": ".json",
+          "size": 60
+        }
+      ]
     }
   ],
   "flatIndex": {
@@ -130,28 +130,28 @@
       "ext": ".json",
       "size": 53
     },
-    "/about-me": {
-      "name": "about-me",
-      "path": "/about-me",
-      "type": "directory",
-      "entity": {
-        "name": "Обо мне",
-        "programType": "explorer"
-      }
-    },
-    "/about-me/entity.json": {
-      "name": "entity.json",
-      "path": "/about-me/entity.json",
-      "type": "file",
-      "ext": ".json",
-      "size": 63
-    },
     "/entity.json": {
       "name": "entity.json",
       "path": "/entity.json",
       "type": "file",
       "ext": ".json",
       "size": 73
+    },
+    "/about": {
+      "name": "about",
+      "path": "/about",
+      "type": "directory",
+      "entity": {
+        "name": "Обо мне",
+        "programType": "about"
+      }
+    },
+    "/about/entity.json": {
+      "name": "entity.json",
+      "path": "/about/entity.json",
+      "type": "file",
+      "ext": ".json",
+      "size": 60
     }
   },
   "stats": {

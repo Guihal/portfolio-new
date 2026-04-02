@@ -1,10 +1,16 @@
-import type { WindowOb, WindowBounds } from '../Window';
+import type { WindowOb } from '../Window';
+import {
+    getTargetBounds,
+    type WindowBoundsKey,
+    type WindowBounds,
+} from '~/composables/useWindowBounds';
 
 export function useUpdateWindowBounds(windowOb: WindowOb) {
     return (targetBounds: WindowBounds) => {
-        for (const key in windowOb.boundsTarget) {
-            const typedKey = key as keyof WindowBounds;
-            windowOb.boundsTarget[typedKey] = targetBounds[typedKey];
+        const target = getTargetBounds(windowOb.id);
+        const keys: WindowBoundsKey[] = ['left', 'top', 'width', 'height'];
+        for (const key of keys) {
+            target[key] = targetBounds[key];
         }
     };
 }

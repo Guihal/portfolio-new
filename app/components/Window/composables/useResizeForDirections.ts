@@ -1,5 +1,6 @@
 import { clampHandlers, type ClampFn } from '../utils/clampers';
-import type { WindowBoundsKey, WindowOb } from '../Window';
+import type { WindowOb } from '../Window';
+import { getTargetBounds } from '~/composables/useWindowBounds';
 
 /**
  * Конфигурация цепочек свойств для изменения размера.
@@ -43,25 +44,27 @@ const calculate = {
     // Тянем верхний край вверх/вниз
     // Дельта = Курсор Y - Текущий Top окна
     top: (windowOb: WindowOb, x: number, y: number) => {
-        return y - windowOb.bounds.target.top;
+        return y - getTargetBounds(windowOb.id).top;
     },
 
     // Тянем левый край влево/вправо
     // Дельта = Курсор X - Текущий Left окна
-    left: (windowOb: WindowOb, x: number, y: number) => {
-        return x - windowOb.bounds.target.left;
+    left: (windowOb: WindowOb, x: number, _y: number) => {
+        return x - getTargetBounds(windowOb.id).left;
     },
 
     // Тянем нижний край (изменяется высота)
     // Дельта = Курсор Y - Текущее дно (Top + Height)
-    bottom: (windowOb: WindowOb, x: number, y: number) => {
-        return y - (windowOb.bounds.target.top + windowOb.bounds.target.height);
+    bottom: (windowOb: WindowOb, _x: number, y: number) => {
+        const target = getTargetBounds(windowOb.id);
+        return y - (target.top + target.height);
     },
 
     // Тянем правый край (изменяется ширина)
     // Дельта = Курсор X - Текущий правый край (Left + Width)
-    right: (windowOb: WindowOb, x: number, y: number) => {
-        return x - (windowOb.bounds.target.left + windowOb.bounds.target.width);
+    right: (windowOb: WindowOb, x: number, _y: number) => {
+        const target = getTargetBounds(windowOb.id);
+        return x - (target.left + target.width);
     },
 };
 
@@ -83,52 +86,48 @@ export function useResizeForDirections<K extends ChainedKey>(
 ): ControlledResult<K> {
     const { contentArea } = useContentArea();
     const result = {} as ControlledResult<K>;
+    const target = getTargetBounds(windowOb.id);
 
     for (const key of properties) {
         const { primary, compensate } = chainedProperties[key];
 
-        (result as any)[key] = (x: number, y: number) => {
-            // Вычисляем дельту для текущего направления
+        (result as Record<string, (x: number, y: number) => void>)[key] = (
+            x: number,
+            y: number,
+        ) => {
             const delta = calculate[key](windowOb, x, y);
-            const bounds = windowOb.bounds.target;
 
-            // Получаем clamp-функцию для первичного свойства
             const clampPrimary = clampHandlers[primary] as ClampFn;
 
-            // Применяем дельту и clamp к первичному свойству
             const clampedPrimary = clampPrimary(
-                bounds[primary] + delta,
+                target[primary] + delta,
                 windowOb,
                 contentArea.value.width,
                 contentArea.value.height,
             );
 
-            // Вычисляем фактическое изменение после clamp
-            const clampedPrimaryDelta = clampedPrimary - bounds[primary];
+            const clampedPrimaryDelta = clampedPrimary - target[primary];
 
-            // Если есть компенсация — применяем обратное изменение
             if (compensate) {
                 const clampCompensate = clampHandlers[compensate] as ClampFn;
 
-                // Компенсирующее изменение (в противоположную сторону)
                 const clampedCompensate = clampCompensate(
-                    bounds[compensate] - delta,
+                    target[compensate] - delta,
                     windowOb,
                     contentArea.value.width,
                     contentArea.value.height,
                 );
 
                 const clampedCompensateDelta =
-                    clampedCompensate - bounds[compensate];
+                    clampedCompensate - target[compensate];
 
-                // Если одно из изменений равно 0 — выходим (достигнут предел)
                 if (clampedCompensateDelta === 0 || clampedPrimaryDelta === 0)
                     return;
 
-                bounds[compensate] = clampedCompensate;
+                target[compensate] = clampedCompensate;
             }
 
-            bounds[primary] = clampedPrimary;
+            target[primary] = clampedPrimary;
         };
     }
 

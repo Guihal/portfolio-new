@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-30T22:11:20.603Z",
+  "generatedAt": "2026-04-02T01:00:33.768Z",
   "rootEntity": {
     "name": "Рабочий стол",
     "programType": "explorer"
@@ -34,11 +34,11 @@
       ]
     },
     {
-      "name": "about-me",
-      "path": "/about-me",
+      "name": "about",
+      "path": "/about",
       "entity": {
         "name": "Обо мне",
-        "programType": "explorer"
+        "programType": "about"
       },
       "children": []
     }
@@ -68,12 +68,12 @@
         "programType": "explorer"
       }
     },
-    "/about-me": {
-      "name": "about-me",
-      "path": "/about-me",
+    "/about": {
+      "name": "about",
+      "path": "/about",
       "entity": {
         "name": "Обо мне",
-        "programType": "explorer"
+        "programType": "about"
       }
     },
     "/": {

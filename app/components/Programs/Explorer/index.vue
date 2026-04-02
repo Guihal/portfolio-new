@@ -30,7 +30,9 @@
     <div class="explorer">
         <div class="explorer__left">
             <ProgramsExplorerNav />
-            <ProgramsExplorerNavFacts />
+            <ClientOnly>
+                <ProgramsExplorerNavFacts />
+            </ClientOnly>
         </div>
         <div class="explorer__content pixel-box">
             <template v-if="data?.length > 0">
@@ -48,10 +50,9 @@
 <style lang="scss">
     .explorer {
         box-sizing: border-box;
-        width: calc(100% - 20px);
-        height: calc(100% - 10px);
+        width: 100%;
+        height: 100%;
         min-height: fit-content;
-        margin: 10px;
         margin-top: 0;
         display: flex;
         gap: 10px;
@@ -67,7 +68,7 @@
             flex-direction: column;
             gap: 10px;
 
-            @container window (width < 768px) {
+            @include cw('md') {
                 display: none;
             }
         }

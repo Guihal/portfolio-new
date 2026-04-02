@@ -1,17 +1,15 @@
 <script setup lang="ts">
     import type { WindowOb } from '~/components/Window/Window';
+    import type { ProgramType } from '~~/shared/types/Program';
+
+    const props = defineProps<{
+        programType: ProgramType;
+        windowObs: WindowOb[];
+        containerBounds: DOMRect | null;
+    }>();
 
     const tooltip = ref<HTMLElement | null>(null);
     const content = ref<HTMLElement | null>(null);
-
-    const { windowObs, isShow, containerBounds, mouseover, mouseout } =
-        defineProps<{
-            windowObs: WindowOb[];
-            isShow: boolean;
-            containerBounds: DOMRect | null;
-            mouseover: () => void;
-            mouseout: () => void;
-        }>();
 
     const tooltipBounds = ref<DOMRect | null>(null);
     const contentBounds = ref<DOMRect | null>(null);
@@ -29,23 +27,22 @@
     useResizeObserver(content, setContentBounds);
 
     const { contentArea } = useContentArea();
+    const { cancelHide, hide } = useTaskbarTooltips();
 
     const maxWidth = computed(() => contentArea.value.width);
 
     const top = computed(() => {
-        if (!containerBounds || !tooltipBounds.value) return 0;
+        if (!props.containerBounds || !tooltipBounds.value) return 0;
 
-        const value = containerBounds.top - tooltipBounds.value.height;
-
-        return value;
+        return props.containerBounds.top - tooltipBounds.value.height;
     });
 
     const left = computed(() => {
-        if (!containerBounds || !tooltipBounds.value) return 0;
+        if (!props.containerBounds || !tooltipBounds.value) return 0;
 
         const value =
-            containerBounds.left +
-            containerBounds.width / 2 -
+            props.containerBounds.left +
+            props.containerBounds.width / 2 -
             tooltipBounds.value.width / 2;
 
         const valueClamped = Math.max(
@@ -58,29 +55,27 @@
 
         return valueClamped;
     });
+
+    const onMouseover = () => cancelHide(props.programType);
+    const onMouseout = () => hide(props.programType);
 </script>
 
 <template>
-    <Teleport to="body">
-        <Transition name="taskbar__tooltip">
-            <div
-                v-show="isShow"
-                ref="tooltip"
-                :style="{
-                    '--top': top,
-                    '--left': left,
-                    '--mxw': maxWidth,
-                    '--c-w': contentBounds?.width ?? 0,
-                }"
-                @mouseover="mouseover"
-                @mouseout="mouseout"
-                class="taskbar__tooltip pixel-box">
-                <div ref="content" class="taskbar__tooltip__content">
-                    <TaskbarElementsProgramAllFrames :windowObs />
-                </div>
-            </div>
-        </Transition>
-    </Teleport>
+    <div
+        ref="tooltip"
+        :style="{
+            '--top': top,
+            '--left': left,
+            '--mxw': maxWidth,
+            '--c-w': contentBounds?.width ?? 0,
+        }"
+        class="taskbar__tooltip pixel-box"
+        @mouseover="onMouseover"
+        @mouseout="onMouseout">
+        <div ref="content" class="taskbar__tooltip__content">
+            <TaskbarElementsProgramAllFrames :window-obs="windowObs" />
+        </div>
+    </div>
 </template>
 
 <style lang="scss">
@@ -99,24 +94,15 @@
         padding: 10px;
         box-sizing: border-box;
         z-index: 120;
-        transition-property: opacity, scale, width;
+        transition-property: width;
         transition-duration: 0.3s;
         transition-timing-function: ease-in-out;
         overflow-x: clip;
-
-        &-enter-active {
-            transition-property: opacity, scale;
-        }
 
         &__content {
             width: fit-content;
             display: flex;
             gap: 10px;
-        }
-
-        &-enter-from,
-        &-leave-to {
-            opacity: 0 !important;
         }
     }
 </style>

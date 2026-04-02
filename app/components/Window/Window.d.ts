@@ -1,13 +1,6 @@
 import type { ChainedKey } from './composables/useResizeForDirections';
 import type { FsFile } from '~~/shared/types/FsFile';
-
-export type WindowBounds = {
-    left: number;
-    top: number;
-    width: number;
-    height: number;
-};
-export type WindowBoundsKey = keyof WindowBounds;
+import type { WindowBoundsKey } from '~/composables/useWindowBounds';
 
 export type WindowState =
     | 'fullscreen'
@@ -17,7 +10,8 @@ export type WindowState =
     | 'resize'
     | 'loading'
     | 'error'
-    | 'focused';
+    | 'focused'
+    | 'preview';
 
 export type WindowResizeDirections = Partial<Record<ChainedKey, boolean>>;
 
@@ -25,14 +19,9 @@ export type WindowStates = Partial<Record<WindowState, true>>;
 export type WindowFile = FsFile | null;
 export type WindowOb = {
     id: string;
-    bounds: {
-        target: WindowBounds;
-        calculated: WindowBounds;
-    };
     states: WindowStates;
     targetFile: {
         value: string;
     };
     file: WindowFile;
-    // content: ProgramInstance;
 };

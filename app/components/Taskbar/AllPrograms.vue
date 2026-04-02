@@ -1,52 +1,24 @@
 <script setup lang="ts">
-    import type { ProgramType } from '~~/shared/types/Program';
-    import type { WindowOb } from '../Window/Window';
-    import { PROGRAMS } from '~/utils/constants/PROGRAMS';
-    import { debounce } from '../Window/utils/debounce';
-
-    const { allWindows } = useAllWindows();
-
-    const windowsGroupByProgram: Ref<Partial<Record<ProgramType, WindowOb[]>>> =
-        ref({});
-
-    watch(
-        allWindows.value,
-        debounce(() => {
-            windowsGroupByProgram.value = {};
-
-            for (const id in allWindows.value) {
-                const typedId = id as keyof AllWindows;
-
-                if (!allWindows.value[typedId]?.file) continue;
-
-                const typeProgram = allWindows.value[typedId].file.programType;
-
-                if (!PROGRAMS[typeProgram]) continue;
-
-                if (!windowsGroupByProgram.value[typeProgram]) {
-                    windowsGroupByProgram.value[typeProgram] = [];
-                }
-
-                windowsGroupByProgram.value[typeProgram].push(
-                    allWindows.value[typedId],
-                );
-            }
-        }, 100),
-        {
-            immediate: true,
-            deep: true,
-        },
-    );
+    const { windowsGroupByProgram } = useWindowsGroupByProgram();
+    console.log(windowsGroupByProgram.value);
 </script>
 
 <template>
     <TransitionGroup name="taskbar__el">
-        <template
+        <TaskbarElementsProgram
             v-for="(windows, programType) in windowsGroupByProgram"
-            :key="programType">
-            <TaskbarElementsProgram :windowObs="windows" :programType />
-        </template>
+            :key="programType"
+            :window-obs="windows ?? []"
+            :program-type="programType" />
     </TransitionGroup>
 </template>
 
-<style lang="scss"></style>
+<style lang="scss">
+    .taskbar__el-leave-active {
+        transition: opacity 0.3s ease-in-out;
+    }
+
+    .taskbar__el-leave-to {
+        opacity: 0;
+    }
+</style>

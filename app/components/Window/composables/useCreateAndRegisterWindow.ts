@@ -1,6 +1,7 @@
-import type { File } from '~~/shared/types/File';
+import type { FsFile } from '~~/shared/types/FsFile';
 import { useGetId } from '../utils/useGetId';
-import type { WindowBounds, WindowOb, WindowStates } from '../Window';
+import type { WindowStates } from '../Window';
+import type { WindowOb } from '../Window.d';
 
 interface UseCreateAndRegisterWindowOptions {
     isForce?: boolean; // Игнорировать проверку на дубликаты
@@ -20,7 +21,7 @@ interface UseCreateAndRegisterWindowOptions {
  * @returns WindowOb | null (null если окно уже существует)
  */
 export function useCreateAndRegisterWindow(
-    file: File | string,
+    file: FsFile | string,
     options: UseCreateAndRegisterWindowOptions = {
         isForce: false,
     },
@@ -43,21 +44,6 @@ export function useCreateAndRegisterWindow(
     // Генерируем уникальный ID
     const id = useGetId();
 
-    // Начальные границы (будут установлены в useSetFullscreenObserver)
-    const calculated: WindowBounds = {
-        top: 0,
-        left: 0,
-        width: 0,
-        height: 0,
-    };
-
-    const target: WindowBounds = {
-        top: 0,
-        left: 0,
-        width: 0,
-        height: 0,
-    };
-
     // Начальные состояния (пустые)
     const states: WindowStates = {};
 
@@ -65,10 +51,6 @@ export function useCreateAndRegisterWindow(
 
     const windowOb: WindowOb = {
         id,
-        bounds: {
-            target,
-            calculated,
-        },
         states,
         targetFile: {
             value: path,
@@ -79,6 +61,7 @@ export function useCreateAndRegisterWindow(
     // Регистрируем окно в глобальном хранилище
     allWindows.value[id] = windowOb;
 
+    // Bounds создаются лениво в useWindowBounds при первом обращении
     // Фокусируем новое окно
     // focus(windowOb.id);
     return windowOb;

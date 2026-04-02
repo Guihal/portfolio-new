@@ -44,16 +44,18 @@
 <style lang="scss">
     .window__content {
         width: 100%;
-        height: 100%;
-        max-height: calc(100% - var(--header-height));
+        flex: 1;
+        min-height: 0;
+        overflow: hidden;
         box-sizing: border-box;
 
         &__wrapper {
+            padding: 10px;
+            padding-top: 0;
             width: 100%;
             height: 100%;
             max-width: 100%;
-            max-height: 100%;
-            overflow: auto;
+            overflow: hidden;
             scrollbar-width: thin;
         }
     }

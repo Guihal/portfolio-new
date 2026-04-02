@@ -1,23 +1,26 @@
-export function useDebouncedMicrotaskRef(value) {
+import { customRef, type Ref } from 'vue';
+
+export function useBatchedRef<T>(initial: T): Ref<T> {
+    let value = initial;
     let pending = false;
 
-    return customRef((track, trigger) => {
-        return {
-            get() {
-                track();
-                return value;
-            },
-            set(newValue) {
-                value = newValue; // обновляем сразу, но trigger не зовём
+    return customRef<T>((track, trigger) => ({
+        get() {
+            track();
+            return value;
+        },
+        set(newValue: T) {
+            if (Object.is(newValue, value)) return;
 
-                if (!pending) {
-                    pending = true;
-                    queueMicrotask(() => {
-                        pending = false;
-                        trigger(); // один раз на все set() в этом тике
-                    });
-                }
-            },
-        };
-    });
+            value = newValue;
+
+            if (!pending) {
+                pending = true;
+                queueMicrotask(() => {
+                    pending = false;
+                    trigger();
+                });
+            }
+        },
+    }));
 }

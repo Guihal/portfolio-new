@@ -6,29 +6,32 @@
     setViewportObserver();
 
     const route = useRoute();
+    const { queuedPush } = useQueuedRouter();
+    const aboutCookie = useCookie('about_visited', {
+        maxAge: 60 * 60 * 24 * 365,
+    });
 
     clearAllWindowsState();
 
-    if (route.fullPath !== '/') {
-        useCreateAndRegisterWindow(route.fullPath);
+    if (!aboutCookie.value && route.fullPath !== '/about-me') {
+        aboutCookie.value = '1';
+        await queuedPush('/about');
+    } else {
+        if (route.fullPath !== '/') {
+            useCreateAndRegisterWindow(route.fullPath);
+        }
     }
 
     useSeoUnfocus();
-
-    onMounted(() => {
-        const nuxtApp = useNuxtApp();
-        nuxtApp.vueApp.config.warnHandler = (msg, instance, trace) => {
-            console.warn(msg);
-            console.log(instance);
-            console.log(trace);
-        };
-    });
 </script>
 <template>
     <NuxtLayout>
         <WindowView />
         <Workbench />
-        <Taskbar />
+        <ClientOnly>
+            <Taskbar />
+            <TaskbarTooltips />
+        </ClientOnly>
     </NuxtLayout>
 </template>
 <style lang="scss">

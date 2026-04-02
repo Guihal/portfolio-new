@@ -1,4 +1,5 @@
 import type { WindowOb } from '../Window';
+import { getTargetBounds } from '~/composables/useWindowBounds';
 import { MINSIZE } from './clampers';
 
 /**
@@ -13,6 +14,7 @@ export function setSize(
     key: 'width' | 'height',
     value: number,
 ) {
+    const target = getTargetBounds(windowOb.id);
     // Clamp: не меньше MINSIZE
-    windowOb.bounds.target[key] = Math.max(MINSIZE, value);
+    target[key] = Math.max(MINSIZE, value);
 }

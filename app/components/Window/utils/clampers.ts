@@ -1,4 +1,8 @@
 import type { WindowOb } from '../Window';
+import {
+    getTargetBounds,
+    type WindowBoundsKey,
+} from '~/composables/useWindowBounds';
 
 // Минимальный размер окна (ширина/высота)
 export const MINSIZE = 320;
@@ -15,18 +19,16 @@ export const MINSIZE = 320;
  */
 export const clampHandlers: Record<string, ClampFn> = {
     // Ограничение top: [0, contentHeight - minHeight]
-    top: (v, windowOb, _cw, ch) =>
-        Math.max(
-            0,
-            Math.min(v, ch - Math.min(windowOb.bounds.target.height, MINSIZE)),
-        ),
+    top: (v, windowOb, _cw, ch) => {
+        const target = getTargetBounds(windowOb.id);
+        return Math.max(0, Math.min(v, ch - Math.min(target.height, MINSIZE)));
+    },
 
     // Ограничение left: [0, contentWidth - minWidth]
-    left: (v, windowOb, cw, ch) =>
-        Math.max(
-            0,
-            Math.min(v, cw - Math.min(windowOb.bounds.target.width, MINSIZE)),
-        ),
+    left: (v, windowOb, cw, ch) => {
+        const target = getTargetBounds(windowOb.id);
+        return Math.max(0, Math.min(v, cw - Math.min(target.width, MINSIZE)));
+    },
 
     // Ограничение width: [MINSIZE, contentWidth]
     width: (v, windowOb, cw, ch) =>

@@ -1,5 +1,6 @@
 import { OFFSET } from '~/utils/constants/OFFSET';
 import type { WindowOb } from '../Window';
+import { getTargetBounds } from '~/composables/useWindowBounds';
 
 /**
  * Composable для перетаскивания окна за заголовок.
@@ -20,6 +21,7 @@ export function useMove(windowOb: WindowOb) {
 
     const { contentArea } = useContentArea();
     const { focus } = useFocusWindowController();
+    const target = getTargetBounds(windowOb.id);
 
     /**
      * Проверяет, вышла ли позиция за пределы рабочей области.
@@ -75,8 +77,8 @@ export function useMove(windowOb: WindowOb) {
             lastX.value = ev.clientX;
 
             // Применяем дельту к позиции окна
-            windowOb.bounds.target.top += deltaY;
-            windowOb.bounds.target.left += deltaX;
+            target.top += deltaY;
+            target.left += deltaX;
         };
 
         // Обработчик отпускания

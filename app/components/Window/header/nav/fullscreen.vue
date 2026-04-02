@@ -2,26 +2,20 @@
     import { OFFSET } from '~/utils/constants/OFFSET';
     import type { WindowOb } from '../../Window';
     import { setSize } from '../../utils/setSize';
+    import { getTargetBounds } from '~/composables/useWindowBounds';
     const windowOb = inject('windowOb') as WindowOb;
 
     const onclick = () => {
+        const target = getTargetBounds(windowOb.id);
         if (windowOb.states.fullscreen) {
             delete windowOb.states.fullscreen;
             const UNFULLSCREENOFFSET = OFFSET * 2;
 
-            windowOb.bounds.target.left = UNFULLSCREENOFFSET;
-            windowOb.bounds.target.top = UNFULLSCREENOFFSET;
+            target.left = UNFULLSCREENOFFSET;
+            target.top = UNFULLSCREENOFFSET;
 
-            setSize(
-                windowOb,
-                'width',
-                windowOb.bounds.target.width - UNFULLSCREENOFFSET * 2,
-            );
-            setSize(
-                windowOb,
-                'height',
-                windowOb.bounds.target.height - UNFULLSCREENOFFSET * 2,
-            );
+            setSize(windowOb, 'width', target.width - UNFULLSCREENOFFSET * 2);
+            setSize(windowOb, 'height', target.height - UNFULLSCREENOFFSET * 2);
         } else {
             windowOb.states.fullscreen = true;
         }

@@ -1,13 +1,15 @@
-import type { WindowBounds, WindowOb } from '../Window';
+import type { WindowOb } from '../Window';
+import {
+    getTargetBounds,
+    type WindowBoundsKey,
+} from '~/composables/useWindowBounds';
 
-export type SetBoundsBounds = Partial<Record<keyof WindowBounds, number>>;
+export type SetBoundsBounds = Partial<Record<WindowBoundsKey, number>>;
 
-const minSize = 320;
-
-export function setTargetBounds(widnowOb: WindowOb, bounds: SetBoundsBounds) {
+export function setTargetBounds(windowOb: WindowOb, bounds: SetBoundsBounds) {
+    const target = getTargetBounds(windowOb.id);
     for (const key in bounds) {
-        const typedKey = key as keyof SetBoundsBounds;
-        // @ts-ignore
-        widnowOb.boundsTarget[typedKey] = bounds[typedKey];
+        const typedKey = key as WindowBoundsKey;
+        target[typedKey] = bounds[typedKey]!;
     }
 }

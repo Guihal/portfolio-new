@@ -6,18 +6,6 @@
     const header = ref<null | HTMLElement>(null);
     // Обработчик pointerdown для перетаскивания окна
     const pointerdown = useMove(windowOb);
-
-    const setHeight = () => {
-        if (!header.value) return;
-        const bounds = header.value.getBoundingClientRect();
-        const height = bounds.height;
-        const parent = header.value.parentNode as HTMLElement;
-        if (!parent) return;
-
-        parent.style.setProperty('--header-height', `${height}px`);
-    };
-
-    useResizeObserver(header, setHeight);
 </script>
 <template>
     <div class="window__header" ref="header">

@@ -4,6 +4,7 @@
         <ClientOnly>
             <Background />
             <FullscreenPreffered />
+            <!-- <PreviewPreffered /> -->
         </ClientOnly>
         <Loader />
         <slot />

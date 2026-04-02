@@ -1,9 +1,54 @@
-@mixin t($fs: 15px, $lh: 1, $cName: 'default', $fw: 400, $family: 'Ithaca') {
+@use './functions' as *;
+@use 'sass:map';
+
+// Брейкпоинты для container queries
+$breakpoints: (
+    'sm': 600px,
+    'md': 768px,
+);
+
+@mixin t($fs: 15px, $lh: 1, $cName: 'default', $fw: 400, $family: 'Pix') {
     $c: c($cName);
-    color: $c;
+    color: #{$c};
     font-family: $family, system-ui;
-    font-size: z($fs);
+    font-size: $fs;
     font-style: normal;
     font-weight: $fw;
     line-height: $lh;
+}
+
+// Container query: ширина меньше брейкпоинта
+// @include cw(sm) { ... } → @container window (width < 600px) { ... }
+@mixin cw($name) {
+    $bp: map.get($breakpoints, $name);
+    @if not $bp {
+        @error "Breakpoint `#{$name}` not found. Available: #{map.keys($breakpoints)}";
+    }
+    @container window (width < #{$bp}) {
+        @content;
+    }
+}
+
+// Container query: высота меньше брейкпоинта
+// @include ch(sm) { ... } → @container window (height < 600px) { ... }
+@mixin ch($name) {
+    $bp: map.get($breakpoints, $name);
+    @if not $bp {
+        @error "Breakpoint `#{$name}` not found. Available: #{map.keys($breakpoints)}";
+    }
+    @container window (height < #{$bp}) {
+        @content;
+    }
+}
+
+// Container query: ширина ИЛИ высота меньше брейкпоинта
+// @include cwh(sm) { ... } → оба условия
+@mixin cwh($name) {
+    $bp: map.get($breakpoints, $name);
+    @if not $bp {
+        @error "Breakpoint `#{$name}` not found. Available: #{map.keys($breakpoints)}";
+    }
+    @container window (height < #{$bp}) or (width < #{$bp}) {
+        @content;
+    }
 }

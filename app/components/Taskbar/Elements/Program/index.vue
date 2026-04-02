@@ -3,7 +3,6 @@
     import type { WindowOb } from '~/components/Window/Window';
     import { PROGRAMS } from '~/utils/constants/PROGRAMS';
     import type { ProgramType } from '~~/shared/types/Program';
-    import { useTooltipContainer } from './useTooltipContainer';
 
     const { programType, windowObs } = defineProps<{
         programType: ProgramType;
@@ -19,8 +18,25 @@
 
     const currentIndex = ref(0);
 
-    const { container, containerBounds, isShow, mouseover, mouseout } =
-        useTooltipContainer();
+    const { register, unregister, setContainer, show, hide, updateWindowObs } =
+        useTaskbarTooltips();
+
+    const container = ref<HTMLElement | null>(null);
+
+    onMounted(() => {
+        register(programType, windowObs);
+        setContainer(programType, container.value);
+    });
+
+    watch(
+        () => windowObs,
+        (obs) => updateWindowObs(programType, obs),
+        { deep: true },
+    );
+
+    onBeforeUnmount(() => {
+        unregister(programType);
+    });
 
     watch(currentIndex, () => {
         if (currentIndex.value > windowObs.length - 1) {
@@ -34,7 +50,16 @@
         focus(windowOb.id);
     });
 
+    watch(
+        () => windowObs.length,
+        (len) => {
+            if (len === 0) hide(programType);
+        },
+    );
+
     const onClick = debounce(() => currentIndex.value++, 50);
+    const onMouseover = debounce(() => show(programType), 16);
+    const onMouseout = debounce(() => hide(programType), 16);
 </script>
 
 <template>
@@ -42,18 +67,9 @@
         ref="container"
         class="taskbar__el"
         @click="onClick"
-        @mouseover="mouseover"
-        @mouseout="mouseout">
-        <TaskbarElementsProgramTooltip
-            :mouseover
-            :mouseout
-            :containerBounds
-            :isShow
-            :windowObs />
+        @mouseover="onMouseover"
+        @mouseout="onMouseout">
         <div class="taskbar__el_img" v-html="icon"></div>
-        <!-- <div class="taskbar__el_number">
-            {{ windowObs.length }}
-        </div> -->
     </button>
 </template>
 

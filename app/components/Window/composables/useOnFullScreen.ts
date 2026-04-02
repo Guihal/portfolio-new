@@ -1,4 +1,9 @@
-import type { WindowBounds, WindowOb } from '../Window';
+import type { WindowOb } from '../Window';
+import {
+    getTargetBounds,
+    getCalculatedBounds,
+    type WindowBoundsKey,
+} from '~/composables/useWindowBounds';
 
 /**
  * Устанавливает размеры окна на всю контентную область (fullscreen).
@@ -9,15 +14,18 @@ import type { WindowBounds, WindowOb } from '../Window';
 export function useOnFullscreen(windowOb: WindowOb, isForce = false) {
     const { contentArea } = useContentArea();
 
+    const target = getTargetBounds(windowOb.id);
+    const calculated = getCalculatedBounds(windowOb.id);
+
     /**
      * Устанавливает значение свойства.
      * Если isForce — также обновляет calculated для мгновенного перехода.
      */
-    const set = (prop: keyof WindowBounds, value: number) => {
-        windowOb.bounds.target[prop] = value;
+    const set = (prop: WindowBoundsKey, value: number) => {
+        target[prop] = value;
         if (isForce) {
             // Синхронизием calculated с target для мгновенной установки
-            windowOb.bounds.calculated[prop] = value;
+            calculated[prop] = value;
         }
     };
 

@@ -16,8 +16,7 @@ body,
         --container-padding: 10px;
     }
 
-    @include t(16px, 1, 'second', 400);
-    font-family: Pix;
+    @include t(15px, 1, 'default-contrast', 400);
 }
 
 * {
