@@ -54,17 +54,45 @@ export const useWindowsStore = defineStore("windows", () => {
 		useFocusStore().unFocus();
 	}
 
+	/**
+	 * Таблица несовместимых state-комбинаций.
+	 * При setState(id, key, true) автоматически clear все states из incompatible[key].
+	 * Базируется на UI-инвариантах:
+	 *   - fullscreen ↔ collapsed: окно не может быть одновременно fullscreen и свернуто
+	 *   - fullscreen ↔ drag/resize: пользователь не может тащить/ресайзить fullscreen-окно
+	 *   - collapsed ↔ drag/resize: свёрнутое окно не интерактивно
+	 */
+	const INCOMPATIBLE: Partial<Record<WindowState, readonly WindowState[]>> = {
+		fullscreen: ["collapsed", "drag", "resize"],
+		collapsed: ["fullscreen", "drag", "resize"],
+		drag: ["fullscreen", "collapsed"],
+		resize: ["fullscreen", "collapsed"],
+	};
+
 	function setState<K extends WindowState>(id: string, key: K, value: boolean) {
 		const w = windows.value[id];
 		if (!w) return;
-		if (value) w.states[key] = true;
-		else Reflect.deleteProperty(w.states, key);
+		if (value) {
+			w.states[key] = true;
+			const conflicts = INCOMPATIBLE[key];
+			if (conflicts) {
+				for (const k of conflicts) Reflect.deleteProperty(w.states, k);
+			}
+		} else {
+			Reflect.deleteProperty(w.states, key);
+		}
 	}
 
 	function clearState(id: string, key: WindowState) {
 		const w = windows.value[id];
 		if (!w) return;
 		Reflect.deleteProperty(w.states, key);
+	}
+
+	function toggleState(id: string, key: WindowState) {
+		const w = windows.value[id];
+		if (!w) return;
+		setState(id, key, !w.states[key]);
 	}
 
 	/**
@@ -90,6 +118,7 @@ export const useWindowsStore = defineStore("windows", () => {
 		unFocus,
 		setState,
 		clearState,
+		toggleState,
 		$reset,
 	};
 });

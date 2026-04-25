@@ -1,15 +1,17 @@
 <script setup lang="ts">
     import { useBoundsStore } from '~/stores/bounds';
+    import { useWindowsStore } from '~/stores/windows';
     import { OFFSET } from '~/utils/constants/offset';
     import type { WindowOb } from '../../types';
     import { setSize } from '../../utils/setSize';
 
     const windowOb = inject('windowOb') as WindowOb;
+    const windowsStore = useWindowsStore();
 
     const onclick = () => {
         const target = useBoundsStore().ensure(windowOb.id).target;
         if (windowOb.states.fullscreen) {
-            delete windowOb.states.fullscreen;
+            windowsStore.clearState(windowOb.id, 'fullscreen');
             const UNFULLSCREENOFFSET = OFFSET * 2;
 
             target.left = UNFULLSCREENOFFSET;
@@ -18,7 +20,7 @@
             setSize(windowOb, 'width', target.width - UNFULLSCREENOFFSET * 2);
             setSize(windowOb, 'height', target.height - UNFULLSCREENOFFSET * 2);
         } else {
-            windowOb.states.fullscreen = true;
+            windowsStore.setState(windowOb.id, 'fullscreen', true);
         }
     };
 </script>

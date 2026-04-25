@@ -1,15 +1,17 @@
 import { useBoundsStore } from "~/stores/bounds";
 import { useFocusStore } from "~/stores/focus";
+import { useWindowsStore } from "~/stores/windows";
 import type { WindowOb } from "../types";
 
 export function useMove(windowOb: WindowOb) {
 	const focusStore = useFocusStore();
+	const windowsStore = useWindowsStore();
 	const target = useBoundsStore().ensure(windowOb.id).target;
 
 	return (ev: PointerEvent) => {
 		if (windowOb.states.fullscreen) return;
 		focusStore.focus(windowOb.id);
-		windowOb.states.drag = true;
+		windowsStore.setState(windowOb.id, "drag", true);
 
 		let lastX = ev.clientX;
 		let lastY = ev.clientY;
@@ -26,7 +28,7 @@ export function useMove(windowOb: WindowOb) {
 		};
 
 		const pointerup = () => {
-			delete windowOb.states.drag;
+			windowsStore.clearState(windowOb.id, "drag");
 
 			document.removeEventListener("pointermove", pointerMove);
 			document.removeEventListener("pointerup", pointerup);

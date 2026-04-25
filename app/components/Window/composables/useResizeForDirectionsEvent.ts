@@ -1,4 +1,5 @@
 import { useFocusStore } from "~/stores/focus";
+import { useWindowsStore } from "~/stores/windows";
 import type { WindowOb } from "../types";
 import { syncBounds } from "../utils/syncBounds";
 import {
@@ -24,18 +25,16 @@ export function useResizeForDirectionsEvent(
 	// Получаем функции для вычисления размеров по направлениям
 	const controlled = useResizeForDirections(windowOb, directions);
 	const focusStore = useFocusStore();
+	const windowsStore = useWindowsStore();
 
 	const onPointerDown = (ev: PointerEvent) => {
-		// Устанавливаем флаг изменения размера
-		windowOb.states.resize = true;
+		// setState 'resize' автоматически clear fullscreen/collapsed через
+		// INCOMPATIBLE table в windows store.
+		windowsStore.setState(windowOb.id, "resize", true);
 		ev.preventDefault();
 
 		// Синхронизируем calculated bounds с target перед началом resize
 		syncBounds(windowOb);
-
-		// Выходим из fullscreen и collapsed режимов
-		delete windowOb.states.fullscreen;
-		delete windowOb.states.collapsed;
 
 		// Захватываем pointer для элемента (чтобы события шли даже за пределами)
 		(ev.target as HTMLElement).setPointerCapture(ev.pointerId);
@@ -56,7 +55,7 @@ export function useResizeForDirectionsEvent(
 		// Обработчик отпускания
 		const onPointerUp = () => {
 			focusStore.focus(windowOb.id);
-			delete windowOb.states.resize;
+			windowsStore.clearState(windowOb.id, "resize");
 			window.removeEventListener("pointermove", onPointerMove);
 			window.removeEventListener("pointerup", onPointerUp);
 		};

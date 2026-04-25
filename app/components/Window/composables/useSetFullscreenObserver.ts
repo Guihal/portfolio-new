@@ -1,5 +1,6 @@
 import { storeToRefs } from "pinia";
 import { useContentAreaStore } from "~/stores/contentArea";
+import { useWindowsStore } from "~/stores/windows";
 import type { WindowOb } from "../types";
 import { useOnFullscreen } from "./useOnFullScreen";
 
@@ -14,6 +15,7 @@ import { useOnFullscreen } from "./useOnFullScreen";
  */
 export function useSetFullscreenObserver(windowOb: WindowOb) {
 	const { area: contentArea } = storeToRefs(useContentAreaStore());
+	const windowsStore = useWindowsStore();
 
 	// Флаг: окно ещё не смонтировано (для принудительной установки fullscreen)
 	let isMounted = false;
@@ -34,8 +36,8 @@ export function useSetFullscreenObserver(windowOb: WindowOb) {
 
 	onMounted(() => {
 		// Принудительно включаем fullscreen при монтировании
-		windowOb.states.fullscreen = true;
-		delete windowOb.states["fullscreen-ready"];
+		windowsStore.setState(windowOb.id, "fullscreen", true);
+		windowsStore.clearState(windowOb.id, "fullscreen-ready");
 
 		// Через 100ms помечаем как смонтированное
 		mountedTimer = setTimeout(() => {

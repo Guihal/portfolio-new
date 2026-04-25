@@ -3,6 +3,7 @@ import { useQueuedRouter } from "~/composables/useQueuedRouter";
 import { useBoundsStore, type WindowBoundsKey } from "~/stores/bounds";
 import { useContentAreaStore } from "~/stores/contentArea";
 import { useFocusStore } from "~/stores/focus";
+import { useWindowsStore } from "~/stores/windows";
 import type { WindowOb } from "../types";
 
 /**
@@ -18,6 +19,7 @@ import type { WindowOb } from "../types";
 export function useCollapsed(windowOb: WindowOb) {
 	const { area: contentArea } = storeToRefs(useContentAreaStore());
 	const focusStore = useFocusStore();
+	const windowsStore = useWindowsStore();
 	const { queuedPush } = useQueuedRouter();
 
 	const beforeCollapsedBounds = ref<Record<WindowBoundsKey, number>>({
@@ -90,10 +92,9 @@ export function useCollapsed(windowOb: WindowOb) {
 			if (collapseInnerTimer !== null) clearTimeout(collapseInnerTimer);
 			collapseInnerTimer = setTimeout(() => {
 				collapseInnerTimer = null;
-				windowOb.states.collapsed = true;
-				delete windowOb.states.fullscreen;
-				delete windowOb.states.resize;
-				delete windowOb.states.drag;
+				// setState 'collapsed' автоматически clear fullscreen/drag/resize
+				// через INCOMPATIBLE table в windows store.
+				windowsStore.setState(windowOb.id, "collapsed", true);
 				collapsePending = false;
 			});
 		});
