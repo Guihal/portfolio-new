@@ -1,105 +1,35 @@
 <script setup lang="ts">
-    import { storeToRefs } from 'pinia';
-    import { computed, ref, watch } from 'vue';
+    import { computed } from 'vue';
     import type { WindowOb } from '~/components/Window/types';
     import { useRemoveWindow } from '~/components/Window/utils/removeWindow';
-    import { useBoundsStore } from '~/stores/bounds';
-    import { useContentAreaStore } from '~/stores/contentArea';
     import { useFocusStore } from '~/stores/focus';
-    import { useFrameStore } from '~/stores/frame';
-    import { useWindowsStore } from '~/stores/windows';
     import { useScale } from '../../useScale';
+    import FrameCloseButton from './FrameCloseButton.vue';
+    import { useTaskbarFramePosition } from './useTaskbarFramePosition';
+    import { useWindowPreview } from './useWindowPreview';
 
-    const { windowOb } = defineProps<{
-        windowOb: WindowOb;
-    }>();
-    const { area: contentArea } = storeToRefs(useContentAreaStore());
-    const { scaledHeight, scaledWidth, scale } = useScale();
-    const frameStore = useFrameStore();
-
-    const PLACEHOLDER_IMG =
-        'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=';
-
-    const srcRaw = computed(() => frameStore.images[windowOb.id] ?? '');
-    const lastNonEmpty = ref<string>(srcRaw.value);
-    watch(srcRaw, (v) => {
-        if (v) lastNonEmpty.value = v;
-    });
-    const src = computed(() => lastNonEmpty.value || PLACEHOLDER_IMG);
-    const calculated = useBoundsStore().ensure(windowOb.id).calculated;
-
-    const frameWidth = computed(() => {
-        return calculated.width * scale.value;
-    });
-
-    const frameHeight = computed(() => {
-        return calculated.height * scale.value;
-    });
-
-    const frameLeft = computed(() => {
-        const value =
-            Math.max(
-                Math.min(
-                    contentArea.value.width - calculated.width,
-                    calculated.left,
-                ),
-                0,
-            ) * scale.value;
-        return value;
-    });
-
-    const frameTop = computed(() => {
-        const value =
-            Math.max(
-                Math.min(
-                    contentArea.value.height - calculated.height,
-                    calculated.top,
-                ),
-                0,
-            ) * scale.value;
-        return value;
-    });
-
-    const file = computed(() => windowOb.file);
-
-    const { title } = useWindowTitle(file);
+    const { windowOb } = defineProps<{ windowOb: WindowOb }>();
+    const { scaledHeight, scaledWidth } = useScale();
+    const { frameWidth, frameHeight, frameLeft, frameTop } =
+        useTaskbarFramePosition(windowOb);
+    const { src, onPreview, offPreview } = useWindowPreview(windowOb);
+    const { title } = useWindowTitle(computed(() => windowOb.file));
 
     const focusStore = useFocusStore();
-    const windowsStore = useWindowsStore();
     const onclickframe = () => focusStore.focus(windowOb.id);
-    const close = () => {
-        useRemoveWindow(windowOb);
-    };
-
-    const onPreview = () => {
-        windowsStore.setState(windowOb.id, 'preview', true);
-    };
-    const offPreview = () => {
-        windowsStore.clearState(windowOb.id, 'preview');
-    };
+    const close = () => useRemoveWindow(windowOb);
 </script>
 
 <template>
-    <div
-        class="taskbar__frame-wrapper"
-        @mouseenter="onPreview"
-        @mouseleave="offPreview">
+    <div class="taskbar__frame-wrapper" @mouseenter="onPreview" @mouseleave="offPreview">
         <div class="taskbar__frame__header">
             <div class="taskbar__frame_name" v-if="title">{{ title }}</div>
-            <div class="taskbar__frame-close" @click="close">
-                <div class="taskbar__frame-close_el"></div>
-                <div class="taskbar__frame-close_el"></div>
-            </div>
+            <FrameCloseButton @close="close" />
         </div>
         <div
             class="taskbar__frame"
-            :class="{
-                'taskbar__frame--active': windowOb.states.focused === true,
-            }"
-            :style="{
-                'min-width': scaledWidth + 'px',
-                'min-height': scaledHeight + 'px',
-            }"
+            :class="{ 'taskbar__frame--active': windowOb.states.focused === true }"
+            :style="{ 'min-width': scaledWidth + 'px', 'min-height': scaledHeight + 'px' }"
             @click="onclickframe">
             <img
                 :src
@@ -124,10 +54,7 @@
         cursor: pointer;
         user-select: none;
 
-        &--active {
-            border-color: rgba(c('default-contrast'), 0.8);
-        }
-
+        &--active { border-color: rgba(c('default-contrast'), 0.8); }
         &_name {
             font-size: 10px;
             max-width: 100%;
@@ -137,7 +64,6 @@
             color: c('default-contrast');
             width: fit-content;
         }
-
         &__header {
             gap: 10px;
             width: 100%;
@@ -145,47 +71,8 @@
             justify-content: space-between;
             align-items: center;
         }
+        &-wrapper { display: flex; flex-direction: column; align-items: end; gap: 10px; }
 
-        @media (hover: hover) {
-            &:hover {
-                border-color: c('default-contrast');
-            }
-        }
-
-        &-img {
-        }
-
-        &-close {
-            height: 10px;
-            width: 10px;
-            cursor: pointer;
-            user-select: none;
-            position: relative;
-
-            &_el {
-                width: 10px;
-                height: 2px;
-                background-color: c('default-contrast');
-                position: absolute;
-                left: 50%;
-                top: 50%;
-                translate: -50% -50%;
-
-                &:first-child {
-                    rotate: -45deg;
-                }
-
-                &:last-child {
-                    rotate: 45deg;
-                }
-            }
-        }
-
-        &-wrapper {
-            display: flex;
-            flex-direction: column;
-            align-items: end;
-            gap: 10px;
-        }
+        @media (hover: hover) { &:hover { border-color: c('default-contrast'); } }
     }
 </style>
