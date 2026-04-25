@@ -5,11 +5,19 @@ import explorer from "./explorer";
 import project from "./project";
 import tproject from "./tproject";
 
+export type ProgramMode = ProgramType;
+
+export type ProgramConfig = {
+	showBreadcrumbs: boolean;
+	canNavigate: boolean;
+};
+
 export type ProgramView = Program & {
 	id: ProgramType;
 	label: string;
 	icon: string;
 	component: Component;
+	config: ProgramConfig;
 };
 
 const REGISTRY: Record<ProgramType, ProgramView> = {

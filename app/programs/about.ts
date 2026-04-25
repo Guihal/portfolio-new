@@ -6,6 +6,10 @@ const program: ProgramView = {
 	label: "Информация о системе",
 	icon,
 	extension: "",
+	config: {
+		showBreadcrumbs: false,
+		canNavigate: false,
+	},
 	component: defineAsyncComponent(
 		() => import("@/components/Programs/About/index.vue"),
 	),

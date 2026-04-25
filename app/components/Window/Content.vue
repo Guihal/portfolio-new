@@ -1,21 +1,41 @@
 <script setup lang="ts">
-    import { getProgram } from '~/programs';
+    import { getProgram, type ProgramConfig, type ProgramMode } from '~/programs';
     import type { WindowOb } from './types';
 
     const windowOb = inject('windowOb') as WindowOb;
 
     const component: Ref<Component | null> = shallowRef(null);
+    const programMode: Ref<ProgramMode | null> = shallowRef(null);
+    const programConfig: Ref<ProgramConfig | null> = shallowRef(null);
+
+    provide('programMode', programMode);
+    provide('programConfig', programConfig);
 
     const callback = () => {
-        if (windowOb.file === null) return null;
+        if (windowOb.file === null) {
+            programMode.value = null;
+            programConfig.value = null;
+            return null;
+        }
 
         const program = getProgram(windowOb.file.programType);
 
-        if (!program) return null;
+        if (!program) {
+            programMode.value = null;
+            programConfig.value = null;
+            return null;
+        }
 
         const componentReal = program.component;
 
-        if (componentReal === undefined) return null;
+        if (componentReal === undefined) {
+            programMode.value = null;
+            programConfig.value = null;
+            return null;
+        }
+
+        programMode.value = program.id;
+        programConfig.value = program.config;
 
         return componentReal;
     };
