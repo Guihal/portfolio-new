@@ -1,4 +1,4 @@
-import { defineStore } from "pinia";
+import { defineStore, getActivePinia } from "pinia";
 import { ref } from "vue";
 import type { WindowOb } from "~/components/Window/types";
 import { debounce } from "~/components/Window/utils/debounce";
@@ -12,11 +12,29 @@ const observers: Map<string, MutationObserver> | null = import.meta.client
 	? new Map()
 	: null;
 
-/** Test-only: сбрасывает module-level observers между тестами. */
+/**
+ * Test/HMR cleanup: disconnect все observers + reset images store state.
+ * На HMR module reload без этого старые observers держат refs на удалённый
+ * DOM, а images.value содержит stale data:url'ы.
+ */
 export function __resetFrameObservers() {
-	if (!observers) return;
-	for (const o of observers.values()) o.disconnect();
-	observers.clear();
+	if (observers) {
+		for (const o of observers.values()) o.disconnect();
+		observers.clear();
+	}
+	try {
+		const pinia = getActivePinia();
+		if (pinia) {
+			const store = useFrameStore();
+			store.images = {};
+		}
+	} catch {
+		// Pinia не инициализирован — OK (test env / module init order).
+	}
+}
+
+if (import.meta.hot) {
+	import.meta.hot.dispose(() => __resetFrameObservers());
 }
 
 export const useFrameStore = defineStore("frame", () => {
