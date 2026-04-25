@@ -1,13 +1,8 @@
 @use './functions' as *;
+@use './breakpoints' as bp;
 @use 'sass:map';
 
-// Брейкпоинты для container queries
-$breakpoints: (
-    'sm': 600px,
-    'md': 768px,
-);
-
-@mixin t($fs: 15px, $lh: 1, $cName: 'default', $fw: 400, $family: 'Pix') {
+@mixin t($fs: 15px, $lh: 1, $cName: 'default', $fw: 400, $family: 'Ithaca') {
     $c: c($cName);
     color: #{$c};
     font-family: $family, system-ui;
@@ -20,11 +15,11 @@ $breakpoints: (
 // Container query: ширина меньше брейкпоинта
 // @include cw(sm) { ... } → @container window (width < 600px) { ... }
 @mixin cw($name) {
-    $bp: map.get($breakpoints, $name);
-    @if not $bp {
-        @error "Breakpoint `#{$name}` not found. Available: #{map.keys($breakpoints)}";
+    $value: map.get(bp.$breakpoints, $name);
+    @if not $value {
+        @error "Breakpoint `#{$name}` not found. Available: #{map.keys(bp.$breakpoints)}";
     }
-    @container window (width < #{$bp}) {
+    @container window (width < #{$value}) {
         @content;
     }
 }
@@ -32,11 +27,11 @@ $breakpoints: (
 // Container query: высота меньше брейкпоинта
 // @include ch(sm) { ... } → @container window (height < 600px) { ... }
 @mixin ch($name) {
-    $bp: map.get($breakpoints, $name);
-    @if not $bp {
-        @error "Breakpoint `#{$name}` not found. Available: #{map.keys($breakpoints)}";
+    $value: map.get(bp.$breakpoints, $name);
+    @if not $value {
+        @error "Breakpoint `#{$name}` not found. Available: #{map.keys(bp.$breakpoints)}";
     }
-    @container window (height < #{$bp}) {
+    @container window (height < #{$value}) {
         @content;
     }
 }
@@ -44,11 +39,11 @@ $breakpoints: (
 // Container query: ширина ИЛИ высота меньше брейкпоинта
 // @include cwh(sm) { ... } → оба условия
 @mixin cwh($name) {
-    $bp: map.get($breakpoints, $name);
-    @if not $bp {
-        @error "Breakpoint `#{$name}` not found. Available: #{map.keys($breakpoints)}";
+    $value: map.get(bp.$breakpoints, $name);
+    @if not $value {
+        @error "Breakpoint `#{$name}` not found. Available: #{map.keys(bp.$breakpoints)}";
     }
-    @container window (height < #{$bp}) or (width < #{$bp}) {
+    @container window (height < #{$value}) or (width < #{$value}) {
         @content;
     }
 }

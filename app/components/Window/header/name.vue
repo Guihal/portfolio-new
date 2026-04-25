@@ -61,7 +61,7 @@
         }
 
         &-text {
-            font-family: Pix, system-ui;
+            font-family: $t-default;
             font-size: 15px;
             line-height: 1;
             letter-spacing: 0.02em;

@@ -55,7 +55,7 @@
             max-width: 100%;
             text-overflow: ellipsis;
             overflow: hidden;
-            font-family: Pix, system-ui;
+            font-family: $t-default;
             font-size: 16px;
             line-height: 1;
             font-weight: 700;

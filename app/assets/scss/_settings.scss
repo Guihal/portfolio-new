@@ -1,3 +1,4 @@
+@use './vars' as *;
 @use './functions' as *;
 @use './mixins' as *;
 
@@ -93,7 +94,7 @@ body,
     }
 
     &_number {
-        font-family: Pix, system-ui;
+        font-family: $t-default;
         position: absolute;
         color: c('default-contrast');
         font-size: 8px;
@@ -147,7 +148,7 @@ body,
     }
 
     &__text {
-        font-family: Pix, system-ui;
+        font-family: $t-default;
         color: c('default-contrast');
         font-size: 20px;
         animation: flick 1s ease-in-out infinite;
