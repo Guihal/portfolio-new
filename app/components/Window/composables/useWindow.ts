@@ -1,10 +1,12 @@
 import { storeToRefs } from "pinia";
+import { ref } from "vue";
 import { useContentAreaStore } from "~/stores/contentArea";
-import { useFrameStore } from "~/stores/frame";
-import { useWindowsStore } from "~/stores/windows";
 import { type WindowOb, WindowObKey, WindowRouteKey } from "../types";
 import { useFetchEntity } from "./useFetchEntity";
 import { useFocusOnClick } from "./useFocusOnClick";
+import { useFrameObserverLifecycle } from "./useFrameObserverLifecycle";
+import { useFullscreenOnMount } from "./useFullscreenOnMount";
+import { useLoadingStateSync } from "./useLoadingStateSync";
 import { useOnFullscreen } from "./useOnFullScreen";
 import { useSeoWindow } from "./useSeoWindow";
 import { useSetFocusState } from "./useSetFocusState";
@@ -14,101 +16,40 @@ import { useWindowLoading } from "./useWindowLoading";
 import { useWindowRoute } from "./useWindowRoute";
 
 /**
- * Единый фасад жизненного цикла окна. Группирует все per-window composable'ы
- * и provide'ы. Вызывается один раз из `Window/index.vue`.
- *
- * Логические группы (см. docs/refactor/P3-01):
- *  - routing:         useWindowRoute
- *  - focus:           useSetFocusState + useFocusOnClick
- *  - states:          inline fullscreen-on-mount + useWindowFullscreenAutoSet
- *  - loading:         useWindowLoading + inline loading-state watch
- *  - seo:             useSeoWindow
- *  - bounds-anim:     useWindowBoundsAnimation
- *  - preview/frames:  frameStore observer (mount/unmount)
- *  - entity:          useFetchEntity (await)
+ * Фасад жизненного цикла окна. Группирует все per-window composable'ы +
+ * provide'ы. Вызывается один раз из `Window/index.vue`.
  */
 export async function useWindow(windowOb: WindowOb) {
-	// routing
 	const windowRoute = useWindowRoute(windowOb);
 	provide(WindowRouteKey, windowRoute);
 	provide(WindowObKey, windowOb);
 
-	// focus
 	useSetFocusState(windowOb);
 	const { focusWindow } = useFocusOnClick(windowOb);
 
-	// states (fullscreen) — inline ex-useSetFullscreenObserver
-	const windowsStore = useWindowsStore();
 	const { area: contentArea } = storeToRefs(useContentAreaStore());
-	let isMounted = false;
-
+	const { isMounted } = useFullscreenOnMount(windowOb);
 	useSetChainedWatchers(
 		() => windowOb.states.fullscreen === true,
 		contentArea,
-		() => {
-			useOnFullscreen(windowOb, !isMounted);
-		},
+		() => useOnFullscreen(windowOb, !isMounted.value),
 		{ immediate: true },
 	);
-
-	let mountedTimer: ReturnType<typeof setTimeout> | null = null;
-	onMounted(() => {
-		windowsStore.setState(windowOb.id, "fullscreen", true);
-		windowsStore.clearState(windowOb.id, "fullscreen-ready");
-		mountedTimer = setTimeout(() => {
-			mountedTimer = null;
-			isMounted = true;
-		}, 100);
-	});
-	onScopeDispose(() => {
-		if (mountedTimer !== null) {
-			clearTimeout(mountedTimer);
-			mountedTimer = null;
-		}
-	});
-
 	useWindowFullscreenAutoSet(windowOb);
 
-	// loading
 	const { getIsLoading, initWindowLoading } = useWindowLoading();
 	const isLoading = getIsLoading(windowOb.id);
 	initWindowLoading(windowOb.id);
-	// inline ex-useSetLoadingState
-	watch(
-		isLoading,
-		() => {
-			windowsStore.setState(windowOb.id, "loading", isLoading.value);
-		},
-		{ immediate: true },
-	);
+	useLoadingStateSync(windowOb, isLoading);
 
-	// seo
 	useSeoWindow(windowOb);
 
-	// bounds animation (RAF + CSS vars)
 	const node = ref<HTMLElement | null>(null);
 	useWindowBoundsAnimation(windowOb, node);
 
-	// preview frames + initial focus
-	const frameStore = useFrameStore();
-	onMounted(() => {
-		focusWindow();
-		frameStore.createObserver(windowOb);
-	});
-	onUnmounted(() => {
-		// Router/focus reset на закрытие окна — orchestrated в windowsStore.remove(),
-		// см. app/stores/windows.ts. Здесь только cleanup observer (HMR/SSR teardown
-		// тоже триггерит unmount, но не должны пушить router).
-		frameStore.destroyObserver(windowOb.id);
-	});
+	useFrameObserverLifecycle(windowOb, focusWindow);
 
-	// entity (must be last — has top-level await)
 	await useFetchEntity(windowOb, windowRoute);
 
-	return {
-		node,
-		windowRoute,
-		isLoading,
-		focusWindow,
-	};
+	return { node, windowRoute, isLoading, focusWindow };
 }
