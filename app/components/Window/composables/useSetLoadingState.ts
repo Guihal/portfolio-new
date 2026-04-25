@@ -1,20 +1,20 @@
-import type { WindowOb } from '../Window';
+import type { WindowOb } from "../types";
 
 export function useSetLoadingState(
-    windowOb: WindowOb,
-    isLoading: Ref<boolean>,
+	windowOb: WindowOb,
+	isLoading: Ref<boolean>,
 ) {
-    watch(
-        isLoading,
-        () => {
-            if (isLoading.value) {
-                windowOb.states.loading = true;
-            } else {
-                delete windowOb.states.loading;
-            }
-        },
-        {
-            immediate: true,
-        },
-    );
+	watch(
+		isLoading,
+		() => {
+			if (isLoading.value) {
+				windowOb.states.loading = true;
+			} else {
+				delete windowOb.states.loading;
+			}
+		},
+		{
+			immediate: true,
+		},
+	);
 }

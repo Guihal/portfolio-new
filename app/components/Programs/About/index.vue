@@ -1,6 +1,7 @@
 <script setup lang="ts">
-    import type { WindowOb } from '~/components/Window/Window';
+    import type { WindowOb } from '~/components/Window/types';
     import { SOCIAL_LINKS } from '~~/shared/utils/Programs/All';
+
     const windowOb = inject('windowOb') as WindowOb;
     const bounds = useWindowBounds(windowOb.id);
 </script>

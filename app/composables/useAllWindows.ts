@@ -1,21 +1,21 @@
-import type { WindowOb } from '~/components/Window/Window';
+import { storeToRefs } from "pinia";
+import type { WindowOb } from "~/components/Window/types";
+import { useWindowsStore } from "~/stores/windows";
 
+/** Type-only consumer: app/components/Taskbar/useIsCurrentRoute.ts. */
 export type AllWindows = Record<string, WindowOb>;
 
-const STATE_KEY = 'windows_all';
-const COUNTER_KEY = 'windows_all_counter';
-
 export const useAllWindows = () => {
-    const allWindows = useState<AllWindows>(STATE_KEY, () => ({}));
-    const allWindowsIdCounter = useState<number>(COUNTER_KEY, () => 0);
-
-    return { allWindows, allWindowsIdCounter };
+	const { windows: allWindows, counter: allWindowsIdCounter } = storeToRefs(
+		useWindowsStore(),
+	);
+	return { allWindows, allWindowsIdCounter };
 };
 
+/**
+ * Чистит ТОЛЬКО windows+counter. focus/bounds/frame intentionally untouched —
+ * паритет со старым поведением; каскадный cleanup в P2-03 через orchestrator.
+ */
 export const clearAllWindowsState = () => {
-    const allWindows = useState<AllWindows>(STATE_KEY, () => ({}));
-    const allWindowsIdCounter = useState<number>(COUNTER_KEY, () => 0);
-
-    allWindows.value = {};
-    allWindowsIdCounter.value = 0;
+	useWindowsStore().$reset();
 };

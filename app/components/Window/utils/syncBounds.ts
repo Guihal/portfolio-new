@@ -1,9 +1,9 @@
-import type { WindowOb } from '../Window';
 import {
-    getTargetBounds,
-    getCalculatedBounds,
-    type WindowBoundsKey,
-} from '~/composables/useWindowBounds';
+	getCalculatedBounds,
+	getTargetBounds,
+	type WindowBoundsKey,
+} from "~/composables/useWindowBounds";
+import type { WindowOb } from "../types";
 
 /**
  * Синхронизирует calculated bounds с target.
@@ -12,13 +12,13 @@ import {
  * @param windowOb - Объект окна
  */
 export function syncBounds(windowOb: WindowOb) {
-    const target = getTargetBounds(windowOb.id);
-    const calculated = getCalculatedBounds(windowOb.id);
+	const target = getTargetBounds(windowOb.id);
+	const calculated = getCalculatedBounds(windowOb.id);
 
-    const keys: WindowBoundsKey[] = ['left', 'top', 'width', 'height'];
+	const keys: WindowBoundsKey[] = ["left", "top", "width", "height"];
 
-    for (const key of keys) {
-        // Копируем текущие (анимированные) значения в целевые
-        target[key] = calculated[key];
-    }
+	for (const key of keys) {
+		// Копируем текущие (анимированные) значения в целевые
+		target[key] = calculated[key];
+	}
 }

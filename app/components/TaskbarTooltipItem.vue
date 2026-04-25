@@ -1,6 +1,6 @@
 <script setup lang="ts">
-    import type { WindowOb } from '~/components/Window/Window';
-    import type { ProgramType } from '~~/shared/types/Program';
+    import type { WindowOb } from '~/components/Window/types';
+    import type { ProgramType } from '~~/shared/types/filesystem';
 
     const props = defineProps<{
         programType: ProgramType;
@@ -70,8 +70,8 @@
             '--c-w': contentBounds?.width ?? 0,
         }"
         class="taskbar__tooltip pixel-box"
-        @mouseover="onMouseover"
-        @mouseout="onMouseout">
+        @mouseenter="onMouseover"
+        @mouseleave="onMouseout">
         <div ref="content" class="taskbar__tooltip__content">
             <TaskbarElementsProgramAllFrames :window-obs="windowObs" />
         </div>

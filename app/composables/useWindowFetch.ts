@@ -1,26 +1,26 @@
-import { useWindowLoading } from '~/components/Window/composables/useWindowLoading';
+import { useWindowLoading } from "~/components/Window/composables/useWindowLoading";
 
 export function useWindowFetch(windowObId: string) {
-    const isLoading = ref(false);
-    const { register } = useWindowLoading();
-    register(windowObId, isLoading);
+	const isLoading = ref(false);
+	const { register } = useWindowLoading();
+	register(windowObId, isLoading);
 
-    const windowFetch = async <T>(
-        callback: () => Promise<T>,
-    ): Promise<T | undefined> => {
-        isLoading.value = true;
-        let result: T | undefined;
+	const windowFetch = async <T>(
+		callback: () => Promise<T>,
+	): Promise<T | undefined> => {
+		isLoading.value = true;
+		let result: T | undefined;
 
-        try {
-            result = await callback();
-        } catch (err) {
-            console.error(err);
-        } finally {
-            isLoading.value = false;
-        }
+		try {
+			result = await callback();
+		} catch (err) {
+			logger.error("[useWindowFetch]", err);
+		} finally {
+			isLoading.value = false;
+		}
 
-        return result;
-    };
+		return result;
+	};
 
-    return { isLoading, windowFetch };
+	return { isLoading, windowFetch };
 }

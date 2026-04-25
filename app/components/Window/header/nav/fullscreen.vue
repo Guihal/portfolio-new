@@ -1,8 +1,10 @@
 <script setup lang="ts">
-    import { OFFSET } from '~/utils/constants/OFFSET';
-    import type { WindowOb } from '../../Window';
-    import { setSize } from '../../utils/setSize';
+    
     import { getTargetBounds } from '~/composables/useWindowBounds';
+import { OFFSET } from '~/utils/constants/offset';
+    import type { WindowOb } from '../../types';
+    import { setSize } from '../../utils/setSize';
+
     const windowOb = inject('windowOb') as WindowOb;
 
     const onclick = () => {

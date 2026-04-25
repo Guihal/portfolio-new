@@ -27,7 +27,7 @@ bun run dev                # Dev-сервер (автогенерация ман
 bun run build              # Production-сборка (автогенерация манифестов + nuxt build)
 bun run generate           # Static generation
 bun run generate:manifest  # Генерация manifest.json из public/entry/
-bun run generate:file-manifest  # Генерация file-manifest.json
+bun run generate:file-manifest  # Генерация file-manifest.json (для будущего полнотекстового поиска)
 bun run generate:manifests  # Обе манифесты сразу
 bun run preview            # Превью production-сборки
 ```
@@ -73,7 +73,7 @@ app/                        # Основной код приложения (Nuxt
 │   │   ├── View.vue        # TransitionGroup всех окон
 │   │   ├── Content.vue     # Рендер программы по programType
 │   │   ├── Loader.vue      # Загрузчик окна
-│   │   ├── Window.d.ts     # Типы WindowOb, WindowState, WindowStates
+│   │   ├── types.ts        # Типы WindowOb, WindowState, WindowStates
 │   │   ├── _nav.scss       # Стили навигации окна
 │   │   ├── composables/    # 17 composables для окна
 │   │   │   ├── useCreateAndRegisterWindow.ts  # Создание + регистрация окна
@@ -136,25 +136,25 @@ app/                        # Основной код приложения (Nuxt
     ├── getClickShortcutEvent.ts  # Обработчик клика (double-click на десктопе)
     ├── useIsMobile.ts            # Определение мобильного устройства
     └── constants/
-        ├── OFFSET.ts             # Смещение 15px
-        └── PROGRAMS.ts           # Реестр программ (explorer, project, tproject)
+        ├── offset.ts             # Смещение 15px
+        └── programs.ts           # Реестр программ (explorer, project, tproject)
 
 server/
 ├── api/
 │   └── filesystem/
-│       ├── list.ts          # POST /api/filesystem/list — список файлов по пути
-│       ├── get.ts           # POST /api/filesystem/get — получить entity по пути
-│       ├── files.get.ts     # GET /api/filesystem/files — получить file-manifest.json
-│       └── breadcrumbs.ts   # POST /api/filesystem/breadcrumbs — хлебные крошки
+│       ├── list.ts          # GET /api/filesystem/list — список файлов (query: path)
+│       ├── get.ts           # GET /api/filesystem/get — получить entity (query: path), кэшируемый
+│       └── breadcrumbs.ts   # GET /api/filesystem/breadcrumbs — хлебные крошки (query: path)
 ├── assets/
 │   ├── manifest.json        # Автогенерируемый манифест (tree + flatIndex)
-│   ├── file-manifest.json   # Автогенерируемый файловый манифест
+│   ├── file-manifest.json   # Автогенерируемый файловый манифест (для будущего полнотекстового поиска, см. docs/backlog.md)
 │   └── entry/               # Контент портфолио (серверный asset)
 │       ├── entity.json      # Корневая entity
 │       ├── about-me/entity.json
 │       └── projects/entity.json + griboyedov/, u24/
 └── utils/
-    ├── CACHELIFETIME.ts         # Время кэша (сейчас 0)
+    ├── cacheLifetime.ts         # maxAge (dev 60с / prod 3600с) для manifest + entity
+    ├── validation.ts            # zod pathSchema + parsePathQuery для API query
     ├── getAllEntitiesByPath.ts  # Поиск детей в manifest.tree
     ├── getBreadcrumbs.ts        # Хлебные крошки через getEntity
     ├── getEntity.ts             # Получение entity из flatIndex
@@ -296,10 +296,11 @@ $colors: (
 
 | Метод | Путь                          | Описание                                               |
 | ----- | ----------------------------- | ------------------------------------------------------ |
-| POST  | `/api/filesystem/list`        | Список файлов в директории (body: `{ path }`)          |
-| POST  | `/api/filesystem/get`         | Получить entity по пути (body: `{ path }`), кэшируемый |
-| GET   | `/api/filesystem/files`       | Получить file-manifest.json                            |
-| POST  | `/api/filesystem/breadcrumbs` | Хлебные крошки для пути                                |
+| GET   | `/api/filesystem/list`        | Список файлов в директории (query: `{ path }`)         |
+| GET   | `/api/filesystem/get`         | Получить entity по пути (query: `{ path }`), кэшируемый |
+| GET   | `/api/filesystem/breadcrumbs` | Хлебные крошки для пути (query: `{ path }`)            |
+
+Все `query.path` валидируются zod-схемой (`server/utils/validation.ts`): ≥1 символ, начинается с `/`, отвергает traversal (`../`), backslash, `//`, null-byte. `maxAge` manifest-кэша = 60с в dev / 3600с в prod. Вручную инвалидировать в dev: `rm -rf .nitro/cache`. Response `Cache-Control` для Vercel Edge задаётся в `nuxt.config.ts → routeRules`.
 
 ## Важные паттерны
 
@@ -330,3 +331,19 @@ Composables `useContentArea`, `useFocusWindowController` используют ф
 7. **Роутинг** — через `useQueuedRouter`, не напрямую `router.push`
 8. **Форматирование** — Biome (не Prettier)
 9. **Пакеты** — через Bun
+
+## Соглашение имён и структура файлов
+
+Фиксированные правила (P0-04). Любой новый файл обязан следовать:
+
+### Директории
+- **Модули** (верхний уровень) — `PascalCase/`: `Taskbar/`, `Window/`, `Programs/`, `Workbench/`.
+- **Подсекции внутри модуля** — `lowercase/`: `resize/`, `header/`, `composables/`, `utils/`.
+- **Подкомпоненты** (секции с собственным UI) — `PascalCase/`: `Nav/`, `Elements/`, `Program/`.
+
+### Файлы
+- **Composables** — `useXxx.ts`. Глобальные — в `app/composables/`, локальные — рядом с компонентом.
+- **Утилиты** — `xxxYyy.ts` (camelCase), без `use`-префикса.
+- **Константы** — `xxxYyy.ts`, экспорт через `export const FOO = …`. Имя файла — **не SCREAMING_SNAKE**.
+- **Типы** — `xxx.ts` с `export type` (например, `types.ts`). `.d.ts` — **только** для ambient-деклараций сторонних модулей.
+- **Vue-компоненты** — `PascalCase.vue` (`Frame.vue`) или `index.vue` для корневого компонента папки.

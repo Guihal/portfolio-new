@@ -1,6 +1,7 @@
 <script setup lang="ts">
     import type { ChainedKey } from '../composables/useResizeForDirections';
-    import type { WindowOb } from '../Window';
+    import type { WindowOb } from '../types';
+
     const directions: [ChainedKey] = ['top'];
 
     const windowOb = inject('windowOb') as WindowOb;

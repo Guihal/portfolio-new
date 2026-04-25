@@ -1,49 +1,27 @@
-import type { ProgramType } from '~~/shared/types/Program';
-import type { WindowOb } from '~/components/Window/Window';
-import { PROGRAMS } from '~/utils/constants/PROGRAMS';
-import { debounce } from '~/components/Window/utils/debounce';
-
-const windowsGroupByProgram: Ref<Partial<Record<ProgramType, WindowOb[]>>> =
-    ref({});
-
-let initialized = false;
+import type { WindowOb } from "~/components/Window/types";
+import { useWindowsStore } from "~/stores/windows";
+import { PROGRAMS } from "~/utils/constants/programs";
+import type { ProgramType } from "~~/shared/types/filesystem";
 
 export const useWindowsGroupByProgram = () => {
-    const { allWindows } = useAllWindows();
+	const store = useWindowsStore();
 
-    if (!initialized) {
-        initialized = true;
+	const windowsGroupByProgram = computed<
+		Partial<Record<ProgramType, WindowOb[]>>
+	>(() => {
+		const result: Partial<Record<ProgramType, WindowOb[]>> = {};
 
-        watch(
-            allWindows.value,
-            debounce(() => {
-                windowsGroupByProgram.value = {};
+		for (const w of store.list) {
+			if (!w?.file) continue;
+			const t = w.file.programType;
+			if (!PROGRAMS[t]) continue;
+			const bucket = result[t] ?? [];
+			bucket.push(w);
+			result[t] = bucket;
+		}
 
-                for (const id in allWindows.value) {
-                    const typedId = id as keyof AllWindows;
+		return result;
+	});
 
-                    if (!allWindows.value[typedId]?.file) continue;
-
-                    const typeProgram =
-                        allWindows.value[typedId].file.programType;
-
-                    if (!PROGRAMS[typeProgram]) continue;
-
-                    if (!windowsGroupByProgram.value[typeProgram]) {
-                        windowsGroupByProgram.value[typeProgram] = [];
-                    }
-
-                    windowsGroupByProgram.value[typeProgram]!.push(
-                        allWindows.value[typedId],
-                    );
-                }
-            }, 100),
-            {
-                immediate: true,
-                deep: true,
-            },
-        );
-    }
-
-    return { windowsGroupByProgram };
+	return { windowsGroupByProgram };
 };

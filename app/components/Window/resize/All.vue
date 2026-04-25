@@ -1,5 +1,5 @@
 <script setup lang="ts">
-    import type { WindowOb } from '../Window';
+    import type { WindowOb } from '../types';
 
     const windowOb = inject('windowOb') as WindowOb;
 </script>

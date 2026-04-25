@@ -1,6 +1,5 @@
 <script setup lang="ts">
     const { windowsGroupByProgram } = useWindowsGroupByProgram();
-    console.log(windowsGroupByProgram.value);
 </script>
 
 <template>

@@ -1,6 +1,6 @@
 <script setup lang="ts">
-    import { PROGRAMS } from '~/utils/constants/PROGRAMS';
-    import type { WindowOb } from '../Window';
+    import { PROGRAMS } from '~/utils/constants/programs';
+    import type { WindowOb } from '../types';
 
     const windowOb = inject('windowOb') as WindowOb;
 

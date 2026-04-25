@@ -1,6 +1,6 @@
-import type { WindowOb } from '../Window';
-import { getTargetBounds } from '~/composables/useWindowBounds';
-import { MINSIZE } from './clampers';
+import { getTargetBounds } from "~/composables/useWindowBounds";
+import type { WindowOb } from "../types";
+import { MINSIZE } from "./clampers";
 
 /**
  * Устанавливает размер (width/height) с учётом минимального размера.
@@ -10,11 +10,11 @@ import { MINSIZE } from './clampers';
  * @param value - Новое значение
  */
 export function setSize(
-    windowOb: WindowOb,
-    key: 'width' | 'height',
-    value: number,
+	windowOb: WindowOb,
+	key: "width" | "height",
+	value: number,
 ) {
-    const target = getTargetBounds(windowOb.id);
-    // Clamp: не меньше MINSIZE
-    target[key] = Math.max(MINSIZE, value);
+	const target = getTargetBounds(windowOb.id);
+	// Clamp: не меньше MINSIZE
+	target[key] = Math.max(MINSIZE, value);
 }

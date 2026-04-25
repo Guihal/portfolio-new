@@ -1,5 +1,7 @@
 <script setup lang="ts">
-    import { useWindowEntityFetcher } from './composables/useFetchWindowEntity';
+    
+    import { useFrameObserver } from '~/composables/useFrameObserver';
+import { useWindowEntityFetcher } from './composables/useFetchWindowEntity';
     import { useFocusOnClick } from './composables/useFocusOnClick';
     import { useSeoWindow } from './composables/useSeoWindow';
     import { useSetFocusState } from './composables/useSetFocusState';
@@ -9,8 +11,7 @@
     import { useWindowLoading } from './composables/useWindowLoading';
     import { useWindowLoop } from './composables/useWindowLoop/useWindowLoop';
     import { useWindowRoute } from './composables/useWindowRoute';
-    import type { WindowOb } from './Window';
-    import { useFrameObserver } from '~/composables/useFrameObserver';
+    import type { WindowOb } from './types';
 
     const { windowOb } = defineProps<{
         windowOb: WindowOb;

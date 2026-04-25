@@ -1,5 +1,5 @@
 <script setup lang="ts">
-    import type { WindowOb } from '../Window';
+    import type { WindowOb } from '../types';
     import { useMove } from './useMove';
 
     const windowOb = inject('windowOb') as WindowOb;
@@ -32,7 +32,8 @@
         }
 
         &__wrapper {
-            width: calc(100% - 130px);
+            flex: 1 1 auto;
+            min-width: 0;
             display: flex;
             padding: 0 10px;
         }

@@ -15,10 +15,8 @@
 
     onMounted(() => {
         const nuxtApp = useNuxtApp();
-        nuxtApp.vueApp.config.warnHandler = (msg, instance, trace) => {
-            console.warn(msg);
-            console.log(instance);
-            console.log(trace);
+        nuxtApp.vueApp.config.warnHandler = (msg) => {
+            logger.warn(msg);
         };
     });
 </script>

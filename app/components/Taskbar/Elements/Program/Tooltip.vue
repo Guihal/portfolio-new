@@ -1,5 +1,5 @@
 <script setup lang="ts">
-    import type { WindowOb } from '~/components/Window/Window';
+    import type { WindowOb } from '~/components/Window/types';
 
     const tooltip = ref<HTMLElement | null>(null);
     const content = ref<HTMLElement | null>(null);

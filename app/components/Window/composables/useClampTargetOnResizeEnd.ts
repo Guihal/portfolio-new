@@ -1,5 +1,5 @@
 // import { clampHandlers } from '../utils/clampers';
-// import type { WindowBounds, WindowOb } from '../Window';
+// import type { WindowBounds, WindowOb } from '../types';
 
 // export function useClampTargetOnResizeEnd(windowOb: WindowOb) {
 //     const { contentArea } = useContentArea();
@@ -18,8 +18,6 @@
 //                     contentArea.value.width,
 //                     contentArea.value.height,
 //                 );
-
-//                 console.log(windowOb.boundsTarget[typedKey]);
 //             }
 //         },
 //     );

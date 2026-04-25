@@ -1,3 +1,1 @@
-export function updateBoundsProp() {
-  
-}
+export function updateBoundsProp() {}

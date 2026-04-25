@@ -1,67 +1,46 @@
-import { debounce } from '../utils/debounce';
-import type { WindowOb } from '../Window';
+import type { WindowOb } from "../types";
+import { debounce } from "../utils/debounce";
 
 export function useWindowRoute(windowOb: WindowOb) {
-    const route = useRoute();
+	const route = useRoute();
+	const { queuedPush } = useQueuedRouter();
 
-    const windowRoute = ref(windowOb.targetFile.value);
+	const windowRoute = ref(windowOb.targetFile.value);
+	const syncSource = ref<"route" | "window" | "idle">("idle");
 
-    const { queuedPush, isQueueEmpty } = useQueuedRouter();
-    let isProgrammaticNavigation = true;
+	// Window → URL. Слияние прошлых двух watcher-ов (targetFile + focused):
+	// cb триггерится при смене любого из [targetFile, focused] и покрывает
+	// и смену пути окна, и получение фокуса.
+	watch(
+		[() => windowOb.targetFile.value, () => windowOb.states.focused],
+		([newPath, focused]) => {
+			if (syncSource.value === "route" || !newPath) return;
+			windowRoute.value = newPath;
+			if (!focused || route.path === newPath) return;
+			syncSource.value = "window";
+			queuedPush(newPath).finally(() => {
+				if (syncSource.value === "window") syncSource.value = "idle";
+			});
+		},
+		{ immediate: true },
+	);
 
-    watch(
-        () => windowOb.states.focused,
-        (focused) => {
-            if (!focused) return;
+	// URL → Window.
+	watch(
+		() => route.path,
+		debounce((newPath: string) => {
+			if (syncSource.value === "window") {
+				syncSource.value = "idle";
+				return;
+			}
+			if (!windowOb.states.focused || !newPath || newPath === windowRoute.value)
+				return;
+			syncSource.value = "route";
+			windowRoute.value = newPath;
+			windowOb.targetFile.value = newPath;
+			syncSource.value = "idle";
+		}, 16),
+	);
 
-            const path = windowOb.targetFile.value;
-            if (!path || route.path === path) return;
-
-            isProgrammaticNavigation = true;
-
-            queuedPush(path).finally(() => {
-                isProgrammaticNavigation = false;
-            });
-        },
-        {
-            immediate: true,
-        },
-    );
-
-    // Окно меняет свой путь → двигаем роутер (только если окно в фокусе)
-    watch(
-        () => windowOb.targetFile.value,
-        (newPath) => {
-            if (!newPath) return;
-
-            windowRoute.value = newPath;
-
-            // Не в фокусе — только запоминаем путь, роутер не трогаем
-            if (!windowOb.states.focused) return;
-
-            if (route.path !== newPath) {
-                isProgrammaticNavigation = true;
-                queuedPush(newPath).finally(() => {
-                    isProgrammaticNavigation = false;
-                });
-            }
-        },
-        {
-            immediate: true,
-        },
-    );
-
-    watch(
-        () => route.path,
-        debounce((newPath) => {
-            if (isProgrammaticNavigation) return;
-            if (!windowOb.states.focused) return;
-            if (!newPath) return;
-
-            windowRoute.value = newPath;
-            windowOb.targetFile.value = newPath;
-        }, 16),
-    );
-
-    return computed(() => windowRoute.value);
+	return readonly(windowRoute);
 }

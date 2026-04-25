@@ -1,3 +1,1 @@
-export function useUpdateWindowWidth() {
-  
-}
+export function useUpdateWindowWidth() {}

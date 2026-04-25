@@ -1,10 +1,9 @@
-import type { FsFile } from '~~/shared/types/FsFile';
-import { useGetId } from '../utils/useGetId';
-import type { WindowStates } from '../Window';
-import type { WindowOb } from '../Window.d';
+import type { FsFile } from "~~/shared/types/filesystem";
+import type { WindowOb, WindowStates } from "../types";
+import { useGetId } from "../utils/useGetId";
 
 interface UseCreateAndRegisterWindowOptions {
-    isForce?: boolean; // Игнорировать проверку на дубликаты
+	isForce?: boolean; // Игнорировать проверку на дубликаты
 }
 
 /**
@@ -21,48 +20,48 @@ interface UseCreateAndRegisterWindowOptions {
  * @returns WindowOb | null (null если окно уже существует)
  */
 export function useCreateAndRegisterWindow(
-    file: FsFile | string,
-    options: UseCreateAndRegisterWindowOptions = {
-        isForce: false,
-    },
+	file: FsFile | string,
+	options: UseCreateAndRegisterWindowOptions = {
+		isForce: false,
+	},
 ): WindowOb | null {
-    const { allWindows } = useAllWindows();
-    const { hasPath } = useWindowPaths();
-    const { focus } = useFocusWindowController();
+	const { allWindows } = useAllWindows();
+	const { hasPath } = useWindowPaths();
+	const { focus } = useFocusWindowController();
 
-    const path = typeof file === 'string' ? file : file.path;
+	const path = typeof file === "string" ? file : file.path;
 
-    // Проверка на дубликат (окно с таким путём уже открыто)
-    if (!options.isForce) {
-        const idWindow = hasPath(path);
-        if (idWindow !== false) {
-            focus(idWindow);
-            return null;
-        }
-    }
+	// Проверка на дубликат (окно с таким путём уже открыто)
+	if (!options.isForce) {
+		const idWindow = hasPath(path);
+		if (idWindow !== false) {
+			focus(idWindow);
+			return null;
+		}
+	}
 
-    // Генерируем уникальный ID
-    const id = useGetId();
+	// Генерируем уникальный ID
+	const id = useGetId();
 
-    // Начальные состояния (пустые)
-    const states: WindowStates = {};
+	// Начальные состояния (пустые)
+	const states: WindowStates = {};
 
-    const realFile = typeof file === 'string' ? null : file;
+	const realFile = typeof file === "string" ? null : file;
 
-    const windowOb: WindowOb = {
-        id,
-        states,
-        targetFile: {
-            value: path,
-        },
-        file: realFile,
-    };
+	const windowOb: WindowOb = {
+		id,
+		states,
+		targetFile: {
+			value: path,
+		},
+		file: realFile,
+	};
 
-    // Регистрируем окно в глобальном хранилище
-    allWindows.value[id] = windowOb;
+	// Регистрируем окно в глобальном хранилище
+	allWindows.value[id] = windowOb;
 
-    // Bounds создаются лениво в useWindowBounds при первом обращении
-    // Фокусируем новое окно
-    // focus(windowOb.id);
-    return windowOb;
+	// Bounds создаются лениво в useWindowBounds при первом обращении
+	// Фокусируем новое окно
+	// focus(windowOb.id);
+	return windowOb;
 }

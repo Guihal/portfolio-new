@@ -1,5 +1,5 @@
-import type { WindowOb } from '../Window';
-import { useOnFullscreen } from './useOnFullScreen';
+import type { WindowOb } from "../types";
+import { useOnFullscreen } from "./useOnFullScreen";
 
 /**
  * Устанавливает fullscreen при монтировании окна.
@@ -11,31 +11,41 @@ import { useOnFullscreen } from './useOnFullScreen';
  * @param windowOb - Объект окна
  */
 export function useSetFullscreenObserver(windowOb: WindowOb) {
-    const { contentArea } = useContentArea();
+	const { contentArea } = useContentArea();
 
-    // Флаг: окно ещё не смонтировано (для принудительной установки fullscreen)
-    let isMounted = false;
+	// Флаг: окно ещё не смонтировано (для принудительной установки fullscreen)
+	let isMounted = false;
 
-    // Chained watcher: при изменении contentArea обновляет fullscreen размеры
-    useSetChainedWatchers(
-        () => windowOb.states.fullscreen === true,
-        contentArea,
-        () => {
-            useOnFullscreen(windowOb, !isMounted);
-        },
-        {
-            immediate: true,
-        },
-    );
+	// Chained watcher: при изменении contentArea обновляет fullscreen размеры
+	useSetChainedWatchers(
+		() => windowOb.states.fullscreen === true,
+		contentArea,
+		() => {
+			useOnFullscreen(windowOb, !isMounted);
+		},
+		{
+			immediate: true,
+		},
+	);
 
-    onMounted(() => {
-        // Принудительно включаем fullscreen при монтировании
-        windowOb.states.fullscreen = true;
-        delete windowOb.states['fullscreen-ready'];
+	let mountedTimer: ReturnType<typeof setTimeout> | null = null;
 
-        // Через 100ms помечаем как смонтированное
-        setTimeout(() => {
-            isMounted = true;
-        }, 100);
-    });
+	onMounted(() => {
+		// Принудительно включаем fullscreen при монтировании
+		windowOb.states.fullscreen = true;
+		delete windowOb.states["fullscreen-ready"];
+
+		// Через 100ms помечаем как смонтированное
+		mountedTimer = setTimeout(() => {
+			mountedTimer = null;
+			isMounted = true;
+		}, 100);
+	});
+
+	onScopeDispose(() => {
+		if (mountedTimer !== null) {
+			clearTimeout(mountedTimer);
+			mountedTimer = null;
+		}
+	});
 }

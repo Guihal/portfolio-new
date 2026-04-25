@@ -19,7 +19,7 @@
         return base.slice(0, Math.round(currentTextLength.value));
     });
 
-    let randomInterval;
+    let randomInterval: ReturnType<typeof setTimeout> | undefined;
     let randomDelta = 1;
 
     const randomTick = () => {

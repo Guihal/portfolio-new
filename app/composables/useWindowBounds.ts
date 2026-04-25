@@ -1,54 +1,32 @@
-import { useBatchedReactive } from './useBatchedReactive';
+import { useBoundsStore } from "~/stores/bounds";
 
 export type WindowBounds = {
-    left: number;
-    top: number;
-    width: number;
-    height: number;
+	left: number;
+	top: number;
+	width: number;
+	height: number;
 };
 
 export type WindowBoundsKey = keyof WindowBounds;
 
 export const CSS_VAR_KEYS: Record<WindowBoundsKey, string> = {
-    left: '--w-left',
-    top: '--w-top',
-    width: '--w-width',
-    height: '--w-height',
+	left: "--w-left",
+	top: "--w-top",
+	width: "--w-width",
+	height: "--w-height",
 };
 
-const targetStores = new Map<string, WindowBounds>();
-const calculatedStores = new Map<string, WindowBounds>();
+export const getTargetBounds = (id: string): WindowBounds =>
+	useBoundsStore().ensure(id).target;
 
-function createReactiveStore(): WindowBounds {
-    return useBatchedReactive({ left: 0, top: 0, width: 0, height: 0 });
-}
+export const getCalculatedBounds = (id: string): WindowBounds =>
+	useBoundsStore().ensure(id).calculated;
 
-function createPlainStore(): WindowBounds {
-    return { left: 0, top: 0, width: 0, height: 0 };
-}
+export const removeWindowBounds = (id: string) => {
+	useBoundsStore().remove(id);
+};
 
-export function getTargetBounds(id: string): WindowBounds {
-    if (!targetStores.has(id)) {
-        targetStores.set(id, createReactiveStore());
-    }
-    return targetStores.get(id)!;
-}
-
-export function getCalculatedBounds(id: string): WindowBounds {
-    if (!calculatedStores.has(id)) {
-        calculatedStores.set(id, createPlainStore());
-    }
-    return calculatedStores.get(id)!;
-}
-
-export function removeWindowBounds(id: string) {
-    targetStores.delete(id);
-    calculatedStores.delete(id);
-}
-
-export function useWindowBounds(id: string) {
-    return {
-        target: getTargetBounds(id),
-        calculated: getCalculatedBounds(id),
-    };
-}
+export const useWindowBounds = (id: string) => {
+	const slot = useBoundsStore().ensure(id);
+	return { target: slot.target, calculated: slot.calculated };
+};

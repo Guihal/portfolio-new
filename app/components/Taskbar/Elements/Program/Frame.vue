@@ -1,9 +1,9 @@
 <script setup lang="ts">
-    import type { WindowOb } from '~/components/Window/Window';
-    import { useScale } from '../../useScale';
-    import { useFrameObserver } from '~/composables/useFrameObserver';
+    import type { WindowOb } from '~/components/Window/types';
     import { useRemoveWindow } from '~/components/Window/utils/removeWindow';
+    import { useFrameObserver } from '~/composables/useFrameObserver';
     import { getCalculatedBounds } from '~/composables/useWindowBounds';
+    import { useScale } from '../../useScale';
 
     const { windowOb } = defineProps<{
         windowOb: WindowOb;
@@ -12,13 +12,15 @@
     const { scaledHeight, scaledWidth, scale } = useScale();
     const { getSrc } = useFrameObserver();
 
-    const srcRaw = getSrc(windowOb.id);
+    const PLACEHOLDER_IMG =
+        'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=';
 
-    const src = ref(srcRaw.value);
-    watch(srcRaw, () => {
-        if (!srcRaw.value) return;
-        src.value = srcRaw.value;
+    const srcRaw = getSrc(windowOb.id);
+    const lastNonEmpty = ref<string>(srcRaw.value);
+    watch(srcRaw, (v) => {
+        if (v) lastNonEmpty.value = v;
     });
+    const src = computed(() => lastNonEmpty.value || PLACEHOLDER_IMG);
     const calculated = getCalculatedBounds(windowOb.id);
 
     const frameWidth = computed(() => {
