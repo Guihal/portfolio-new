@@ -3,16 +3,17 @@
     
     import ShortcutBase from '~/components/Shortcut/Base.vue';
 import { useInjectWindow } from '~/components/Window/composables/useInjectWindow';
-import type { WindowOb } from '~/components/Window/types';
+import { useWindowsStore } from '~/stores/windows';
 
     const windowOb = useInjectWindow();
+    const windowsStore = useWindowsStore();
 
     const { file } = defineProps<{
         file: FsFile;
     }>();
 
     const activate = () => {
-        windowOb.targetFile.value = file.path;
+        windowsStore.setTargetFile(windowOb.id, file.path);
     };
 </script>
 

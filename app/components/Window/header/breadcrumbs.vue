@@ -2,12 +2,13 @@
     
     import { useInjectWindow } from '~/components/Window/composables/useInjectWindow';
 import { useInjectWindowRoute } from '~/components/Window/composables/useInjectWindowRoute';
+    import { useWindowsStore } from '~/stores/windows';
     import type { FsFile } from '~~/shared/types/filesystem';
     import { useWindowLoading } from '../composables/useWindowLoading';
-    import type { WindowOb } from '../types';
 
     const windowRoute = useInjectWindowRoute();
     const windowOb = useInjectWindow();
+    const windowsStore = useWindowsStore();
 
     const { register } = useWindowLoading();
 
@@ -38,7 +39,7 @@ import { useInjectWindowRoute } from '~/components/Window/composables/useInjectW
     );
 
     const goTo = (path: string) => {
-        windowOb.targetFile.value = path;
+        windowsStore.setTargetFile(windowOb.id, path);
     };
 </script>
 
