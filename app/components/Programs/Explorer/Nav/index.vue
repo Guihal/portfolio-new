@@ -19,18 +19,26 @@
         return path;
     });
 
-    const { windowFetch } = useWindowFetch(windowOb.id);
+    const isLoading = ref(false);
+    useWindowLoading().register(windowOb.id, isLoading);
 
     const { data } = await useAsyncData(
         () => `explorer-${lastPath.value}`,
         async () => {
             if (!lastPath.value) return [];
-            const result = await windowFetch(async () =>
-                $fetch<FsFile[]>('/api/filesystem/list', {
-                    query: { path: lastPath.value },
-                }),
-            );
-            return result ?? [];
+            isLoading.value = true;
+            try {
+                return (
+                    (await $fetch<FsFile[]>('/api/filesystem/list', {
+                        query: { path: lastPath.value },
+                    })) ?? []
+                );
+            } catch (err) {
+                logger.error('[explorer-nav]', err);
+                return [];
+            } finally {
+                isLoading.value = false;
+            }
         },
         {
             watch: [lastPath],

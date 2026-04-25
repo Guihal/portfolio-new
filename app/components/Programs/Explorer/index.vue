@@ -1,21 +1,30 @@
 <script setup lang="ts">
+    import { useWindowLoading } from '~/components/Window/composables/useWindowLoading';
     import type { WindowOb } from '~/components/Window/types';
 
     const windowOb = inject('windowOb') as WindowOb;
     const windowRoute = inject('windowRoute') as Ref<string>;
-    const { windowFetch } = useWindowFetch(windowOb.id);
+
+    const isLoading = ref(false);
+    useWindowLoading().register(windowOb.id, isLoading);
 
     const { data } = await useAsyncData(
         () => `explorer-${windowRoute.value}`,
         async () => {
             if (!windowRoute.value) return [];
-
-            const result = await windowFetch(async () =>
-                $fetch<FsFile[]>('/api/filesystem/list', {
-                    query: { path: windowRoute.value },
-                }),
-            );
-            return result ?? [];
+            isLoading.value = true;
+            try {
+                return (
+                    (await $fetch<FsFile[]>('/api/filesystem/list', {
+                        query: { path: windowRoute.value },
+                    })) ?? []
+                );
+            } catch (err) {
+                logger.error('[explorer]', err);
+                return [];
+            } finally {
+                isLoading.value = false;
+            }
         },
         {
             server: import.meta.server,
