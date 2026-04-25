@@ -1,77 +1,9 @@
 <script setup lang="ts">
-    import { useQueuedRouter } from '~/composables/useQueuedRouter';
-    import { useFocusStore } from '~/stores/focus';
-    import { useFrameStore } from '~/stores/frame';
-    import { useWindowEntityFetcher } from './composables/useFetchWindowEntity';
-    import { useFocusOnClick } from './composables/useFocusOnClick';
-    import { useSeoWindow } from './composables/useSeoWindow';
-    import { useSetFocusState } from './composables/useSetFocusState';
-    import { useSetFullscreenObserver } from './composables/useSetFullscreenObserver';
-    import { useSetLoadingState } from './composables/useSetLoadingState';
-    import { useWindowFullscreenAutoSet } from './composables/useWindowFullscreenAutoSet';
-    import { useWindowLoading } from './composables/useWindowLoading';
-    import { useWindowBoundsAnimation } from './composables/useWindowBoundsAnimation';
-    import { useWindowRoute } from './composables/useWindowRoute';
+    import { useWindow } from './composables/useWindow';
     import type { WindowOb } from './types';
 
-    const { windowOb } = defineProps<{
-        windowOb: WindowOb;
-    }>();
-
-    // Установка состояния focused при изменении focusedWindowId
-    useSetFocusState(windowOb);
-
-    const windowRoute = useWindowRoute(windowOb);
-
-    provide('windowRoute', windowRoute);
-    provide('windowOb', windowOb);
-
-    const { getIsLoading, initWindowLoading } = useWindowLoading();
-
-    const isLoading = getIsLoading(windowOb.id);
-
-    // === Инициализация систем окна ===
-
-    // Автоматический fullscreen при монтировании + реакция на changes contentArea
-    useSetFullscreenObserver(windowOb);
-
-    // Авто-переход в fullscreen при перетаскивании за границы
-    useWindowFullscreenAutoSet(windowOb);
-
-    // === Обработчики событий ===
-
-    const { focusWindow } = useFocusOnClick(windowOb);
-    const focusStore = useFocusStore();
-    const { queuedPush } = useQueuedRouter();
-    const unFocus = () => {
-        focusStore.unFocus();
-        queuedPush('/');
-    };
-
-    initWindowLoading(windowOb.id);
-    useSetLoadingState(windowOb, isLoading);
-
-    useSeoWindow(windowOb);
-
-    const windowNode = ref<HTMLElement | null>(null);
-
-    // Плавная анимация границ (RAF-цикл) + прямая запись CSS-переменных в DOM
-    useWindowBoundsAnimation(windowOb, windowNode);
-
-    // При монтировании — сразу фокусируем окно
-    const frameStore = useFrameStore();
-
-    onMounted(() => {
-        focusWindow();
-        frameStore.createObserver(windowOb);
-    });
-
-    onUnmounted(() => {
-        unFocus();
-        frameStore.destroyObserver(windowOb.id);
-    });
-
-    await useWindowEntityFetcher(windowOb, windowRoute);
+    const { windowOb } = defineProps<{ windowOb: WindowOb }>();
+    const { node: windowNode, focusWindow } = await useWindow(windowOb);
 </script>
 <template>
     <div
