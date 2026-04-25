@@ -35,7 +35,7 @@
             top: 0;
             width: 100%;
             height: 100%;
-            background: rgba(c('default'), 0.8);
+            background: c-rgba('default', 0.8);
         }
 
         &__list {

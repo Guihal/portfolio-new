@@ -90,7 +90,7 @@
         top: 0;
         left: 0;
         translate: calc(var(--left) * 1px) calc(var(--top) * 1px);
-        background: rgba(c('default'), 0.8);
+        background: c-rgba('default', 0.8);
         padding: 10px;
         box-sizing: border-box;
         z-index: 120;
