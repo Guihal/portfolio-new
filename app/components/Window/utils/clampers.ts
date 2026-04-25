@@ -1,4 +1,4 @@
-import { getTargetBounds } from "~/composables/useWindowBounds";
+import { useBoundsStore } from "~/stores/bounds";
 import { clamp } from "~/utils/math";
 import type { WindowOb } from "../types";
 
@@ -13,12 +13,12 @@ export type ClampFn = (
 
 export const clampHandlers: Record<string, ClampFn> = {
 	top: (v, windowOb, _cw, ch) => {
-		const target = getTargetBounds(windowOb.id);
+		const target = useBoundsStore().ensure(windowOb.id).target;
 		return clamp(v, 0, ch - Math.min(target.height, MINSIZE));
 	},
 
 	left: (v, windowOb, cw, _ch) => {
-		const target = getTargetBounds(windowOb.id);
+		const target = useBoundsStore().ensure(windowOb.id).target;
 		return clamp(v, 0, cw - Math.min(target.width, MINSIZE));
 	},
 

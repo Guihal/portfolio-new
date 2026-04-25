@@ -1,4 +1,3 @@
-import type { WindowBoundsKey } from "~/composables/useWindowBounds";
 import type { FsFile } from "~~/shared/types/filesystem";
 import type { ChainedKey } from "./composables/useResizeForDirections";
 

@@ -1,4 +1,6 @@
-import { getTargetBounds } from "~/composables/useWindowBounds";
+import { storeToRefs } from "pinia";
+import { useBoundsStore } from "~/stores/bounds";
+import { useContentAreaStore } from "~/stores/contentArea";
 import type { WindowOb } from "../types";
 import { type ClampFn, clampHandlers } from "../utils/clampers";
 
@@ -43,27 +45,27 @@ export type ControlledResult<K extends ChainedKey> = {
 const calculate = {
 	// Тянем верхний край вверх/вниз
 	// Дельта = Курсор Y - Текущий Top окна
-	top: (windowOb: WindowOb, x: number, y: number) => {
-		return y - getTargetBounds(windowOb.id).top;
+	top: (windowOb: WindowOb, _x: number, y: number) => {
+		return y - useBoundsStore().ensure(windowOb.id).target.top;
 	},
 
 	// Тянем левый край влево/вправо
 	// Дельта = Курсор X - Текущий Left окна
 	left: (windowOb: WindowOb, x: number, _y: number) => {
-		return x - getTargetBounds(windowOb.id).left;
+		return x - useBoundsStore().ensure(windowOb.id).target.left;
 	},
 
 	// Тянем нижний край (изменяется высота)
 	// Дельта = Курсор Y - Текущее дно (Top + Height)
 	bottom: (windowOb: WindowOb, _x: number, y: number) => {
-		const target = getTargetBounds(windowOb.id);
+		const target = useBoundsStore().ensure(windowOb.id).target;
 		return y - (target.top + target.height);
 	},
 
 	// Тянем правый край (изменяется ширина)
 	// Дельта = Курсор X - Текущий правый край (Left + Width)
 	right: (windowOb: WindowOb, x: number, _y: number) => {
-		const target = getTargetBounds(windowOb.id);
+		const target = useBoundsStore().ensure(windowOb.id).target;
 		return x - (target.left + target.width);
 	},
 };
@@ -84,9 +86,9 @@ export function useResizeForDirections<K extends ChainedKey>(
 	windowOb: WindowOb,
 	properties: K[],
 ): ControlledResult<K> {
-	const { contentArea } = useContentArea();
+	const { area: contentArea } = storeToRefs(useContentAreaStore());
 	const result = {} as ControlledResult<K>;
-	const target = getTargetBounds(windowOb.id);
+	const target = useBoundsStore().ensure(windowOb.id).target;
 
 	for (const key of properties) {
 		const { primary, compensate } = chainedProperties[key];

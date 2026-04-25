@@ -1,3 +1,4 @@
+import { useFocusStore } from "~/stores/focus";
 import type { WindowOb } from "../types";
 
 /**
@@ -7,10 +8,10 @@ import type { WindowOb } from "../types";
  * @returns focusWindow — функция для фокуса этого окна
  */
 export const useFocusOnClick = (windowOb: WindowOb) => {
-	const { focus } = useFocusWindowController();
+	const focusStore = useFocusStore();
 
 	const focusWindow = () => {
-		focus(windowOb.id);
+		focusStore.focus(windowOb.id);
 	};
 
 	return { focusWindow };

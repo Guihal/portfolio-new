@@ -1,3 +1,6 @@
+import { storeToRefs } from "pinia";
+import { useContentAreaStore } from "~/stores/contentArea";
+
 export const MAX_SIZE = 150;
 
 // Client-only singleton. SSR возвращает свежий stub за вызов (Tooltip скрыт v-show=false на SSR).
@@ -21,7 +24,7 @@ export function useScale(): ScaleTriplet {
 	}
 
 	if (!scale) {
-		const { contentArea } = useContentArea();
+		const { area: contentArea } = storeToRefs(useContentAreaStore());
 
 		scale = computed(
 			() =>

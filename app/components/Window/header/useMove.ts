@@ -1,13 +1,14 @@
-import { getTargetBounds } from "~/composables/useWindowBounds";
+import { useBoundsStore } from "~/stores/bounds";
+import { useFocusStore } from "~/stores/focus";
 import type { WindowOb } from "../types";
 
 export function useMove(windowOb: WindowOb) {
-	const { focus } = useFocusWindowController();
-	const target = getTargetBounds(windowOb.id);
+	const focusStore = useFocusStore();
+	const target = useBoundsStore().ensure(windowOb.id).target;
 
 	return (ev: PointerEvent) => {
 		if (windowOb.states.fullscreen) return;
-		focus(windowOb.id);
+		focusStore.focus(windowOb.id);
 		windowOb.states.drag = true;
 
 		let lastX = ev.clientX;

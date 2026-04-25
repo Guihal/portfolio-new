@@ -1,3 +1,6 @@
+import { storeToRefs } from "pinia";
+import { useWindowsStore } from "~/stores/windows";
+
 // Client-only. SSR: все методы — no-op.
 const loaders: Record<string, Ref<Ref<boolean>[]>> | null = import.meta.client
 	? {}
@@ -29,7 +32,7 @@ export function useWindowLoading() {
 	const getIsLoading = (windowId: string) =>
 		computed(() => isLoading(windowId));
 
-	const { allWindows } = useAllWindows();
+	const { windows: allWindows } = storeToRefs(useWindowsStore());
 
 	const initWindowLoading = (windowId: string) => {
 		if (!loaders) return;

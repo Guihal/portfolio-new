@@ -1,9 +1,9 @@
 <script setup lang="ts">
+    
     import { useAppBootstrap } from './composables/useAppBootstrap';
+import { useViewportObserver } from './composables/useViewportObserver';
 
-    const { setViewportObserver } = useContentArea();
-
-    setViewportObserver();
+    useViewportObserver();
 
     await useAppBootstrap();
 

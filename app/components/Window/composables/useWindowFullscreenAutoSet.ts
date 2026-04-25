@@ -1,4 +1,6 @@
-import { getTargetBounds } from "~/composables/useWindowBounds";
+import { storeToRefs } from "pinia";
+import { useBoundsStore } from "~/stores/bounds";
+import { useContentAreaStore } from "~/stores/contentArea";
 import { OFFSET } from "~/utils/constants/offset";
 import type { WindowOb } from "../types";
 
@@ -13,8 +15,8 @@ import type { WindowOb } from "../types";
  * @param windowOb - Объект окна
  */
 export function useWindowFullscreenAutoSet(windowOb: WindowOb) {
-	const { contentArea } = useContentArea();
-	const target = getTargetBounds(windowOb.id);
+	const { area: contentArea } = storeToRefs(useContentAreaStore());
+	const target = useBoundsStore().ensure(windowOb.id).target;
 
 	/**
 	 * Проверяет, вышло ли окно за границы рабочей области.
@@ -66,7 +68,7 @@ export function useWindowFullscreenAutoSet(windowOb: WindowOb) {
 				dragEndTimer = setTimeout(() => {
 					dragEndTimer = null;
 					if (windowOb.states["fullscreen-ready"]) {
-						windowOb.states["fullscreen"] = true;
+						windowOb.states.fullscreen = true;
 					}
 					delete windowOb.states["fullscreen-ready"];
 				}, 10);

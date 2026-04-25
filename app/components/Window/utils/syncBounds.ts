@@ -1,8 +1,4 @@
-import {
-	getCalculatedBounds,
-	getTargetBounds,
-	type WindowBoundsKey,
-} from "~/composables/useWindowBounds";
+import { useBoundsStore, type WindowBoundsKey } from "~/stores/bounds";
 import type { WindowOb } from "../types";
 
 /**
@@ -12,8 +8,8 @@ import type { WindowOb } from "../types";
  * @param windowOb - Объект окна
  */
 export function syncBounds(windowOb: WindowOb) {
-	const target = getTargetBounds(windowOb.id);
-	const calculated = getCalculatedBounds(windowOb.id);
+	const slot = useBoundsStore().ensure(windowOb.id);
+	const { target, calculated } = slot;
 
 	const keys: WindowBoundsKey[] = ["left", "top", "width", "height"];
 

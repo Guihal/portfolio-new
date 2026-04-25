@@ -1,7 +1,8 @@
 <script setup lang="ts">
-    
-    import { useFrameObserver } from '~/composables/useFrameObserver';
-import { useWindowEntityFetcher } from './composables/useFetchWindowEntity';
+    import { useQueuedRouter } from '~/composables/useQueuedRouter';
+    import { useFocusStore } from '~/stores/focus';
+    import { useFrameStore } from '~/stores/frame';
+    import { useWindowEntityFetcher } from './composables/useFetchWindowEntity';
     import { useFocusOnClick } from './composables/useFocusOnClick';
     import { useSeoWindow } from './composables/useSeoWindow';
     import { useSetFocusState } from './composables/useSetFocusState';
@@ -40,7 +41,12 @@ import { useWindowEntityFetcher } from './composables/useFetchWindowEntity';
     // === Обработчики событий ===
 
     const { focusWindow } = useFocusOnClick(windowOb);
-    const { unFocus } = useFocusWindowController();
+    const focusStore = useFocusStore();
+    const { queuedPush } = useQueuedRouter();
+    const unFocus = () => {
+        focusStore.unFocus();
+        queuedPush('/');
+    };
 
     initWindowLoading(windowOb.id);
     useSetLoadingState(windowOb, isLoading);
@@ -53,16 +59,16 @@ import { useWindowEntityFetcher } from './composables/useFetchWindowEntity';
     useWindowLoop(windowOb, windowNode);
 
     // При монтировании — сразу фокусируем окно
-    const { createObserver, destroyObserver } = useFrameObserver();
+    const frameStore = useFrameStore();
 
     onMounted(() => {
         focusWindow();
-        createObserver(windowOb);
+        frameStore.createObserver(windowOb);
     });
 
     onUnmounted(() => {
         unFocus();
-        destroyObserver(windowOb.id);
+        frameStore.destroyObserver(windowOb.id);
     });
 
     await useWindowEntityFetcher(windowOb, windowRoute);

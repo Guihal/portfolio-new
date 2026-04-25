@@ -1,5 +1,7 @@
 <script setup lang="ts">
+    import { storeToRefs } from 'pinia';
     import type { WindowOb } from '~/components/Window/types';
+    import { useContentAreaStore } from '~/stores/contentArea';
 
     const tooltip = ref<HTMLElement | null>(null);
     const content = ref<HTMLElement | null>(null);
@@ -28,7 +30,7 @@
     useResizeObserver(tooltip, setTooltipBounds);
     useResizeObserver(content, setContentBounds);
 
-    const { contentArea } = useContentArea();
+    const { area: contentArea } = storeToRefs(useContentAreaStore());
 
     const maxWidth = computed(() => contentArea.value.width);
 
@@ -95,7 +97,7 @@
         top: 0;
         left: 0;
         translate: calc(var(--left) * 1px) calc(var(--top) * 1px);
-        background: c-rgba('default', 0.8);
+        background: rgba(c('default'), 0.8);
         padding: 10px;
         box-sizing: border-box;
         z-index: 120;

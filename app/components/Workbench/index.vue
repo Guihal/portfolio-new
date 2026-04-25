@@ -1,8 +1,12 @@
 <script setup lang="ts">
+    import { storeToRefs } from 'pinia';
+    import { useQueuedRouter } from '~/composables/useQueuedRouter';
+    import { useContentAreaStore } from '~/stores/contentArea';
+    import { useFocusStore } from '~/stores/focus';
     import type { FsFile } from '~~/shared/types/filesystem';
 
     const workbench: Ref<null | HTMLElement> = ref(null);
-    const { contentArea } = useContentArea();
+    const { area: contentArea } = storeToRefs(useContentAreaStore());
 
     const { cellsInElement, realCell, subscribe } = useGridCells(workbench, {
         width: 100,
@@ -48,7 +52,12 @@
         },
     );
 
-    const { unFocus } = useFocusWindowController();
+    const focusStore = useFocusStore();
+    const { queuedPush } = useQueuedRouter();
+    const unFocus = () => {
+        focusStore.unFocus();
+        queuedPush('/');
+    };
 </script>
 <template>
     <div ref="workbench" class="workbench" @click="unFocus">

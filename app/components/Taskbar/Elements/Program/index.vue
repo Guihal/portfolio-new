@@ -1,5 +1,6 @@
 <script setup lang="ts">
     import type { WindowOb } from '~/components/Window/types';
+    import { useFocusStore } from '~/stores/focus';
     import { PROGRAMS } from '~/utils/constants/programs';
     import type { ProgramType } from '~~/shared/types/filesystem';
 
@@ -13,7 +14,8 @@
         return PROGRAMS[programType].icon;
     });
 
-    const { focus } = useFocusWindowController();
+    const focusStore = useFocusStore();
+    const focus = (id: string) => focusStore.focus(id);
 
     const currentIndex = ref(0);
 

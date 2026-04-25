@@ -1,6 +1,7 @@
 import { isNavigationFailure } from "vue-router";
 import { callWithNuxt } from "#app";
 import { useCreateAndRegisterWindow } from "~/components/Window/composables/useCreateAndRegisterWindow";
+import { useWindowsStore } from "~/stores/windows";
 
 const CANONICAL_ENTRY = "/about";
 const COOKIE_MAX_AGE = 60 * 60 * 24 * 365;
@@ -50,7 +51,7 @@ export async function useAppBootstrap() {
 		// Per-request stateless SSR render: allWindows обнуляется каждый SSR hit.
 		// На клиенте (hydration + lifecycle) — НЕ clear'ить: payload корректен.
 		if (import.meta.server) {
-			clearAllWindowsState();
+			useWindowsStore().$reset();
 		}
 		if (effectivePath !== "/") {
 			try {

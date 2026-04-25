@@ -1,27 +1,31 @@
 <script setup lang="ts">
+    import { storeToRefs } from 'pinia';
+    import { computed, ref, watch } from 'vue';
     import type { WindowOb } from '~/components/Window/types';
     import { useRemoveWindow } from '~/components/Window/utils/removeWindow';
-    import { useFrameObserver } from '~/composables/useFrameObserver';
-    import { getCalculatedBounds } from '~/composables/useWindowBounds';
+    import { useBoundsStore } from '~/stores/bounds';
+    import { useContentAreaStore } from '~/stores/contentArea';
+    import { useFocusStore } from '~/stores/focus';
+    import { useFrameStore } from '~/stores/frame';
     import { useScale } from '../../useScale';
 
     const { windowOb } = defineProps<{
         windowOb: WindowOb;
     }>();
-    const { contentArea } = useContentArea();
+    const { area: contentArea } = storeToRefs(useContentAreaStore());
     const { scaledHeight, scaledWidth, scale } = useScale();
-    const { getSrc } = useFrameObserver();
+    const frameStore = useFrameStore();
 
     const PLACEHOLDER_IMG =
         'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=';
 
-    const srcRaw = getSrc(windowOb.id);
+    const srcRaw = computed(() => frameStore.images[windowOb.id] ?? '');
     const lastNonEmpty = ref<string>(srcRaw.value);
     watch(srcRaw, (v) => {
         if (v) lastNonEmpty.value = v;
     });
     const src = computed(() => lastNonEmpty.value || PLACEHOLDER_IMG);
-    const calculated = getCalculatedBounds(windowOb.id);
+    const calculated = useBoundsStore().ensure(windowOb.id).calculated;
 
     const frameWidth = computed(() => {
         return calculated.width * scale.value;
@@ -59,8 +63,8 @@
 
     const { title } = useWindowTitle(file);
 
-    const { focus } = useFocusWindowController();
-    const onclickframe = () => focus(windowOb.id);
+    const focusStore = useFocusStore();
+    const onclickframe = () => focusStore.focus(windowOb.id);
     const close = () => {
         useRemoveWindow(windowOb);
     };
@@ -113,13 +117,13 @@
 <style lang="scss">
     .taskbar__frame {
         position: relative;
-        border: 1px solid c-rgba('default-contrast', 0.2);
+        border: 1px solid rgba(c('default-contrast'), 0.2);
         transition: border-color 0.3s ease-in-out;
         cursor: pointer;
         user-select: none;
 
         &--active {
-            border-color: c-rgba('default-contrast', 0.8);
+            border-color: rgba(c('default-contrast'), 0.8);
         }
 
         &_name {

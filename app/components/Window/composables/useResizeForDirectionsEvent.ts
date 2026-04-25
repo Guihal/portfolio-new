@@ -1,3 +1,4 @@
+import { useFocusStore } from "~/stores/focus";
 import type { WindowOb } from "../types";
 import { syncBounds } from "../utils/syncBounds";
 import {
@@ -22,7 +23,7 @@ export function useResizeForDirectionsEvent(
 ) {
 	// Получаем функции для вычисления размеров по направлениям
 	const controlled = useResizeForDirections(windowOb, directions);
-	const { focus } = useFocusWindowController();
+	const focusStore = useFocusStore();
 
 	const onPointerDown = (ev: PointerEvent) => {
 		// Устанавливаем флаг изменения размера
@@ -54,7 +55,7 @@ export function useResizeForDirectionsEvent(
 
 		// Обработчик отпускания
 		const onPointerUp = () => {
-			focus(windowOb.id);
+			focusStore.focus(windowOb.id);
 			delete windowOb.states.resize;
 			window.removeEventListener("pointermove", onPointerMove);
 			window.removeEventListener("pointerup", onPointerUp);

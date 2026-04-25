@@ -1,14 +1,13 @@
 <script setup lang="ts">
-    
-    import { getTargetBounds } from '~/composables/useWindowBounds';
-import { OFFSET } from '~/utils/constants/offset';
+    import { useBoundsStore } from '~/stores/bounds';
+    import { OFFSET } from '~/utils/constants/offset';
     import type { WindowOb } from '../../types';
     import { setSize } from '../../utils/setSize';
 
     const windowOb = inject('windowOb') as WindowOb;
 
     const onclick = () => {
-        const target = getTargetBounds(windowOb.id);
+        const target = useBoundsStore().ensure(windowOb.id).target;
         if (windowOb.states.fullscreen) {
             delete windowOb.states.fullscreen;
             const UNFULLSCREENOFFSET = OFFSET * 2;

@@ -1,9 +1,5 @@
 import type { WatchHandle } from "vue";
-import {
-	getCalculatedBounds,
-	getTargetBounds,
-	type WindowBoundsKey,
-} from "~/composables/useWindowBounds";
+import { useBoundsStore, type WindowBoundsKey } from "~/stores/bounds";
 import type { WindowOb } from "../../types";
 import { Preprocessor } from "./Preprocessor";
 
@@ -39,8 +35,8 @@ export class WindowLoopController {
 	}
 
 	start() {
+		const target = useBoundsStore().ensure(this.windowOb.id).target;
 		for (const key of this.keys) {
-			const target = getTargetBounds(this.windowOb.id);
 			const wh = watch(
 				() => target[key],
 				() => {
@@ -62,7 +58,7 @@ export class WindowLoopController {
 	/** Пишет CSS-переменные напрямую в element */
 	flushToDOM(isForce = false) {
 		if (!this.element) return;
-		const calculated = getCalculatedBounds(this.windowOb.id);
+		const calculated = useBoundsStore().ensure(this.windowOb.id).calculated;
 		const prev = this.prevBounds;
 		const threshold = 1; // Порог для предотвращения мелких обновлений
 		if (
@@ -89,8 +85,8 @@ export class WindowLoopController {
 		const deltaTime = now - this.lastTimestamp;
 		this.lastTimestamp = now;
 
-		const target = getTargetBounds(this.windowOb.id);
-		const calculated = getCalculatedBounds(this.windowOb.id);
+		const slot = useBoundsStore().ensure(this.windowOb.id);
+		const { target, calculated } = slot;
 
 		for (const key of this.keys) {
 			if (!this.activeKeys.has(key)) continue;

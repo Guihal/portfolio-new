@@ -1,3 +1,6 @@
+import { storeToRefs } from "pinia";
+import { useFocusStore } from "~/stores/focus";
+
 export function useSeoUnfocus() {
 	const { data } = useAsyncData(
 		"entity-/",
@@ -13,9 +16,9 @@ export function useSeoUnfocus() {
 		{ immediate: true, server: true },
 	);
 
-	const focusedWindowId = useFocusedWindowId();
+	const { focusedId } = storeToRefs(useFocusStore());
 
 	useSeoMeta({
-		title: () => (focusedWindowId.value ? undefined : data.value?.name),
+		title: () => (focusedId.value ? undefined : data.value?.name),
 	});
 }

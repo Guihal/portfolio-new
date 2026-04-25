@@ -1,8 +1,4 @@
-import {
-	getCalculatedBounds,
-	getTargetBounds,
-	type WindowBoundsKey,
-} from "~/composables/useWindowBounds";
+import { useBoundsStore, type WindowBoundsKey } from "~/stores/bounds";
 import type { WindowLoopController } from "./useWindowLoop";
 
 /**
@@ -37,8 +33,8 @@ export class Preprocessor {
 	 * @param deltaTime - Время с последнего кадра (мс)
 	 */
 	calculate(key: WindowBoundsKey, deltaTime: number) {
-		const target = getTargetBounds(this.controller.windowOb.id);
-		const calculated = getCalculatedBounds(this.controller.windowOb.id);
+		const slot = useBoundsStore().ensure(this.controller.windowOb.id);
+		const { target, calculated } = slot;
 
 		// Разница между целевым и текущим значением
 		const delta = target[key] - calculated[key];

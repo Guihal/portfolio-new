@@ -1,4 +1,4 @@
-import { getTargetBounds } from "~/composables/useWindowBounds";
+import { useBoundsStore } from "~/stores/bounds";
 import type { WindowOb } from "../types";
 import { MINSIZE } from "./clampers";
 
@@ -6,7 +6,7 @@ import { MINSIZE } from "./clampers";
  * Устанавливает размер (width/height) с учётом минимального размера.
  *
  * @param windowOb - Объект окна
- * @param key - Какое свойство устанавливать ('width' или 'height')
+ * @param key - Какое свойство устанавливать ('width' or 'height')
  * @param value - Новое значение
  */
 export function setSize(
@@ -14,7 +14,7 @@ export function setSize(
 	key: "width" | "height",
 	value: number,
 ) {
-	const target = getTargetBounds(windowOb.id);
+	const target = useBoundsStore().ensure(windowOb.id).target;
 	// Clamp: не меньше MINSIZE
 	target[key] = Math.max(MINSIZE, value);
 }

@@ -1,10 +1,17 @@
 <script setup lang="ts">
+    import { useQueuedRouter } from '~/composables/useQueuedRouter';
+    import { useTaskbarObserver } from '~/composables/useViewportObserver';
+    import { useFocusStore } from '~/stores/focus';
+
     const taskbar = ref<HTMLElement | null>(null);
-    const { setTaskbarObserver } = useContentArea();
+    useTaskbarObserver(taskbar);
 
-    setTaskbarObserver(taskbar);
-
-    const { unFocus } = useFocusWindowController();
+    const focusStore = useFocusStore();
+    const { queuedPush } = useQueuedRouter();
+    const unFocus = () => {
+        focusStore.unFocus();
+        queuedPush('/');
+    };
 </script>
 <template>
     <nav ref="taskbar" class="taskbar pixel-box">

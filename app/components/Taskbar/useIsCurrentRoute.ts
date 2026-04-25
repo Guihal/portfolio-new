@@ -1,10 +1,12 @@
+import { storeToRefs } from "pinia";
+import { useWindowsStore } from "~/stores/windows";
+
 export function useIsCurrentRoute(checkedRoute: Ref<string>) {
-	const { allWindows } = useAllWindows();
+	const { windows: allWindows } = storeToRefs(useWindowsStore());
 	const isCurrentRoute = ref(false);
 	const callback = () => {
 		for (const key in allWindows.value) {
-			const typedKey = key as keyof AllWindows;
-			if (allWindows.value[typedKey]?.file?.path === checkedRoute.value) {
+			if (allWindows.value[key]?.file?.path === checkedRoute.value) {
 				isCurrentRoute.value = true;
 				return;
 			}

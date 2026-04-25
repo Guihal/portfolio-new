@@ -1,7 +1,21 @@
 import { defineStore } from "pinia";
-import { markRaw, ref } from "vue";
-import { useBatchedReactive } from "~/composables/useBatchedReactive";
-import type { WindowBounds } from "~/composables/useWindowBounds";
+import { customRef, markRaw, type Ref, ref } from "vue";
+
+export type WindowBounds = {
+	left: number;
+	top: number;
+	width: number;
+	height: number;
+};
+
+export type WindowBoundsKey = keyof WindowBounds;
+
+export const CSS_VAR_KEYS: Record<WindowBoundsKey, string> = {
+	left: "--w-left",
+	top: "--w-top",
+	width: "--w-width",
+	height: "--w-height",
+};
 
 type BoundsSlot = { target: WindowBounds; calculated: WindowBounds };
 
@@ -11,6 +25,65 @@ const emptyBounds = (): WindowBounds => ({
 	width: 0,
 	height: 0,
 });
+
+/**
+ * Microtask-batched reactive object: parallel writes within one task tick
+ * coalesced into single trigger per key. Used for target bounds — drag/resize
+ * loops fire many writes per frame, batching prevents redundant Vue re-renders.
+ */
+function createBatchedBounds(initial: WindowBounds): WindowBounds {
+	let pending = false;
+	const triggers = new Map<WindowBoundsKey, () => void>();
+	const dirty = new Set<WindowBoundsKey>();
+	const store = { ...initial };
+
+	const refs = {} as { [K in WindowBoundsKey]: Ref<number> };
+
+	const wrapRef = (k: WindowBoundsKey): Ref<number> =>
+		customRef<number>((track, trigger) => {
+			triggers.set(k, trigger);
+			return {
+				get() {
+					track();
+					return store[k];
+				},
+				set(newValue) {
+					if (Object.is(newValue, store[k])) return;
+					store[k] = newValue;
+					dirty.add(k);
+
+					if (!pending) {
+						pending = true;
+						queueMicrotask(() => {
+							pending = false;
+							for (const dk of dirty) {
+								triggers.get(dk)?.();
+							}
+							dirty.clear();
+						});
+					}
+				},
+			};
+		});
+
+	for (const key of Object.keys(initial) as WindowBoundsKey[]) {
+		refs[key] = wrapRef(key);
+	}
+
+	return new Proxy(store, {
+		get(_target, key) {
+			if (key in refs) return refs[key as WindowBoundsKey].value;
+			return Reflect.get(store, key);
+		},
+		set(_target, key, value) {
+			if (key in refs) {
+				refs[key as WindowBoundsKey].value = value;
+				return true;
+			}
+			return Reflect.set(store, key, value);
+		},
+	}) as WindowBounds;
+}
 
 export const useBoundsStore = defineStore("bounds", () => {
 	const bounds = ref<Record<string, BoundsSlot>>({});
@@ -22,7 +95,7 @@ export const useBoundsStore = defineStore("bounds", () => {
 		// markRaw: иначе Vue's outer reactive Proxy перехватывает set
 		// синхронно и customRef-batched trigger (microtask) defeated.
 		bounds.value[id] = {
-			target: markRaw(useBatchedReactive(emptyBounds())),
+			target: markRaw(createBatchedBounds(emptyBounds())),
 			calculated: emptyBounds(),
 		};
 		return bounds.value[id] as BoundsSlot;

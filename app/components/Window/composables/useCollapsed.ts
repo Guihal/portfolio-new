@@ -1,7 +1,8 @@
-import {
-	getTargetBounds,
-	type WindowBoundsKey,
-} from "~/composables/useWindowBounds";
+import { storeToRefs } from "pinia";
+import { useQueuedRouter } from "~/composables/useQueuedRouter";
+import { useBoundsStore, type WindowBoundsKey } from "~/stores/bounds";
+import { useContentAreaStore } from "~/stores/contentArea";
+import { useFocusStore } from "~/stores/focus";
 import type { WindowOb } from "../types";
 
 /**
@@ -15,8 +16,9 @@ import type { WindowOb } from "../types";
  * @returns Функция для сворачивания окна
  */
 export function useCollapsed(windowOb: WindowOb) {
-	const { contentArea } = useContentArea();
-	const { unFocus } = useFocusWindowController();
+	const { area: contentArea } = storeToRefs(useContentAreaStore());
+	const focusStore = useFocusStore();
+	const { queuedPush } = useQueuedRouter();
 
 	const beforeCollapsedBounds = ref<Record<WindowBoundsKey, number>>({
 		width: 0,
@@ -25,7 +27,7 @@ export function useCollapsed(windowOb: WindowOb) {
 		left: 0,
 	});
 
-	const target = getTargetBounds(windowOb.id);
+	const target = useBoundsStore().ensure(windowOb.id).target;
 
 	watch(
 		() => windowOb.states.collapsed === true,
@@ -82,7 +84,8 @@ export function useCollapsed(windowOb: WindowOb) {
 		if (collapseOuterTimer !== null) clearTimeout(collapseOuterTimer);
 		collapseOuterTimer = setTimeout(() => {
 			collapseOuterTimer = null;
-			unFocus();
+			focusStore.unFocus();
+			queuedPush("/");
 
 			if (collapseInnerTimer !== null) clearTimeout(collapseInnerTimer);
 			collapseInnerTimer = setTimeout(() => {

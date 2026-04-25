@@ -95,7 +95,7 @@
             }
 
             .shortcut__text {
-                font-family: Pix, system-ui;
+                font-family: $t-default;
                 font-size: 16px;
                 font-weight: 700;
                 line-height: 1;

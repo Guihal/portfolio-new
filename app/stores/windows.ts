@@ -42,9 +42,8 @@ export const useWindowsStore = defineStore("windows", () => {
 		Reflect.deleteProperty(windows.value, id);
 		const focus = useFocusStore();
 		if (focus.focusedId === id) focus.unFocus();
-		// TODO P2-03: каскад useBoundsStore().remove(id) + useFrameStore().remove(id)
-		// делает оркестратор (removeWindow.ts). Пока консюмеры не мигрированы —
-		// bounds/frame наполняются через старые composables, cleanup там же.
+		// Cascade cleanup (bounds/frame/loaders) выполняется orchestrator'ом
+		// useRemoveWindow в app/components/Window/utils/removeWindow.ts.
 	}
 
 	function focus(id: string) {
@@ -70,8 +69,8 @@ export const useWindowsStore = defineStore("windows", () => {
 
 	/**
 	 * Сбрасывает ТОЛЬКО windows+counter. focus/bounds/frame intentionally
-	 * untouched — паритет со старым clearAllWindowsState; каскадный cleanup
-	 * в P2-03 через orchestrator.
+	 * untouched — паритет со старым SSR-сбросом; каскадный cleanup на удалении
+	 * конкретного окна — через orchestrator (useRemoveWindow).
 	 */
 	function $reset() {
 		windows.value = {};

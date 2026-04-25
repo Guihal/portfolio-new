@@ -1,8 +1,6 @@
-import {
-	getCalculatedBounds,
-	getTargetBounds,
-	type WindowBoundsKey,
-} from "~/composables/useWindowBounds";
+import { storeToRefs } from "pinia";
+import { useBoundsStore, type WindowBoundsKey } from "~/stores/bounds";
+import { useContentAreaStore } from "~/stores/contentArea";
 import type { WindowOb } from "../types";
 
 /**
@@ -12,10 +10,10 @@ import type { WindowOb } from "../types";
  * @param isForce - Если true, синхронизирует calculated с target (для мгновенной установки без анимации)
  */
 export function useOnFullscreen(windowOb: WindowOb, isForce = false) {
-	const { contentArea } = useContentArea();
+	const { area: contentArea } = storeToRefs(useContentAreaStore());
 
-	const target = getTargetBounds(windowOb.id);
-	const calculated = getCalculatedBounds(windowOb.id);
+	const slot = useBoundsStore().ensure(windowOb.id);
+	const { target, calculated } = slot;
 
 	/**
 	 * Устанавливает значение свойства.

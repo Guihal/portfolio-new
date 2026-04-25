@@ -1,3 +1,5 @@
+import { storeToRefs } from "pinia";
+import { useContentAreaStore } from "~/stores/contentArea";
 import type { WindowOb } from "../types";
 import { useOnFullscreen } from "./useOnFullScreen";
 
@@ -11,7 +13,7 @@ import { useOnFullscreen } from "./useOnFullScreen";
  * @param windowOb - Объект окна
  */
 export function useSetFullscreenObserver(windowOb: WindowOb) {
-	const { contentArea } = useContentArea();
+	const { area: contentArea } = storeToRefs(useContentAreaStore());
 
 	// Флаг: окно ещё не смонтировано (для принудительной установки fullscreen)
 	let isMounted = false;
