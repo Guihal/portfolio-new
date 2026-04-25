@@ -1,6 +1,6 @@
-import { useQueuedRouter } from "~/composables/useQueuedRouter";
 import { useFocusStore } from "~/stores/focus";
 import { useFrameStore } from "~/stores/frame";
+import { useQueuedRouterStore } from "~/stores/queuedRouter";
 import type { WindowOb } from "../types";
 import { useWindowEntityFetcher } from "./useFetchWindowEntity";
 import { useFocusOnClick } from "./useFocusOnClick";
@@ -37,10 +37,10 @@ export async function useWindow(windowOb: WindowOb) {
 	useSetFocusState(windowOb);
 	const { focusWindow } = useFocusOnClick(windowOb);
 	const focusStore = useFocusStore();
-	const { queuedPush } = useQueuedRouter();
+	const queuedRouter = useQueuedRouterStore();
 	const unFocus = () => {
 		focusStore.unFocus();
-		queuedPush("/");
+		queuedRouter.push("/");
 	};
 
 	// states (fullscreen)

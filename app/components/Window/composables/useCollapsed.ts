@@ -1,8 +1,8 @@
 import { storeToRefs } from "pinia";
-import { useQueuedRouter } from "~/composables/useQueuedRouter";
 import { useBoundsStore, type WindowBoundsKey } from "~/stores/bounds";
 import { useContentAreaStore } from "~/stores/contentArea";
 import { useFocusStore } from "~/stores/focus";
+import { useQueuedRouterStore } from "~/stores/queuedRouter";
 import { useWindowsStore } from "~/stores/windows";
 import type { WindowOb } from "../types";
 
@@ -20,7 +20,7 @@ export function useCollapsed(windowOb: WindowOb) {
 	const { area: contentArea } = storeToRefs(useContentAreaStore());
 	const focusStore = useFocusStore();
 	const windowsStore = useWindowsStore();
-	const { queuedPush } = useQueuedRouter();
+	const queuedRouter = useQueuedRouterStore();
 
 	const beforeCollapsedBounds = ref<Record<WindowBoundsKey, number>>({
 		width: 0,
@@ -87,7 +87,7 @@ export function useCollapsed(windowOb: WindowOb) {
 		collapseOuterTimer = setTimeout(() => {
 			collapseOuterTimer = null;
 			focusStore.unFocus();
-			queuedPush("/");
+			queuedRouter.push("/");
 
 			if (collapseInnerTimer !== null) clearTimeout(collapseInnerTimer);
 			collapseInnerTimer = setTimeout(() => {

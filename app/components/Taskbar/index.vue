@@ -1,16 +1,16 @@
 <script setup lang="ts">
-    import { useQueuedRouter } from '~/composables/useQueuedRouter';
     import { useTaskbarObserver } from '~/composables/useViewportObserver';
     import { useFocusStore } from '~/stores/focus';
+    import { useQueuedRouterStore } from '~/stores/queuedRouter';
 
     const taskbar = ref<HTMLElement | null>(null);
     useTaskbarObserver(taskbar);
 
     const focusStore = useFocusStore();
-    const { queuedPush } = useQueuedRouter();
+    const queuedRouter = useQueuedRouterStore();
     const unFocus = () => {
         focusStore.unFocus();
-        queuedPush('/');
+        queuedRouter.push('/');
     };
 </script>
 <template>

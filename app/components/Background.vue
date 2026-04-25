@@ -1,6 +1,6 @@
 <script setup lang="ts">
-    import { useQueuedRouter } from '~/composables/useQueuedRouter';
     import { useFocusStore } from '~/stores/focus';
+    import { useQueuedRouterStore } from '~/stores/queuedRouter';
 
     // Параметры линий сетки
     const lineWidth = 1;
@@ -76,10 +76,10 @@
     watchEffect(draw);
 
     const focusStore = useFocusStore();
-    const { queuedPush } = useQueuedRouter();
+    const queuedRouter = useQueuedRouterStore();
     const unFocus = () => {
         focusStore.unFocus();
-        queuedPush('/');
+        queuedRouter.push('/');
     };
 
     onMounted(() => {
