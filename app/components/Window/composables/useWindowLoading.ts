@@ -32,7 +32,8 @@ export function useWindowLoading() {
 	const getIsLoading = (windowId: string) =>
 		computed(() => isLoading(windowId));
 
-	const { windows: allWindows } = storeToRefs(useWindowsStore());
+	const windowsStore = useWindowsStore();
+	const { windows: allWindows } = storeToRefs(windowsStore);
 
 	const initWindowLoading = (windowId: string) => {
 		if (!loaders) return;
@@ -55,11 +56,7 @@ export function useWindowLoading() {
 			if (!windowOb) return;
 
 			const timer = setTimeout(() => {
-				if (loading) {
-					windowOb.states.loading = true;
-				} else {
-					delete windowOb.states.loading;
-				}
+				windowsStore.setState(windowId, "loading", loading);
 			}, 50);
 
 			onCleanup(() => clearTimeout(timer));

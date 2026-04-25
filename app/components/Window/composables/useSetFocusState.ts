@@ -1,19 +1,17 @@
 import { useFocusStore } from "~/stores/focus";
+import { useWindowsStore } from "~/stores/windows";
 import type { WindowOb } from "../types";
 
 export function useSetFocusState(windowOb: WindowOb) {
 	const focusStore = useFocusStore();
+	const windowsStore = useWindowsStore();
 
 	const isFocused = focusStore.isFocused(windowOb.id);
 
 	watch(
 		isFocused,
 		() => {
-			if (isFocused.value) {
-				windowOb.states.focused = true;
-			} else {
-				delete windowOb.states.focused;
-			}
+			windowsStore.setState(windowOb.id, "focused", isFocused.value);
 		},
 		{
 			immediate: true,
@@ -24,7 +22,7 @@ export function useSetFocusState(windowOb: WindowOb) {
 		() => windowOb.states.focused === true,
 		(v) => {
 			if (v) {
-				delete windowOb.states.collapsed;
+				windowsStore.clearState(windowOb.id, "collapsed");
 			}
 		},
 		{

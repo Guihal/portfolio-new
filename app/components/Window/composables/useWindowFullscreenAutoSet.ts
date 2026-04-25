@@ -1,6 +1,7 @@
 import { storeToRefs } from "pinia";
 import { useBoundsStore } from "~/stores/bounds";
 import { useContentAreaStore } from "~/stores/contentArea";
+import { useWindowsStore } from "~/stores/windows";
 import { OFFSET } from "~/utils/constants/offset";
 import type { WindowOb } from "../types";
 
@@ -16,6 +17,7 @@ import type { WindowOb } from "../types";
  */
 export function useWindowFullscreenAutoSet(windowOb: WindowOb) {
 	const { area: contentArea } = storeToRefs(useContentAreaStore());
+	const windowsStore = useWindowsStore();
 	const target = useBoundsStore().ensure(windowOb.id).target;
 
 	/**
@@ -45,11 +47,11 @@ export function useWindowFullscreenAutoSet(windowOb: WindowOb) {
 			height: target.height,
 		}),
 		() => {
-			if (isOutOfBounds()) {
-				windowOb.states["fullscreen-ready"] = true;
-			} else {
-				delete windowOb.states["fullscreen-ready"];
-			}
+			windowsStore.setState(
+				windowOb.id,
+				"fullscreen-ready",
+				isOutOfBounds(),
+			);
 		},
 	);
 
@@ -68,9 +70,9 @@ export function useWindowFullscreenAutoSet(windowOb: WindowOb) {
 				dragEndTimer = setTimeout(() => {
 					dragEndTimer = null;
 					if (windowOb.states["fullscreen-ready"]) {
-						windowOb.states.fullscreen = true;
+						windowsStore.setState(windowOb.id, "fullscreen", true);
 					}
-					delete windowOb.states["fullscreen-ready"];
+					windowsStore.clearState(windowOb.id, "fullscreen-ready");
 				}, 10);
 			}
 		},

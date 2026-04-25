@@ -106,6 +106,93 @@ describe("windows store", () => {
 		expect(s.byPath("/nonexistent")).toBeUndefined();
 	});
 
+	describe("setState incompatibility table", () => {
+		it("setState fullscreen=true очищает collapsed/drag/resize", () => {
+			const s = useWindowsStore();
+			const w = s.create(file);
+			s.setState(w.id, "collapsed", true);
+			s.setState(w.id, "drag", true);
+			s.setState(w.id, "resize", true);
+			s.setState(w.id, "fullscreen", true);
+			expect(w.states.fullscreen).toBe(true);
+			expect(w.states.collapsed).toBeUndefined();
+			expect(w.states.drag).toBeUndefined();
+			expect(w.states.resize).toBeUndefined();
+		});
+
+		it("setState collapsed=true очищает fullscreen/drag/resize", () => {
+			const s = useWindowsStore();
+			const w = s.create(file);
+			s.setState(w.id, "fullscreen", true);
+			s.setState(w.id, "drag", true);
+			s.setState(w.id, "resize", true);
+			s.setState(w.id, "collapsed", true);
+			expect(w.states.collapsed).toBe(true);
+			expect(w.states.fullscreen).toBeUndefined();
+			expect(w.states.drag).toBeUndefined();
+			expect(w.states.resize).toBeUndefined();
+		});
+
+		it("setState drag=true очищает fullscreen/collapsed (resize не трогает)", () => {
+			const s = useWindowsStore();
+			const w = s.create(file);
+			s.setState(w.id, "fullscreen", true);
+			s.setState(w.id, "drag", true);
+			expect(w.states.drag).toBe(true);
+			expect(w.states.fullscreen).toBeUndefined();
+		});
+
+		it("setState resize=true очищает fullscreen/collapsed (drag не трогает)", () => {
+			const s = useWindowsStore();
+			const w = s.create(file);
+			s.setState(w.id, "collapsed", true);
+			s.setState(w.id, "resize", true);
+			expect(w.states.resize).toBe(true);
+			expect(w.states.collapsed).toBeUndefined();
+		});
+
+		it("setState focused=true НЕ очищает другие states (вне таблицы)", () => {
+			const s = useWindowsStore();
+			const w = s.create(file);
+			s.setState(w.id, "fullscreen", true);
+			s.setState(w.id, "focused", true);
+			expect(w.states.focused).toBe(true);
+			expect(w.states.fullscreen).toBe(true);
+		});
+
+		it("setState value=false не триггерит INCOMPATIBLE clears", () => {
+			const s = useWindowsStore();
+			const w = s.create(file);
+			s.setState(w.id, "collapsed", true);
+			s.setState(w.id, "fullscreen", false);
+			expect(w.states.collapsed).toBe(true);
+			expect(w.states.fullscreen).toBeUndefined();
+		});
+
+		it("toggleState переключает state", () => {
+			const s = useWindowsStore();
+			const w = s.create(file);
+			s.toggleState(w.id, "fullscreen");
+			expect(w.states.fullscreen).toBe(true);
+			s.toggleState(w.id, "fullscreen");
+			expect(w.states.fullscreen).toBeUndefined();
+		});
+
+		it("toggleState fullscreen применяет INCOMPATIBLE table", () => {
+			const s = useWindowsStore();
+			const w = s.create(file);
+			s.setState(w.id, "collapsed", true);
+			s.toggleState(w.id, "fullscreen");
+			expect(w.states.fullscreen).toBe(true);
+			expect(w.states.collapsed).toBeUndefined();
+		});
+
+		it("toggleState несуществующего id — no-op", () => {
+			const s = useWindowsStore();
+			expect(() => s.toggleState("ghost", "fullscreen")).not.toThrow();
+		});
+	});
+
 	// Контрактный тест: фиксирует deferred cross-store cleanup (TODO P2-03).
 	// Пока консюмеры не мигрированы, windows.remove НЕ трогает bounds/frame.
 	// Орфан-slot bounds[id] ожидается жить до явного вызова boundsStore.remove.

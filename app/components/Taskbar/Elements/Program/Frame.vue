@@ -7,6 +7,7 @@
     import { useContentAreaStore } from '~/stores/contentArea';
     import { useFocusStore } from '~/stores/focus';
     import { useFrameStore } from '~/stores/frame';
+    import { useWindowsStore } from '~/stores/windows';
     import { useScale } from '../../useScale';
 
     const { windowOb } = defineProps<{
@@ -64,16 +65,17 @@
     const { title } = useWindowTitle(file);
 
     const focusStore = useFocusStore();
+    const windowsStore = useWindowsStore();
     const onclickframe = () => focusStore.focus(windowOb.id);
     const close = () => {
         useRemoveWindow(windowOb);
     };
 
     const onPreview = () => {
-        windowOb.states.preview = true;
+        windowsStore.setState(windowOb.id, 'preview', true);
     };
     const offPreview = () => {
-        delete windowOb.states.preview;
+        windowsStore.clearState(windowOb.id, 'preview');
     };
 </script>
 
