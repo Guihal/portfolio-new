@@ -1,3 +1,4 @@
+import type { FsFile } from "~~/shared/types/filesystem";
 import type { WindowOb } from "../types";
 import { useWindowLoading } from "./useWindowLoading";
 
@@ -18,7 +19,12 @@ function isAbortError(err: unknown): boolean {
 	return false;
 }
 
-export async function useWindowEntityFetcher(
+/**
+ * Слитый fetch для окна: грузит сущность по `windowRoute` и регистрирует
+ * `isLoading` в global window-loading registry. Заменяет
+ * `useFetchWindowEntity` + `useWindowFetch`.
+ */
+export async function useFetchEntity(
 	windowOb: WindowOb,
 	windowRoute: Readonly<Ref<string>>,
 ) {
@@ -43,8 +49,6 @@ export async function useWindowEntityFetcher(
 	const { register } = useWindowLoading();
 	register(windowOb.id, isLoading);
 
-	// Abort controller — ранняя регистрация onScopeDispose до первого await,
-	// чтобы controller-leak был невозможен даже при abort parent scope во время fetch.
 	let activeController: AbortController | null = null;
 	let disposed = false;
 	onScopeDispose(() => {
@@ -53,13 +57,12 @@ export async function useWindowEntityFetcher(
 		activeController = null;
 	});
 
-	const { data, error } = await useAsyncData(
+	const { data, error } = await useAsyncData<FsFile | null>(
 		() => `window-entity-${windowRoute.value}`,
 		async () => {
 			if (disposed) return null;
 			if (!isNeedLoading.value) return null;
 
-			// Abort previous in-flight request.
 			activeController?.abort();
 			const controller = new AbortController();
 			activeController = controller;
@@ -71,8 +74,6 @@ export async function useWindowEntityFetcher(
 					signal: controller.signal,
 				});
 			} finally {
-				// Balanced decrement (counter must not stuck) — ref writes post-dispose
-				// безопасны: watchers уже unsubscribed, no side-effect.
 				inFlightCount.value--;
 				if (activeController === controller) activeController = null;
 			}
@@ -84,8 +85,6 @@ export async function useWindowEntityFetcher(
 		},
 	);
 
-	// Unified error handling: showError на каждую non-abort error-transition,
-	// clearError когда данные восстановились.
 	const triggerFatal = () => {
 		showError(
 			createError({
@@ -98,16 +97,11 @@ export async function useWindowEntityFetcher(
 
 	let lastErrorWasFatal = false;
 
-	// Initial error (setup-level).
 	if (error.value && !isAbortError(error.value)) {
 		lastErrorWasFatal = true;
 		triggerFatal();
 	}
 
-	// Subsequent error transitions.
-	// Recovery (error→null) НЕ чистит global Nuxt error state — clearError затронул бы
-	// чужие app-level ошибки (single-source инвариант не гарантирован). Юзер перезагрузит
-	// страницу или навигация триггернёт reset.
 	watch(error, (newVal, oldVal) => {
 		if (newVal === oldVal) return;
 		if (!newVal) {
@@ -132,4 +126,10 @@ export async function useWindowEntityFetcher(
 			immediate: true,
 		},
 	);
+
+	return {
+		entity: data,
+		isLoading,
+		error,
+	};
 }

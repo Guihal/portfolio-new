@@ -1,13 +1,15 @@
+import { storeToRefs } from "pinia";
 import { useQueuedRouter } from "~/composables/useQueuedRouter";
+import { useContentAreaStore } from "~/stores/contentArea";
 import { useFocusStore } from "~/stores/focus";
 import { useFrameStore } from "~/stores/frame";
+import { useWindowsStore } from "~/stores/windows";
 import type { WindowOb } from "../types";
-import { useWindowEntityFetcher } from "./useFetchWindowEntity";
+import { useFetchEntity } from "./useFetchEntity";
 import { useFocusOnClick } from "./useFocusOnClick";
+import { useOnFullscreen } from "./useOnFullScreen";
 import { useSeoWindow } from "./useSeoWindow";
 import { useSetFocusState } from "./useSetFocusState";
-import { useSetFullscreenObserver } from "./useSetFullscreenObserver";
-import { useSetLoadingState } from "./useSetLoadingState";
 import { useWindowBoundsAnimation } from "./useWindowBoundsAnimation";
 import { useWindowFullscreenAutoSet } from "./useWindowFullscreenAutoSet";
 import { useWindowLoading } from "./useWindowLoading";
@@ -20,12 +22,12 @@ import { useWindowRoute } from "./useWindowRoute";
  * Логические группы (см. docs/refactor/P3-01):
  *  - routing:         useWindowRoute
  *  - focus:           useSetFocusState + useFocusOnClick
- *  - states:          useSetFullscreenObserver + useWindowFullscreenAutoSet
- *  - loading:         useWindowLoading + useSetLoadingState
+ *  - states:          inline fullscreen-on-mount + useWindowFullscreenAutoSet
+ *  - loading:         useWindowLoading + inline loading-state watch
  *  - seo:             useSeoWindow
  *  - bounds-anim:     useWindowBoundsAnimation
  *  - preview/frames:  frameStore observer (mount/unmount)
- *  - entity:          useWindowEntityFetcher (await)
+ *  - entity:          useFetchEntity (await)
  */
 export async function useWindow(windowOb: WindowOb) {
 	// routing
@@ -43,15 +45,50 @@ export async function useWindow(windowOb: WindowOb) {
 		queuedPush("/");
 	};
 
-	// states (fullscreen)
-	useSetFullscreenObserver(windowOb);
+	// states (fullscreen) — inline ex-useSetFullscreenObserver
+	const windowsStore = useWindowsStore();
+	const { area: contentArea } = storeToRefs(useContentAreaStore());
+	let isMounted = false;
+
+	useSetChainedWatchers(
+		() => windowOb.states.fullscreen === true,
+		contentArea,
+		() => {
+			useOnFullscreen(windowOb, !isMounted);
+		},
+		{ immediate: true },
+	);
+
+	let mountedTimer: ReturnType<typeof setTimeout> | null = null;
+	onMounted(() => {
+		windowsStore.setState(windowOb.id, "fullscreen", true);
+		windowsStore.clearState(windowOb.id, "fullscreen-ready");
+		mountedTimer = setTimeout(() => {
+			mountedTimer = null;
+			isMounted = true;
+		}, 100);
+	});
+	onScopeDispose(() => {
+		if (mountedTimer !== null) {
+			clearTimeout(mountedTimer);
+			mountedTimer = null;
+		}
+	});
+
 	useWindowFullscreenAutoSet(windowOb);
 
 	// loading
 	const { getIsLoading, initWindowLoading } = useWindowLoading();
 	const isLoading = getIsLoading(windowOb.id);
 	initWindowLoading(windowOb.id);
-	useSetLoadingState(windowOb, isLoading);
+	// inline ex-useSetLoadingState
+	watch(
+		isLoading,
+		() => {
+			windowsStore.setState(windowOb.id, "loading", isLoading.value);
+		},
+		{ immediate: true },
+	);
 
 	// seo
 	useSeoWindow(windowOb);
@@ -72,7 +109,7 @@ export async function useWindow(windowOb: WindowOb) {
 	});
 
 	// entity (must be last — has top-level await)
-	await useWindowEntityFetcher(windowOb, windowRoute);
+	await useFetchEntity(windowOb, windowRoute);
 
 	return {
 		node,
