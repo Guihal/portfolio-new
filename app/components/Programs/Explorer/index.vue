@@ -17,7 +17,7 @@
     const isLoading = ref(false);
     useWindowLoading().register(windowOb.id, isLoading);
 
-    const { data } = await useAsyncData(
+    const { data } = await useAsyncData<FsFile[]>(
         () => `explorer-${windowRoute.value}`,
         async () => {
             if (!windowRoute.value) return [];
@@ -36,8 +36,10 @@
             }
         },
         {
-            server: import.meta.server,
+            server: true,
             immediate: true,
+            transform: (d) => d ?? [],
+            default: () => [],
         },
     );
 </script>
@@ -49,17 +51,7 @@
                 <ProgramsExplorerNavFacts />
             </ClientOnly>
         </div>
-        <div class="explorer__content pixel-box">
-            <template v-if="(data?.length ?? 0) > 0">
-                <ProgramsExplorerShortcut
-                    v-for="file in data"
-                    :key="file.path"
-                    :file />
-            </template>
-            <template v-else>
-                <div class="explorer__empty">Тут ничего нет :(</div>
-            </template>
-        </div>
+        <ProgramsExplorerList :items="data" />
     </div>
 </template>
 <style lang="scss">
