@@ -1,5 +1,5 @@
 <script setup lang="ts">
-    import { PROGRAMS } from '~/utils/constants/programs';
+    import { getProgram } from '~/programs';
     import type { WindowOb } from '../types';
 
     const windowOb = inject('windowOb') as WindowOb;
@@ -7,7 +7,7 @@
     const icon = computed(() => {
         if (windowOb.file === null) return '';
 
-        const iconString = PROGRAMS[windowOb.file.programType].icon;
+        const iconString = getProgram(windowOb.file.programType)?.icon;
 
         if (!iconString) return '';
 

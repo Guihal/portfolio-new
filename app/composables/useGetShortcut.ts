@@ -1,9 +1,9 @@
-import { PROGRAMS } from "~/utils/constants/programs";
+import { getProgram, hasProgram } from "~/programs";
 import type { Entity, FsFile } from "~~/shared/types/filesystem";
 
 export function useGetShortcut(fsFile: FsFile | Entity) {
-	const isRegisteredFile = Object.hasOwn(PROGRAMS, fsFile.programType);
-	const program = isRegisteredFile ? PROGRAMS[fsFile.programType] : null;
+	const isRegisteredFile = hasProgram(fsFile.programType);
+	const program = isRegisteredFile ? getProgram(fsFile.programType) : null;
 	const icon = program?.icon ?? null;
 	const extention = program?.extension ?? null;
 

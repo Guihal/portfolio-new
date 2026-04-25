@@ -1,5 +1,5 @@
 <script setup lang="ts">
-    import { PROGRAMS } from '~/utils/constants/programs';
+    import { getProgram } from '~/programs';
     import type { WindowOb } from './types';
 
     const windowOb = inject('windowOb') as WindowOb;
@@ -9,7 +9,7 @@
     const callback = () => {
         if (windowOb.file === null) return null;
 
-        const program = PROGRAMS[windowOb.file.programType];
+        const program = getProgram(windowOb.file.programType);
 
         if (!program) return null;
 

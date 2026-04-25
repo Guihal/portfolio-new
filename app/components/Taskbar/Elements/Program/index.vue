@@ -1,7 +1,7 @@
 <script setup lang="ts">
     import type { WindowOb } from '~/components/Window/types';
+    import { getProgram } from '~/programs';
     import { useFocusStore } from '~/stores/focus';
-    import { PROGRAMS } from '~/utils/constants/programs';
     import type { ProgramType } from '~~/shared/types/filesystem';
 
     const { programType, windowObs } = defineProps<{
@@ -9,10 +9,7 @@
         windowObs: WindowOb[];
     }>();
 
-    const icon = computed(() => {
-        if (!PROGRAMS[programType]) return '';
-        return PROGRAMS[programType].icon;
-    });
+    const icon = computed(() => getProgram(programType)?.icon ?? '');
 
     const focusStore = useFocusStore();
     const focus = (id: string) => focusStore.focus(id);
