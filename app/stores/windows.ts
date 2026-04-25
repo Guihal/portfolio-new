@@ -7,6 +7,7 @@ import type {
 } from "~/components/Window/types";
 import type { FsFile, ProgramType } from "~~/shared/types/filesystem";
 import { useFocusStore } from "./focus";
+import { useQueuedRouterStore } from "./queuedRouter";
 
 export const useWindowsStore = defineStore("windows", () => {
 	const windows = ref<Record<string, WindowOb>>({});
@@ -14,10 +15,32 @@ export const useWindowsStore = defineStore("windows", () => {
 
 	const list = computed<WindowOb[]>(() => Object.values(windows.value));
 	const byId = (id: string): WindowOb | undefined => windows.value[id];
+
+	// First-wins: при дублирующихся path возвращаем самое раннее окно.
+	// Паритет с тестом «double create того же path → byPath возвращает первое».
+	const byPathMap = computed<Map<string, WindowOb>>(() => {
+		const m = new Map<string, WindowOb>();
+		for (const w of list.value) {
+			const p = w.targetFile.value;
+			if (!m.has(p)) m.set(p, w);
+		}
+		return m;
+	});
+	const byProgramMap = computed<Map<ProgramType, WindowOb[]>>(() => {
+		const m = new Map<ProgramType, WindowOb[]>();
+		for (const w of list.value) {
+			const t = w.file?.programType;
+			if (!t) continue;
+			const arr = m.get(t);
+			if (arr) arr.push(w);
+			else m.set(t, [w]);
+		}
+		return m;
+	});
 	const byPath = (path: string): WindowOb | undefined =>
-		list.value.find((w) => w.targetFile.value === path);
+		byPathMap.value.get(path);
 	const byProgram = (type: ProgramType): WindowOb[] =>
-		list.value.filter((w) => w.file?.programType === type);
+		byProgramMap.value.get(type) ?? [];
 
 	function create(file: FsFile | string): WindowOb {
 		let id: string;
@@ -39,9 +62,13 @@ export const useWindowsStore = defineStore("windows", () => {
 
 	function remove(id: string) {
 		if (!(id in windows.value)) return;
-		Reflect.deleteProperty(windows.value, id);
 		const focus = useFocusStore();
-		if (focus.focusedId === id) focus.unFocus();
+		const wasFocused = focus.focusedId === id;
+		Reflect.deleteProperty(windows.value, id);
+		if (wasFocused) {
+			focus.unFocus();
+			useQueuedRouterStore().push("/");
+		}
 		// Cascade cleanup (bounds/frame/loaders) выполняется orchestrator'ом
 		// useRemoveWindow в app/components/Window/utils/removeWindow.ts.
 	}
@@ -67,6 +94,10 @@ export const useWindowsStore = defineStore("windows", () => {
 		collapsed: ["fullscreen", "drag", "resize"],
 		drag: ["fullscreen", "collapsed"],
 		resize: ["fullscreen", "collapsed"],
+		// One-way: новый fetch (loading=true) сбрасывает прошлую ошибку.
+		// Обратное (error → clear loading) НЕ добавляем — иначе setError во время
+		// in-flight fetch ложно сбросит loading flag.
+		loading: ["error"],
 	};
 
 	function setState<K extends WindowState>(id: string, key: K, value: boolean) {
@@ -76,10 +107,14 @@ export const useWindowsStore = defineStore("windows", () => {
 			w.states[key] = true;
 			const conflicts = INCOMPATIBLE[key];
 			if (conflicts) {
-				for (const k of conflicts) Reflect.deleteProperty(w.states, k);
+				for (const k of conflicts) {
+					Reflect.deleteProperty(w.states, k);
+					if (k === "error") w.errorMessage = undefined;
+				}
 			}
 		} else {
 			Reflect.deleteProperty(w.states, key);
+			if (key === "error") w.errorMessage = undefined;
 		}
 	}
 
@@ -87,12 +122,44 @@ export const useWindowsStore = defineStore("windows", () => {
 		const w = windows.value[id];
 		if (!w) return;
 		Reflect.deleteProperty(w.states, key);
+		if (key === "error") w.errorMessage = undefined;
+	}
+
+	function setError(id: string, message: string | null) {
+		const w = windows.value[id];
+		if (!w) return;
+		if (typeof message === "string") {
+			setState(id, "error", true);
+			w.errorMessage = message;
+		} else if (w.states.error || w.errorMessage !== undefined) {
+			clearState(id, "error");
+		}
 	}
 
 	function toggleState(id: string, key: WindowState) {
 		const w = windows.value[id];
 		if (!w) return;
 		setState(id, key, !w.states[key]);
+	}
+
+	/**
+	 * Установить FsFile в окне. Единственно-разрешённый способ мутации
+	 * `windowOb.file` — прямая мутация снаружи store запрещена (см. P*-1).
+	 */
+	function setFile(id: string, file: FsFile) {
+		const w = windows.value[id];
+		if (!w) return;
+		w.file = { ...file };
+	}
+
+	/**
+	 * Обновить targetFile.value окна. Единственно-разрешённый способ —
+	 * прямая мутация снаружи store запрещена (см. P*-1).
+	 */
+	function setTargetFile(id: string, path: string) {
+		const w = windows.value[id];
+		if (!w) return;
+		w.targetFile.value = path;
 	}
 
 	/**
@@ -112,13 +179,18 @@ export const useWindowsStore = defineStore("windows", () => {
 		byId,
 		byPath,
 		byProgram,
+		byPathMap,
+		byProgramMap,
 		create,
 		remove,
 		focus,
 		unFocus,
 		setState,
 		clearState,
+		setError,
 		toggleState,
+		setFile,
+		setTargetFile,
 		$reset,
 	};
 });
