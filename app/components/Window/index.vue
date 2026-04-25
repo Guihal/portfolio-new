@@ -10,7 +10,7 @@
     import { useSetLoadingState } from './composables/useSetLoadingState';
     import { useWindowFullscreenAutoSet } from './composables/useWindowFullscreenAutoSet';
     import { useWindowLoading } from './composables/useWindowLoading';
-    import { useWindowLoop } from './composables/useWindowLoop/useWindowLoop';
+    import { useWindowBoundsAnimation } from './composables/useWindowBoundsAnimation';
     import { useWindowRoute } from './composables/useWindowRoute';
     import type { WindowOb } from './types';
 
@@ -56,7 +56,7 @@
     const windowNode = ref<HTMLElement | null>(null);
 
     // Плавная анимация границ (RAF-цикл) + прямая запись CSS-переменных в DOM
-    useWindowLoop(windowOb, windowNode);
+    useWindowBoundsAnimation(windowOb, windowNode);
 
     // При монтировании — сразу фокусируем окно
     const frameStore = useFrameStore();

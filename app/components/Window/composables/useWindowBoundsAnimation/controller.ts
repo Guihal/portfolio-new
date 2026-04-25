@@ -1,16 +1,15 @@
 import type { WatchHandle } from "vue";
 import { useBoundsStore, type WindowBoundsKey } from "~/stores/bounds";
 import type { WindowOb } from "../../types";
-import { Preprocessor } from "./Preprocessor";
+import { easeTowards } from "./easing";
 
 /**
  * Контроллер анимационного цикла для плавного изменения границ окна.
  * Использует один RAF-цикл для всех свойств (left, top, height, width).
- * Пишет CSS-переменные напрямую в DOM, минуя Vue reactivity.
+ * Пишет cssText напрямую в DOM, минуя Vue reactivity.
  */
-export class WindowLoopController {
+export class WindowAnimationController {
 	windowOb: WindowOb;
-	preprocessor: Preprocessor;
 	keys: WindowBoundsKey[] = ["left", "top", "height", "width"];
 
 	activeKeys = new Set<WindowBoundsKey>();
@@ -18,16 +17,10 @@ export class WindowLoopController {
 	rafId: number | null = null;
 	lastTimestamp = 0;
 	element: HTMLElement | null = null;
-	prevBounds: {
-		width: number;
-		height: number;
-		left: number;
-		top: number;
-	} | null = null;
+	prevCssText = "";
 
 	constructor(windowOb: WindowOb) {
 		this.windowOb = windowOb;
-		this.preprocessor = new Preprocessor(this);
 	}
 
 	setElement(el: HTMLElement) {
@@ -55,29 +48,14 @@ export class WindowLoopController {
 		this.rafId = requestAnimationFrame(this.tick);
 	}
 
-	/** Пишет CSS-переменные напрямую в element */
-	flushToDOM(isForce = false) {
+	/** Пишет cssText в element только при изменении строки. */
+	flushToDOM() {
 		if (!this.element) return;
 		const calculated = useBoundsStore().ensure(this.windowOb.id).calculated;
-		const prev = this.prevBounds;
-		const threshold = 1; // Порог для предотвращения мелких обновлений
-		if (
-			!isForce &&
-			prev &&
-			Math.abs(calculated.width - prev.width) < threshold &&
-			Math.abs(calculated.height - prev.height) < threshold &&
-			Math.abs(calculated.left - prev.left) < threshold &&
-			Math.abs(calculated.top - prev.top) < threshold
-		)
-			return;
-
-		this.prevBounds = {
-			width: calculated.width,
-			height: calculated.height,
-			left: calculated.left,
-			top: calculated.top,
-		};
-		this.element.style.cssText = `translate:${calculated.left}px ${calculated.top}px;width:${calculated.width}px;height:${calculated.height}px`;
+		const cssText = `translate:${calculated.left}px ${calculated.top}px;width:${calculated.width}px;height:${calculated.height}px`;
+		if (cssText === this.prevCssText) return;
+		this.prevCssText = cssText;
+		this.element.style.cssText = cssText;
 	}
 
 	tick = () => {
@@ -87,11 +65,19 @@ export class WindowLoopController {
 
 		const slot = useBoundsStore().ensure(this.windowOb.id);
 		const { target, calculated } = slot;
+		const interacting = Boolean(
+			this.windowOb.states.drag || this.windowOb.states.resize,
+		);
 
 		for (const key of this.keys) {
 			if (!this.activeKeys.has(key)) continue;
 
-			this.preprocessor.calculate(key, deltaTime);
+			calculated[key] = easeTowards(
+				calculated[key],
+				target[key],
+				deltaTime,
+				interacting,
+			);
 
 			if (Math.abs(calculated[key] - target[key]) < 0.1) {
 				calculated[key] = target[key];
@@ -105,7 +91,6 @@ export class WindowLoopController {
 			this.rafId = requestAnimationFrame(this.tick);
 		} else {
 			this.rafId = null;
-			this.flushToDOM(true);
 		}
 	};
 
@@ -121,22 +106,22 @@ export class WindowLoopController {
 	}
 }
 
-export function useWindowLoop(
+export function useWindowBoundsAnimation(
 	windowOb: WindowOb,
 	element: Ref<HTMLElement | null>,
 ) {
-	const loopController = new WindowLoopController(windowOb);
+	const controller = new WindowAnimationController(windowOb);
 
 	onMounted(() => {
 		if (element.value) {
-			loopController.setElement(element.value);
+			controller.setElement(element.value);
 		}
-		loopController.start();
+		controller.start();
 	});
 
 	onBeforeUnmount(() => {
-		loopController.destroy();
+		controller.destroy();
 	});
 
-	return loopController;
+	return controller;
 }
