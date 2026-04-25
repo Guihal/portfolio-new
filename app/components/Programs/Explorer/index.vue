@@ -90,7 +90,7 @@
         }
 
         &__empty {
-            font-family: Pix, system-ui;
+            font-family: $t-default;
             font-size: 40px;
             line-height: 100%;
             color: c('default-contrast');
