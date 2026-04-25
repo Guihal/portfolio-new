@@ -1,8 +1,8 @@
 <script setup lang="ts">
     import { computed } from 'vue';
     import type { WindowOb } from '~/components/Window/types';
+    import { hasProgram } from '~/programs';
     import { useWindowsStore } from '~/stores/windows';
-    import { PROGRAMS } from '~/utils/constants/programs';
     import type { ProgramType } from '~~/shared/types/filesystem';
 
     const store = useWindowsStore();
@@ -15,7 +15,7 @@
         for (const w of store.list) {
             if (!w?.file) continue;
             const t = w.file.programType;
-            if (!PROGRAMS[t]) continue;
+            if (!hasProgram(t)) continue;
             const bucket = result[t] ?? [];
             bucket.push(w);
             result[t] = bucket;

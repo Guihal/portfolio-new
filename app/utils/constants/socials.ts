@@ -1,8 +1,4 @@
-import type {
-	Program,
-	ProgramType,
-	SocialLink,
-} from "~~/shared/types/filesystem";
+import type { SocialLink } from "~~/shared/types/filesystem";
 
 export const SOCIAL_LINKS: SocialLink[] = [
 	{
@@ -18,16 +14,3 @@ export const SOCIAL_LINKS: SocialLink[] = [
 		icon: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0Zm5.5 16.5h-2.25v-4.5L12.75 16.5h-1.5L8.75 12v4.5H6.5v-9h2.25L12 12.75 15.25 7.5h2.25v9Z" fill="currentColor"/></svg>`,
 	},
 ];
-
-export const ALLPROGRAMS: Record<ProgramType, Program> = {
-	explorer: {},
-	project: {
-		extension: "prjt",
-	},
-	tproject: {
-		extension: "tprjt",
-	},
-	about: {
-		extension: "",
-	},
-};

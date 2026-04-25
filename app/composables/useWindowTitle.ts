@@ -1,11 +1,11 @@
-import { PROGRAMS } from "~/utils/constants/programs";
+import { getProgram } from "~/programs";
 
 export function useWindowTitle(file: Ref<FsFile | null>) {
 	const separator = " - ";
 
 	const label = computed(() => {
 		if (!file.value) return "";
-		return PROGRAMS[file.value.programType]?.label ?? "";
+		return getProgram(file.value.programType)?.label ?? "";
 	});
 
 	const name = computed(() => {
