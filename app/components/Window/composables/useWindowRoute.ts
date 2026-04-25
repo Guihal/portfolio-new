@@ -1,27 +1,30 @@
 import { useQueuedRouterStore } from "~/stores/queuedRouter";
+import { useWindowsStore } from "~/stores/windows";
 import type { WindowOb } from "../types";
-import { debounce } from "../utils/debounce";
 
+/**
+ * Двухсторонняя синхронизация пути окна с URL (только когда окно focused).
+ *
+ * Без флагов / debounce: oscillation предотвращается early-return guard'ами
+ * на обоих watcher'ах (newPath === current → skip), плюс queuedRouter сам
+ * dedup'ит push'ы.
+ */
 export function useWindowRoute(windowOb: WindowOb) {
 	const route = useRoute();
 	const queuedRouter = useQueuedRouterStore();
+	const windowsStore = useWindowsStore();
 
 	const windowRoute = ref(windowOb.targetFile.value);
-	const syncSource = ref<"route" | "window" | "idle">("idle");
 
-	// Window → URL. Слияние прошлых двух watcher-ов (targetFile + focused):
-	// cb триггерится при смене любого из [targetFile, focused] и покрывает
-	// и смену пути окна, и получение фокуса.
+	// Window → URL.
 	watch(
 		[() => windowOb.targetFile.value, () => windowOb.states.focused],
 		([newPath, focused]) => {
-			if (syncSource.value === "route" || !newPath) return;
-			windowRoute.value = newPath;
-			if (!focused || route.path === newPath) return;
-			syncSource.value = "window";
-			queuedRouter.push(newPath).finally(() => {
-				if (syncSource.value === "window") syncSource.value = "idle";
-			});
+			if (!newPath) return;
+			if (windowRoute.value !== newPath) windowRoute.value = newPath;
+			if (!focused) return;
+			if (route.path === newPath) return;
+			queuedRouter.push(newPath);
 		},
 		{ immediate: true },
 	);
@@ -29,18 +32,11 @@ export function useWindowRoute(windowOb: WindowOb) {
 	// URL → Window.
 	watch(
 		() => route.path,
-		debounce((newPath: string) => {
-			if (syncSource.value === "window") {
-				syncSource.value = "idle";
-				return;
-			}
-			if (!windowOb.states.focused || !newPath || newPath === windowRoute.value)
-				return;
-			syncSource.value = "route";
-			windowRoute.value = newPath;
-			windowOb.targetFile.value = newPath;
-			syncSource.value = "idle";
-		}, 16),
+		(newPath) => {
+			if (!windowOb.states.focused || !newPath) return;
+			if (newPath === windowOb.targetFile.value) return;
+			windowsStore.setTargetFile(windowOb.id, newPath);
+		},
 	);
 
 	return readonly(windowRoute);

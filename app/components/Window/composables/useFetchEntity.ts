@@ -1,6 +1,9 @@
+import { useWindowsStore } from "~/stores/windows";
 import type { FsFile } from "~~/shared/types/filesystem";
 import type { WindowOb } from "../types";
 import { useWindowLoading } from "./useWindowLoading";
+
+const DEFAULT_ERR_MSG = "Не удалось открыть";
 
 function isAbortError(err: unknown): boolean {
 	if (!err || typeof err !== "object") return false;
@@ -19,15 +22,27 @@ function isAbortError(err: unknown): boolean {
 	return false;
 }
 
+function extractMsg(err: unknown): string {
+	if (!err || typeof err !== "object") return DEFAULT_ERR_MSG;
+	const e = err as { statusMessage?: string; message?: string };
+	return e.statusMessage || e.message || DEFAULT_ERR_MSG;
+}
+
 /**
  * Слитый fetch для окна: грузит сущность по `windowRoute` и регистрирует
  * `isLoading` в global window-loading registry. Заменяет
  * `useFetchWindowEntity` + `useWindowFetch`.
+ *
+ * Per-window cache key (включает windowOb.id) — два окна на одинаковом path
+ * не делят data/error через useAsyncData. Stale Nuxt payload entries
+ * чистятся per-route (watch на windowRoute) и per-window (onScopeDispose).
  */
 export async function useFetchEntity(
 	windowOb: WindowOb,
 	windowRoute: Readonly<Ref<string>>,
 ) {
+	const windowsStore = useWindowsStore();
+
 	const isNeedLoading = computed(() => {
 		return (
 			windowOb.file?.path !== windowOb.targetFile.value ||
@@ -55,10 +70,22 @@ export async function useFetchEntity(
 		disposed = true;
 		activeController?.abort();
 		activeController = null;
+		clearNuxtData(
+			(k) =>
+				typeof k === "string" && k.startsWith(`window-entity-${windowOb.id}-`),
+		);
+	});
+
+	// Per-route cleanup: при навигации внутри окна освобождаем payload
+	// предыдущего key, чтобы не накапливать stale entries.
+	watch(windowRoute, (newRoute, oldRoute) => {
+		if (oldRoute && oldRoute !== newRoute) {
+			clearNuxtData(`window-entity-${windowOb.id}-${oldRoute}`);
+		}
 	});
 
 	const { data, error } = await useAsyncData<FsFile | null>(
-		() => `window-entity-${windowRoute.value}`,
+		() => `window-entity-${windowOb.id}-${windowRoute.value}`,
 		async () => {
 			if (disposed) return null;
 			if (!isNeedLoading.value) return null;
@@ -85,42 +112,24 @@ export async function useFetchEntity(
 		},
 	);
 
-	const triggerFatal = () => {
-		showError(
-			createError({
-				statusCode: 404,
-				statusMessage: "Страница не найдена",
-				fatal: true,
-			}),
-		);
-	};
-
-	let lastErrorWasFatal = false;
-
 	if (error.value && !isAbortError(error.value)) {
-		lastErrorWasFatal = true;
-		triggerFatal();
+		windowsStore.setError(windowOb.id, extractMsg(error.value));
 	}
 
-	watch(error, (newVal, oldVal) => {
-		if (newVal === oldVal) return;
-		if (!newVal) {
-			lastErrorWasFatal = false;
-			return;
-		}
+	watch(error, (newVal) => {
+		if (!newVal) return;
 		if (isAbortError(newVal)) return;
-		if (lastErrorWasFatal) return;
-		lastErrorWasFatal = true;
-		triggerFatal();
+		windowsStore.setError(windowOb.id, extractMsg(newVal));
 	});
 
 	watch(
 		data,
 		() => {
 			if (!data.value) return;
-			windowOb.file = {
-				...data.value,
-			};
+			windowsStore.setFile(windowOb.id, data.value);
+			// Symmetric к watch(error): успешный fetch очищает прошлую ошибку
+			// если она задержалась (refresh без loading-transition cycle).
+			windowsStore.setError(windowOb.id, null);
 		},
 		{
 			immediate: true,
