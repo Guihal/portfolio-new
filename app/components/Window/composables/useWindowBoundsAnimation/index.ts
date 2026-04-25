@@ -1,5 +1,5 @@
-export { easeTowards } from "./easing";
 export {
 	useWindowBoundsAnimation,
 	WindowAnimationController,
 } from "./controller";
+export { easeTowards } from "./easing";

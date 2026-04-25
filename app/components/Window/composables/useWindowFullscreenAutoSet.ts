@@ -47,11 +47,7 @@ export function useWindowFullscreenAutoSet(windowOb: WindowOb) {
 			height: target.height,
 		}),
 		() => {
-			windowsStore.setState(
-				windowOb.id,
-				"fullscreen-ready",
-				isOutOfBounds(),
-			);
+			windowsStore.setState(windowOb.id, "fullscreen-ready", isOutOfBounds());
 		},
 	);
 
