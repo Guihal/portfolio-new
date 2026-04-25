@@ -1,11 +1,13 @@
 <script setup lang="ts">
+    
     import { useInjectWindow } from '~/components/Window/composables/useInjectWindow';
+import { useInjectWindowRoute } from '~/components/Window/composables/useInjectWindowRoute';
     import { useWindowLoading } from '~/components/Window/composables/useWindowLoading';
     import type { WindowOb } from '~/components/Window/types';
     import type { ProgramConfig } from '~/programs';
 
     const windowOb = useInjectWindow();
-    const windowRoute = inject('windowRoute') as Ref<string>;
+    const windowRoute = useInjectWindowRoute();
     const programConfig = inject<Ref<ProgramConfig | null>>(
         'programConfig',
         ref(null),

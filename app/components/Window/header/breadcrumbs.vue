@@ -1,10 +1,12 @@
 <script setup lang="ts">
+    
     import { useInjectWindow } from '~/components/Window/composables/useInjectWindow';
+import { useInjectWindowRoute } from '~/components/Window/composables/useInjectWindowRoute';
     import type { FsFile } from '~~/shared/types/filesystem';
     import { useWindowLoading } from '../composables/useWindowLoading';
     import type { WindowOb } from '../types';
 
-    const windowRoute = inject('windowRoute') as Ref<string>;
+    const windowRoute = useInjectWindowRoute();
     const windowOb = useInjectWindow();
 
     const { register } = useWindowLoading();

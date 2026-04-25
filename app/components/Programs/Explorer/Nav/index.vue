@@ -1,10 +1,12 @@
 <script setup lang="ts">
+    
     import { useInjectWindow } from '~/components/Window/composables/useInjectWindow';
+import { useInjectWindowRoute } from '~/components/Window/composables/useInjectWindowRoute';
     import { useWindowLoading } from '~/components/Window/composables/useWindowLoading';
     import type { WindowOb } from '~/components/Window/types';
 
     const windowOb = useInjectWindow();
-    const windowRoute = inject('windowRoute') as Ref<string>;
+    const windowRoute = useInjectWindowRoute();
 
     const lastPath: Ref<null | string> = computed(() => {
         if (windowRoute.value === '/') return null;
