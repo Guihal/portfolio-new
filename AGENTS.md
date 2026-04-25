@@ -11,13 +11,14 @@
 | Фреймворк        | Nuxt 4 (`nuxt ^4.3.1`, `vue ^3.5.28`)                  |
 | Язык             | TypeScript                                             |
 | Стили            | SCSS (глобальные функции/миксины через `globals.scss`) |
-| Состояние        | Pinia + `useState`                                     |
-| Менеджер пакетов | Bun (также есть `pnpm-lock.yaml`)                      |
+| Состояние        | Pinia (stores в `app/stores/`)                         |
+| Менеджер пакетов | Bun                                                    |
 | Линтинг          | ESLint (`@nuxt/eslint`), Biome                         |
 | Форматтер        | Biome                                                  |
 | Хостинг          | Vercel (preset `vercel` в `nitro`)                     |
 | Изображения      | `@nuxt/image`                                          |
 | Утилиты          | `html-to-image` (скриншоты окон для превью в taskbar)  |
+| Валидация        | `zod` (server-side query parsing)                      |
 
 ## Команды
 
@@ -26,168 +27,198 @@ bun install                # Установка зависимостей
 bun run dev                # Dev-сервер (автогенерация манифестов + nuxt dev)
 bun run build              # Production-сборка (автогенерация манифестов + nuxt build)
 bun run generate           # Static generation
-bun run generate:manifest  # Генерация manifest.json из public/entry/
-bun run generate:file-manifest  # Генерация file-manifest.json (для будущего полнотекстового поиска)
-bun run generate:manifests  # Обе манифесты сразу
+bun run generate:manifest  # Генерация manifest.json из server/assets/entry/
+bun run generate:file-manifest  # Генерация file-manifest.json
+bun run generate:manifests # Оба манифеста сразу
 bun run preview            # Превью production-сборки
+bun run typecheck          # nuxi typecheck
+bun run lint               # ESLint
+bun run biome:check        # Biome
 ```
 
 ## Структура проекта
 
 ```
-app/                        # Основной код приложения (Nuxt app directory)
-├── app.vue                 # Точка входа: инициализация viewport, окон, SEO
-├── error.vue               # Страница ошибки
+app/
+├── app.vue                       # Точка входа: viewport, окна, SEO bootstrap
+├── error.vue                     # Страница ошибки
 ├── assets/
-│   ├── fonts/              # Шрифты: IBMPlexMono, Ithaca
+│   ├── fonts/                    # IBMPlexMono, Ithaca, PixCyrillic.woff2
+│   ├── icons/programs/           # SVG-иконки программ (импорт через ?raw)
+│   │   ├── about.svg
+│   │   ├── explorer.svg
+│   │   ├── project.svg
+│   │   └── tproject.svg
 │   └── scss/
-│       ├── globals.scss    # Точка входа SCSS (@forward vars, functions, mixins)
-│       ├── vars.scss       # Цвета ($colors map)
-│       ├── functions.scss  # Функция c() для цветов
-│       ├── mixins.scss     # Миксин t() для типографики
-│       ├── main.scss       # Импортирует reset, fonts, settings
-│       ├── reset.scss      # CSS reset
-│       ├── fonts.scss      # @font-face объявления
-│       └── _settings.scss  # Глобальные стили :root, body
+│       ├── globals.scss          # @forward vars, functions, mixins, breakpoints
+│       ├── vars.scss             # $colors map (HEX + RGB triplets)
+│       ├── functions.scss        # c(name) → var(--color-name); c-rgba(name, α)
+│       ├── mixins.scss           # @include t() — типографика; cw/ch/cwh — container queries
+│       ├── _breakpoints.scss     # $breakpoints: sm/md/lg/xl
+│       ├── main.scss             # reset + fonts + settings
+│       ├── reset.scss
+│       ├── fonts.scss
+│       └── _settings.scss        # :root CSS-vars (--color-*, --color-*-rgb), body
 ├── components/
-│   ├── AnimatedText.vue    # Анимация печатания текста
-│   ├── Background.vue      # Canvas-сетка на фоне (grid)
-│   ├── FullscreenPreffered.vue  # Индикатор полноэкранного режима
-│   ├── Loader.vue          # Экран загрузки (пиксельный спиннер + звук)
-│   ├── TaskbarTooltipItem.vue / TaskbarTooltips.vue  # Тултипы панели задач
+│   ├── AnimatedText.vue
+│   ├── Background.vue            # Canvas grid фон
+│   ├── FullscreenPreffered.vue
+│   ├── PreviewPreffered.vue
+│   ├── Loader.vue                # Boot loader (пиксельный спиннер + звук)
+│   ├── TaskbarTooltipItem.vue
+│   ├── TaskbarTooltips.vue
+│   ├── Shortcut/
+│   │   └── Base.vue              # Generic shortcut (variant: desktop|list|nav)
 │   ├── Programs/
-│   │   └── Explorer/       # Программа «Проводник»
-│   │       ├── index.vue   # Основной компонент: навигация + содержимое
-│   │       ├── shortcut.vue # Иконка файла/папки
-│   │       └── Nav/        # Навигация: index, shortcut, Facts
+│   │   ├── About/index.vue       # Программа «О себе»
+│   │   └── Explorer/             # Программа «Проводник»
+│   │       ├── index.vue
+│   │       ├── shortcut.vue      # Адаптер над Shortcut/Base
+│   │       └── Nav/
+│   │           ├── index.vue
+│   │           ├── shortcut.vue
+│   │           ├── Facts.vue
+│   │           └── facts-data.ts
 │   ├── Taskbar/
-│   │   ├── index.vue       # Панель задач (нижняя, fixed)
-│   │   ├── AllPrograms.vue # Список программ в taskbar
+│   │   ├── index.vue
+│   │   ├── AllPrograms.vue
 │   │   ├── useIsCurrentRoute.ts
 │   │   ├── useScale.ts
 │   │   └── Elements/
-│   │       ├── About.vue   # Кнопка «О себе»
-│   │       └── Program/    # Кнопка программы (frame, tooltip, etc.)
+│   │       ├── About.vue
+│   │       └── Program/
+│   │           ├── index.vue
+│   │           ├── Frame.vue
+│   │           ├── AllFrames.vue
+│   │           ├── FrameCloseButton.vue
+│   │           ├── Tooltip.vue
+│   │           ├── TooltipEl.vue
+│   │           ├── useTaskbarFramePosition.ts
+│   │           ├── useTooltipContainer.ts
+│   │           └── useWindowPreview.ts   # html-to-image превью
 │   ├── Window/
-│   │   ├── index.vue       # Компонент окна (фокус, роутинг, анимация bounds)
-│   │   ├── View.vue        # TransitionGroup всех окон
-│   │   ├── Content.vue     # Рендер программы по programType
-│   │   ├── Loader.vue      # Загрузчик окна
-│   │   ├── types.ts        # Типы WindowOb, WindowState, WindowStates
-│   │   ├── _nav.scss       # Стили навигации окна
-│   │   ├── composables/    # 17 composables для окна
-│   │   │   ├── useCreateAndRegisterWindow.ts  # Создание + регистрация окна
-│   │   │   ├── useCreateWindowByPath.ts       # Создание окна по API-пути
-│   │   │   ├── useFetchWindowEntity.ts        # Загрузка entity для окна
-│   │   │   ├── useWindowRoute.ts              # Синхронизация окна ↔ URL
-│   │   │   ├── useWindowLoading.ts            # Состояние загрузки
-│   │   │   ├── useCollapsed.ts                # Сворачивание окна
-│   │   │   ├── useOnFullScreen.ts             # Полноэкранный режим
-│   │   │   ├── useWindowFullscreenAutoSet.ts  # Авто-fullscreen при drag за край
-│   │   │   ├── useSetFullscreenObserver.ts    # Observer fullscreen
-│   │   │   ├── useSetFocusState.ts            # Установка focused-состояния
-│   │   │   ├── useSetLoadingState.ts          # Установка loading-состояния
-│   │   │   ├── useFocusOnClick.ts             # Фокус по клику
-│   │   │   ├── useSeoWindow.ts               # SEO title для окна
-│   │   │   ├── useIsInerractionWindow.ts      # Проверка взаимодействия
-│   │   │   ├── useClampTargetOnResizeEnd.ts   # Ограничение bounds при resize
-│   │   │   ├── useResizeForDirections.ts      # Направления resize (top/left/right/bottom)
-│   │   │   └── useResizeForDirectionsEvent.ts # Обработчики событий resize
-│   │   ├── header/         # Заголовок окна
-│   │   │   ├── index.vue   # Контейнер (drag, навигация, breadcrumbs)
-│   │   │   ├── name.vue    # Название окна
+│   │   ├── index.vue                 # Корневой компонент окна (вызывает useWindow)
+│   │   ├── View.vue                  # TransitionGroup всех окон
+│   │   ├── Content.vue               # Рендер ProgramView.component по programType
+│   │   ├── Loader.vue
+│   │   ├── types.ts                  # WindowOb, WindowState, WindowStates
+│   │   ├── _nav.scss
+│   │   ├── composables/
+│   │   │   ├── useWindow.ts          # Фасад: routing+entity+focus+bounds-anim+states+seo+preview
+│   │   │   ├── useWindowRoute.ts     # window ↔ URL
+│   │   │   ├── useFetchEntity.ts     # GET /api/filesystem/get → windowOb.file
+│   │   │   ├── useWindowLoading.ts
+│   │   │   ├── useCollapsed.ts
+│   │   │   ├── useOnFullScreen.ts
+│   │   │   ├── useWindowFullscreenAutoSet.ts
+│   │   │   ├── useSetFocusState.ts
+│   │   │   ├── useFocusOnClick.ts
+│   │   │   ├── useSeoWindow.ts
+│   │   │   ├── useCreateAndRegisterWindow.ts
+│   │   │   ├── useCreateWindowByPath.ts
+│   │   │   ├── useClampTargetOnResizeEnd.ts
+│   │   │   ├── useResizeForDirections.ts
+│   │   │   ├── useResizeForDirectionsEvent.ts
+│   │   │   └── useWindowBoundsAnimation/
+│   │   │       ├── index.ts          # Public composable (RAF + CSS-vars)
+│   │   │       ├── controller.ts     # Animation step / lerp
+│   │   │       └── easing.ts
+│   │   ├── header/
+│   │   │   ├── index.vue
+│   │   │   ├── name.vue
 │   │   │   ├── breadcrumbs.vue
-│   │   │   └── useMove.ts  # Drag-and-drop логика
-│   │   ├── resize/         # 10 компонентов resize-хендлов
-│   │   │   ├── All.vue, Top, Bottom, Left, Right
-│   │   │   ├── LeftTop, RightTop, LeftBottom, RightBottom
-│   │   │   └── index.vue
+│   │   │   ├── nav/
+│   │   │   └── useMove.ts            # Drag handler
+│   │   ├── resize/                   # 9 хендлов + контейнер
+│   │   │   ├── index.vue, All.vue
+│   │   │   ├── Top.vue, Bottom.vue, Left.vue, Right.vue
+│   │   │   └── LeftTop.vue, RightTop.vue, LeftBottom.vue, RightBottom.vue
 │   │   └── utils/
-│   │       ├── debounce.ts, clampers.ts, useGetId.ts
-│   │       └── (другие утилиты)
+│   │       ├── clampers.ts, debounce.ts, useGetId.ts
+│   │       ├── removeWindow.ts       # Cascade-cleanup orchestrator
+│   │       ├── setCalculatedBounds.ts, setTargetBounds.ts, syncBounds.ts
+│   │       ├── setPath.ts, setSize.ts
+│   │       ├── updateBoundsProp.ts, updateWindowBounds.ts, updateWindowWidth.ts
 │   └── Workbench/
-│       ├── index.vue       # Рабочий стол (grid ярлыков)
-│       └── Shortcut/       # Ярлык на рабочем столе
+│       ├── index.vue                 # Рабочий стол (grid ярлыков)
+│       └── Shortcut/index.vue        # Адаптер над Shortcut/Base
 ├── composables/
-│   ├── useAllWindows.ts         # Глобальное хранилище окон (useState)
-│   ├── useAllWindowsBounds.ts   # (пустой)
-│   ├── useBatchedReactive.ts    # Batched реактивный объект (queueMicrotask)
-│   ├── useBatchedRef.ts         # Batched ref (queueMicrotask)
-│   ├── useContentArea.ts        # Viewport − taskbar = рабочая область
-│   ├── useFocusController.ts    # Глобальный focusedWindowId
-│   ├── useFrameObserver.ts      # MutationObserver → html-to-image (превью окон)
-│   ├── useGridCells.ts          # Расчёт сетки для grid-layout
-│   ├── useMutationObserver.ts   # (пустой)
-│   ├── useQueuedRouter.ts       # Очередь router.push с дедупликацией
-│   ├── useResizeObserver.ts     # Обёртка ResizeObserver
-│   ├── useSeoUnfocus.ts         # SEO title при снятии фокуса
-│   ├── useSetChainedWatchers.ts # Условные watchers (активны только при условии)
-│   ├── useTaskbarTooltips.ts    # Управление тултипами taskbar
-│   ├── useWindowBounds.ts       # Bounds окон: target (reactive) + calculated (plain)
-│   ├── useWindowFetch.ts        # Fetch-обёртка с loading-состоянием
-│   ├── useWindowPaths.ts        # Поиск окна по пути
-│   ├── useWindowTitle.ts        # Title окна (label + name)
-│   └── useWindowsGroupByProgram.ts  # Группировка окон по programType
+│   ├── useAppBootstrap.ts            # Init top-level effects (viewport, taskbar)
+│   ├── useBatchedRef.ts              # queueMicrotask-batched ref
+│   ├── useGetShortcut.ts             # Метаданные ярлыка по FsFile (icon, name, isRegistered)
+│   ├── useGridCells.ts
+│   ├── useResizeObserver.ts
+│   ├── useSeoUnfocus.ts
+│   ├── useSetChainedWatchers.ts      # Условные watchers (active by predicate)
+│   ├── useTaskbarTooltips.ts
+│   ├── useViewportObserver.ts
+│   └── useWindowTitle.ts
+├── programs/                         # Data-driven program registry
+│   ├── index.ts                      # REGISTRY + getProgram/getAllPrograms/hasProgram
+│   ├── about.ts
+│   ├── explorer.ts
+│   ├── project.ts
+│   └── tproject.ts
+├── stores/                           # Pinia stores
+│   ├── windows.ts                    # WindowOb CRUD + setState/clearState/toggleState
+│   ├── focus.ts                      # focusedId + isFocused(id)
+│   ├── bounds.ts                     # target/calculated bounds slot per id + CSS_VAR_KEYS
+│   ├── frame.ts                      # MutationObserver per id (preview triggers)
+│   ├── contentArea.ts                # viewport - taskbar = area
+│   └── queuedRouter.ts               # router.push очередь + дедупликация
 ├── layouts/
-│   └── default.vue         # ClientOnly: Background + FullscreenPreffered + Loader
+│   └── default.vue
 ├── plugins/
-│   └── warn.client.ts      # Кастомный Vue warn handler
+│   └── warn.client.ts
 └── utils/
-    ├── getClickShortcutEvent.ts  # Обработчик клика (double-click на десктопе)
-    ├── useIsMobile.ts            # Определение мобильного устройства
+    ├── getClickShortcutEvent.ts      # double-click на десктопе / single на мобилке
+    ├── math.ts
+    ├── useIsMobile.ts
     └── constants/
-        ├── offset.ts             # Смещение 15px
-        └── programs.ts           # Реестр программ (explorer, project, tproject)
+        ├── offset.ts                 # OFFSET = 15
+        └── socials.ts                # SOCIALS = SocialLink[]
 
 server/
 ├── api/
 │   └── filesystem/
-│       ├── list.ts          # GET /api/filesystem/list — список файлов (query: path)
-│       ├── get.ts           # GET /api/filesystem/get — получить entity (query: path), кэшируемый
-│       └── breadcrumbs.ts   # GET /api/filesystem/breadcrumbs — хлебные крошки (query: path)
+│       ├── list.ts                   # GET /api/filesystem/list?path=...
+│       ├── get.ts                    # GET /api/filesystem/get?path=...
+│       └── breadcrumbs.ts            # GET /api/filesystem/breadcrumbs?path=...
 ├── assets/
-│   ├── manifest.json        # Автогенерируемый манифест (tree + flatIndex)
-│   ├── file-manifest.json   # Автогенерируемый файловый манифест (для будущего полнотекстового поиска, см. docs/backlog.md)
-│   └── entry/               # Контент портфолио (серверный asset)
-│       ├── entity.json      # Корневая entity
-│       ├── about-me/entity.json
-│       └── projects/entity.json + griboyedov/, u24/
+│   ├── manifest.json                 # Авто (tree + flatIndex)
+│   ├── file-manifest.json            # Авто (file types)
+│   └── entry/                        # Контент портфолио
+│       ├── entity.json
+│       ├── about/...
+│       └── projects/...
 └── utils/
-    ├── cacheLifetime.ts         # maxAge (dev 60с / prod 3600с) для manifest + entity
-    ├── validation.ts            # zod pathSchema + parsePathQuery для API query
-    ├── getAllEntitiesByPath.ts  # Поиск детей в manifest.tree
-    ├── getBreadcrumbs.ts        # Хлебные крошки через getEntity
-    ├── getEntity.ts             # Получение entity из flatIndex
-    ├── getManifest.ts           # Чтение manifest.json (кэш в prod)
-    └── PROGRAMHADLERS.ts        # Обработчики программ (заготовка)
+    ├── manifest.ts                   # loadManifest + findNode + resolveEntity (объединил 4 утилиты)
+    ├── validation.ts                 # zod pathSchema + parsePathQuery
+    ├── errors.ts                     # notFound, badRequest, serverError
+    └── cacheLifetime.ts              # MANIFEST_CACHE_MAX_AGE (60 dev / 3600 prod)
 
 shared/
 ├── types/
-│   ├── Entity.d.ts          # { name, programType, hidden? }
-│   ├── FsFile.d.ts          # Entity & { path }
-│   └── Program.d.ts         # ProgramType = 'explorer' | 'project' | 'tproject'
-└── utils/Programs/
-    ├── All.ts               # ALLPROGRAMS: Record<ProgramType, Program>
-    └── Explorer.ts          # (пустой)
+│   └── filesystem.ts                 # ProgramType, Entity, FsFile, Manifest, ManifestEntry, ManifestNode, SocialLink
+└── utils/
+    └── logger.ts                     # console-обёртка
 
 scripts/
-├── generate-manifest.ts     # Обходит public/entry/ → manifest.json (tree + flatIndex)
-└── generate-file-manifest.ts # Обходит public/entry/ → file-manifest.json (с типами файлов)
+├── generate-manifest.ts              # Обходит server/assets/entry/ → manifest.json
+└── generate-file-manifest.ts         # → file-manifest.json
 
 public/
+├── favicon.svg
 ├── robots.txt
-├── entry/                   # Контент портфолио (entity.json в каждой папке)
-│   ├── entity.json
-│   ├── about-me/entity.json
-│   └── projects/entity.json + ...
-└── imgs/                    # Изображения
+├── loading-end.mp3
+└── imgs/
 ```
 
 ## Архитектура
 
 ### Виртуальная файловая система
 
-Контент портфолио хранится как виртуальная файловая система в `public/entry/`. Каждая директория содержит `entity.json` с метаданными:
+Контент портфолио хранится как виртуальная FS в `server/assets/entry/`. Каждая папка содержит `entity.json`:
 
 ```json
 {
@@ -197,153 +228,248 @@ public/
 }
 ```
 
-Скрипты `generate-manifest.ts` и `generate-file-manifest.ts` обходят дерево `public/entry/` и генерируют:
+Скрипты `generate-manifest.ts` / `generate-file-manifest.ts` обходят дерево и пишут:
 
-- `server/assets/manifest.json` — дерево + плоский индекс
-- `server/assets/file-manifest.json` — детальный манифест с типами файлов
+- `server/assets/manifest.json` — `{ tree: ManifestNode[], flatIndex: Record<path, ManifestEntry> }`.
+- `server/assets/file-manifest.json` — расширенный manifest с типами файлов (для будущего полнотекстового поиска).
 
-В dev-режиме `nuxt.config.ts` отслеживает изменения в `public/entry/` и автоматически перегенерирует манифесты.
+В dev `nuxt.config.ts` смотрит `server/assets/entry/` и регенерирует манифесты автоматически.
 
 ### Оконный менеджер
 
-Ключевая концепция: каждое окно — объект `WindowOb`:
+Каждое окно — `WindowOb` (`app/components/Window/types.ts`):
 
 ```typescript
+type WindowState =
+    | "fullscreen"
+    | "fullscreen-ready"
+    | "collapsed"
+    | "drag"
+    | "resize"
+    | "loading"
+    | "error"
+    | "focused"
+    | "preview";
+
 type WindowOb = {
-    id: string; // Уникальный ID
-    states: WindowStates; // fullscreen, collapsed, drag, resize, loading, error, focused
-    targetFile: { value: string }; // Путь к файлу
-    file: FsFile | null; // Загруженная entity
+    id: string;
+    states: Partial<Record<WindowState, true>>;
+    targetFile: { value: string };  // путь
+    file: FsFile | null;            // загруженная entity
 };
 ```
 
-**Жизненный цикл окна:**
+#### Lifecycle окна
 
-1. `useCreateAndRegisterWindow` — создание и регистрация в `allWindows`
-2. Проверка дубликатов через `useWindowPaths.hasPath`
-3. `useWindowEntityFetcher` — загрузка entity через API
-4. `useWindowRoute` — двунаправленная синхронизация окна ↔ URL
-5. `useWindowLoop` — RAF-цикл для анимации bounds (CSS-переменные)
-6. `useFrameObserver` — MutationObserver → html-to-image (превью для taskbar)
+```
+open(path)
+   │
+   ▼
+useWindowsStore.create(path)
+   │
+   ▼
+<Window :windowOb=...> mounts
+   │
+   ├─► useWindow(windowOb)
+   │      ├── routing: useWindowRoute
+   │      ├── entity:  await useFetchEntity
+   │      ├── focus:   useSetFocusState + useFocusOnClick
+   │      ├── bounds:  useWindowBoundsAnimation (RAF + CSS vars)
+   │      ├── states:  fullscreen-on-mount + useWindowFullscreenAutoSet + loading watch
+   │      ├── seo:     useSeoWindow
+   │      └── preview: frameStore.createObserver (MutationObserver → html-to-image)
+   │
+   ▼
+provide('windowOb', windowOb) → <Content /> → <ProgramComponent />
+```
 
-**Bounds система:**
+`useWindow` (`app/components/Window/composables/useWindow.ts`) — единственный фасад на окно, вызывается один раз из `Window/index.vue`. Группирует все per-window-эффекты, делает `provide('windowOb')` и `provide('windowRoute')`, возвращает `{ node, windowRoute, isLoading, focusWindow, unFocus }`.
 
-- `target` — целевые координаты (реактивные, batched через `useBatchedReactive`)
-- `calculated` — текущие анимированные координаты (plain object)
-- RAF-цикл в `useWindowLoop` плавно анимирует calculated → target
-- CSS-переменные `--w-top`, `--w-left`, `--w-width`, `--w-height` управляют позицией
+#### State API (`useWindowsStore`)
+
+```typescript
+windowsStore.setState(id, key, value);   // value=true автоматически снимает несовместимые
+windowsStore.clearState(id, key);
+windowsStore.toggleState(id, key);
+```
+
+Таблица несовместимости (set true → снимаются автоматически):
+
+| key          | конфликтует с                          |
+| ------------ | -------------------------------------- |
+| `fullscreen` | `collapsed`, `drag`, `resize`          |
+| `collapsed`  | `fullscreen`, `drag`, `resize`         |
+| `drag`       | `fullscreen`, `collapsed`              |
+| `resize`     | `fullscreen`, `collapsed`              |
+
+Прочие states (`loading`, `focused`, `error`, `preview`, `fullscreen-ready`) — независимые.
+
+#### Bounds-система
+
+- `useBoundsStore` хранит per-id slot `{ target: WindowBounds, calculated: WindowBounds }` (`bounds.ts`).
+- `target` — желаемые координаты, `calculated` — текущие анимированные.
+- `useWindowBoundsAnimation` (`useWindowBoundsAnimation/index.ts`) запускает RAF-цикл (`controller.ts` + `easing.ts`), интерполирует calculated → target и пишет CSS-vars `--w-left`, `--w-top`, `--w-width`, `--w-height` (см. `CSS_VAR_KEYS` в `bounds.ts`).
+- Cascade cleanup при удалении окна — `app/components/Window/utils/removeWindow.ts` (orchestrator: bounds + frame + loader + windows store).
 
 ### Роутинг
 
-- Catch-all роут (`[...path].vue` отсутствует, используется программный роутинг)
-- `useQueuedRouter` — очередь навигации с дедупликацией
-- URL синхронизируется с активным окном через `useWindowRoute`
-- При фокусе окна — URL обновляется на `windowOb.targetFile.value`
-- При ручной навигации — обновляется `windowOb.targetFile`
+- Программный роутинг: нет `[...path].vue`.
+- `useQueuedRouterStore` (Pinia) — очередь `router.push` с дедупликацией (двойной защитой: `lastPushedPath` + сравнение с хвостом очереди).
+- `useWindowRoute` синхронизирует `windowOb.targetFile.value` ↔ URL: при focus URL = path окна; при ручной навигации обновляется `targetFile`.
 
-### Программы
+### Программы (data-driven)
 
-Типы программ определены в `shared/types/Program.d.ts`:
+Реестр в `app/programs/`. Каждая программа — отдельный файл `<name>.ts`:
 
-- `explorer` — файловый проводник
-- `project` — просмотр проекта
-- `tproject` — просмотр проекта на Tilda
+```typescript
+// app/programs/explorer.ts
+import icon from "@/assets/icons/programs/explorer.svg?raw";
+import type { ProgramView } from "./index";
 
-Все программы используют один компонент `Programs/Explorer/index.vue`, но могут иметь разные конфигурации.
+const program: ProgramView = {
+    id: "explorer",
+    label: "Проводник",
+    icon,                                 // SVG как строка (Vite ?raw)
+    config: { showBreadcrumbs: true, canNavigate: true },
+    component: defineAsyncComponent(
+        () => import("@/components/Programs/Explorer/index.vue"),
+    ),
+};
+export default program;
+```
+
+Aggregator `app/programs/index.ts`:
+
+```typescript
+getProgram(type: ProgramType): ProgramView | null
+getAllPrograms(): Record<ProgramType, ProgramView>
+hasProgram(type: ProgramType): boolean
+```
+
+`ProgramType = 'explorer' | 'project' | 'tproject' | 'about'` определён в `shared/types/filesystem.ts`.
+
+### Shortcut
+
+`app/components/Shortcut/Base.vue` — generic ярлык. Адаптеры передают `:file`, `:variant ('desktop' | 'list' | 'nav')`, `:on-activate` и (опц.) slot `icon`. Используют `useGetShortcut(file)` для иконки/имени из `programs/`.
+
+Существующие адаптеры:
+- `app/components/Workbench/Shortcut/index.vue` — desktop-вариант.
+- `app/components/Programs/Explorer/shortcut.vue` — list-вариант.
+- `app/components/Programs/Explorer/Nav/shortcut.vue` — nav-вариант.
 
 ### Taskbar
 
-- Нижняя панель с кнопками программ и «О себе»
-- Группировка окон по `programType` через `useWindowsGroupByProgram`
-- Тултипы с превью окон (скриншоты через `html-to-image`)
-- Тултипы управляются через `useTaskbarTooltips`
+- Нижняя панель: кнопка «О себе» + список программ (`AllPrograms.vue`).
+- Группировка окон по `programType` через `windowsStore.byProgram(type)`.
+- Превью окон: `useWindowPreview` + `frameStore` (MutationObserver → html-to-image).
+- Тултипы: `useTaskbarTooltips` (`app/composables/`).
 
 ## SCSS
 
-### Глобальные функции (доступны везде через `additionalData`)
+### Глобальные функции
+
+Доступны везде через `additionalData`:
 
 ```scss
-c('color-name')  // Функция получения цвета из $colors map
-@include t($fs, $lh, $cName, $fw, $family)  // Миксин типографики
+c('color-name')                          // → var(--color-color-name)
+c-rgba('color-name', 0.5)                // → rgb(var(--color-color-name-rgb) / 0.5)
+@include t($fs, $lh, $cName, $fw, $family)
+@include cw('md') / ch('md') / cwh('md') // container-query breakpoints
 ```
+
+`c()` валидирует имя по `$colors` map в compile-time (typo → `@error`) и возвращает CSS custom property — это даёт runtime theme switch через `[data-theme]` без rebuild.
 
 ### Цветовая палитра (`vars.scss`)
 
+`$colors` — map имя → HEX. Каждое имя экспонируется как `--color-<name>` (HEX) и `--color-<name>-rgb` (R, G, B triplet, для `c-rgba`). Объявления — в `_settings.scss` под `:root`.
+
+### Breakpoints (`_breakpoints.scss`)
+
 ```scss
-$colors: (
-    'accent': #db481d,
-    // Оранжевый акцент
-    'main': #40b567,
-    // Зелёный фон
-    'default': #151515,
-    // Основной тёмный
-    'default-1': #181818,
-    // Заголовок окна
-    'default-2': #1d1a1a,
-    // Промежуточный тёмный
-    'default-3': #2f2626,
-    // Фон контента
-    'default-contrast': #cecece, // Светлый текст
-);
+$breakpoints: ('sm': 600px, 'md': 768px, 'lg': 1024px, 'xl': 1280px);
 ```
+
+Используются миксинами `cw/ch/cwh` поверх container-queries (`container-type: inline-size; container-name: window`).
 
 ### Шрифты
 
-- **Ithaca** — основной шрифт (для текста)
-- **IBMPlexMono** — моноширинный
+`Ithaca` — основной, `IBMPlexMono` — моноширинный, `PixCyrillic` — пиксельный (boot loader).
 
 ## API сервера
 
-| Метод | Путь                          | Описание                                               |
-| ----- | ----------------------------- | ------------------------------------------------------ |
-| GET   | `/api/filesystem/list`        | Список файлов в директории (query: `{ path }`)         |
-| GET   | `/api/filesystem/get`         | Получить entity по пути (query: `{ path }`), кэшируемый |
-| GET   | `/api/filesystem/breadcrumbs` | Хлебные крошки для пути (query: `{ path }`)            |
+| Метод | Путь                          | Описание                                         |
+| ----- | ----------------------------- | ------------------------------------------------ |
+| GET   | `/api/filesystem/list`        | Список детей по `query.path`                     |
+| GET   | `/api/filesystem/get`         | Entity по `query.path` (cached)                  |
+| GET   | `/api/filesystem/breadcrumbs` | Хлебные крошки для `query.path`                  |
 
-Все `query.path` валидируются zod-схемой (`server/utils/validation.ts`): ≥1 символ, начинается с `/`, отвергает traversal (`../`), backslash, `//`, null-byte. `maxAge` manifest-кэша = 60с в dev / 3600с в prod. Вручную инвалидировать в dev: `rm -rf .nitro/cache`. Response `Cache-Control` для Vercel Edge задаётся в `nuxt.config.ts → routeRules`.
+Все endpoints:
+- Валидируют query через `parsePathQuery` (`server/utils/validation.ts`) — zod-схема: ≥ 1 char, начинается с `/`, отвергает `..`, `\`, `//`, null-byte, длина ≤ 1024.
+- Используют единый `loadManifest()` из `server/utils/manifest.ts` (`defineCachedFunction`, `maxAge` = `MANIFEST_CACHE_MAX_AGE` из `cacheLifetime.ts`: 60 dev / 3600 prod).
+- Бросают ошибки через `server/utils/errors.ts`: `notFound()`, `badRequest()`, `serverError(err)`.
 
-## Важные паттерны
+Инвалидация кэша вручную в dev: `rm -rf .nitro/cache`. Response `Cache-Control` для Vercel Edge — в `nuxt.config.ts → routeRules`.
 
-### Batched Reactivity
+## Чек-листы расширения
 
-`useBatchedReactive` и `useBatchedRef` используют `queueMicrotask` для батчинга обновлений. Это критично для производительности при быстром изменении bounds окон во время drag/resize.
+### Новая программа
 
-### Chained Watchers
+1. `app/assets/icons/programs/<name>.svg` — иконка.
+2. `app/programs/<name>.ts` — экспорт `ProgramView` (id, label, icon, config, component).
+3. `shared/types/filesystem.ts` — добавить `<name>` в union `ProgramType`.
+4. `app/programs/index.ts` — импорт + ключ в `REGISTRY`.
+5. (опц.) `app/components/Programs/<Name>/index.vue` — UI; иначе переиспользовать существующий через `component`.
+6. (опц.) `server/assets/entry/<name>/entity.json` — корневая entity если программа имеет filesystem-точку входа.
+7. `bun run generate:manifests` — регенерация манифестов.
+8. Sanity: `bun run typecheck`.
 
-`useSetChainedWatchers` создаёт условные watchers — они активны только когда условие (getter) возвращает true. Используется для drag/resize чтобы не тратить ресурсы в idle.
+### Новый API-эндпоинт
 
-### Scoped Initialization
+1. `server/api/filesystem/<name>.ts` — `defineEventHandler(async (event) => { ... })`.
+2. Query: `parsePathQuery(getQuery(event))` (или собственная zod-схема рядом в `server/utils/validation.ts`).
+3. Данные: `await loadManifest()` + `findNode` / `resolveEntity` из `server/utils/manifest.ts`.
+4. Ошибки: `throw notFound()` / `badRequest()` / `serverError(err)` из `server/utils/errors.ts`.
+5. Кэш: `defineCachedFunction(handler, { name, maxAge: MANIFEST_CACHE_MAX_AGE, getKey })` если результат стабильный.
+6. `nuxt.config.ts → routeRules` — `Cache-Control` для Vercel Edge при необходимости.
+7. Sanity: `bun run typecheck` + ручной curl.
 
-Composables `useContentArea`, `useFocusWindowController` используют флаги инициализации (`let initialized = false`) для предотвращения дублирования observers.
+### Новый shortcut
 
-### CSS Container Queries
-
-Окна используют `container-type: inline-size` + `container-name: window` для адаптивности контента внутри окон (например, скрытие навигации в Explorer при ширине < 768px).
+1. Создать `<location>/shortcut.vue` (или `index.vue` в папке-адаптере).
+2. Импорт `Shortcut/Base.vue`, передать `:file: FsFile`, `:variant: 'desktop' | 'list' | 'nav'`, `:on-activate: () => void`.
+3. (опц.) Slot `icon` — для override SVG.
+4. Если программа ярлыка — новая, она должна быть зарегистрирована в `app/programs/` (см. чек-лист «Новая программа») — `useGetShortcut(file)` берёт иконку/label оттуда.
 
 ## Правила разработки
 
-1. **Все цвета через `c()`** — никогда не использовать хардкод цветов
-2. **Типографику через `@include t()`** — для единообразия
-3. **Не редактировать `manifest.json` и `file-manifest.json` вручную** — они автогенерируемые
-4. **Контент добавлять через `public/entry/`** — создавать папку с `entity.json`
-5. **При добавлении новой программы** — обновить `ProgramType`, `PROGRAMS`, `ALLPROGRAMS`
-6. **Bounds окон** — всегда через `useWindowBounds`, не напрямую в DOM
-7. **Роутинг** — через `useQueuedRouter`, не напрямую `router.push`
-8. **Форматирование** — Biome (не Prettier)
-9. **Пакеты** — через Bun
+1. **Цвета — только через `c()` / `c-rgba()`**. Никакого hex/rgb в компонентах. `c()` возвращает CSS-var, не статический цвет — это требование для theme switch.
+2. **Типографика — через `@include t()`**.
+3. **`manifest.json` / `file-manifest.json` — не редактировать вручную**, только `bun run generate:manifests`.
+4. **Контент** добавлять в `server/assets/entry/` (assets теперь серверные, не в `public/`).
+5. **Новая программа** — следовать чек-листу. `ProgramType` (union) обязан совпадать с ключом в `REGISTRY`.
+6. **Bounds окон** — только через `useBoundsStore` (Pinia). Не писать CSS-vars напрямую — `useWindowBoundsAnimation` сам их синхронизирует.
+7. **Window states** — только через `windowsStore.setState/clearState/toggleState`. Не мутировать `windowOb.states[key]` напрямую — теряется автоматический conflict-resolution.
+8. **Роутинг** — через `useQueuedRouterStore` (store), не напрямую `router.push`.
+9. **Window-эффекты** — добавлять внутрь `useWindow.ts` фасада, не в `Window/index.vue`. Один окно = один вызов `useWindow`.
+10. **Server query валидация** — обязательно через `parsePathQuery` или явную zod-схему.
+11. **Server errors** — только helper'ы из `server/utils/errors.ts`.
+12. **Форматирование** — Biome. **Пакеты** — Bun.
 
 ## Соглашение имён и структура файлов
 
-Фиксированные правила (P0-04). Любой новый файл обязан следовать:
-
 ### Директории
-- **Модули** (верхний уровень) — `PascalCase/`: `Taskbar/`, `Window/`, `Programs/`, `Workbench/`.
+
+- **Модули** (верхний уровень `app/components/`) — `PascalCase/`: `Taskbar/`, `Window/`, `Programs/`, `Workbench/`, `Shortcut/`.
 - **Подсекции внутри модуля** — `lowercase/`: `resize/`, `header/`, `composables/`, `utils/`.
-- **Подкомпоненты** (секции с собственным UI) — `PascalCase/`: `Nav/`, `Elements/`, `Program/`.
+- **Подкомпоненты с UI** — `PascalCase/`: `Nav/`, `Elements/`, `Program/`, `About/`, `Explorer/`.
+- **Stores** — `app/stores/<name>.ts` (camelCase, без `use`-префикса в имени файла; export — `useXxxStore`).
+- **Programs** — `app/programs/<name>.ts` (lowercase, совпадает с `ProgramType`).
 
 ### Файлы
-- **Composables** — `useXxx.ts`. Глобальные — в `app/composables/`, локальные — рядом с компонентом.
+
+- **Composables** — `useXxx.ts`. Глобальные → `app/composables/`. Локальные → рядом с компонентом (например, `Window/composables/`).
+- **Stores** — `defineStore("<name>", () => ...)`. Файл `<name>.ts`. Export `useXxxStore`.
 - **Утилиты** — `xxxYyy.ts` (camelCase), без `use`-префикса.
-- **Константы** — `xxxYyy.ts`, экспорт через `export const FOO = …`. Имя файла — **не SCREAMING_SNAKE**.
-- **Типы** — `xxx.ts` с `export type` (например, `types.ts`). `.d.ts` — **только** для ambient-деклараций сторонних модулей.
-- **Vue-компоненты** — `PascalCase.vue` (`Frame.vue`) или `index.vue` для корневого компонента папки.
+- **Константы** — `xxxYyy.ts`, `export const FOO = ...`. Имя файла — НЕ SCREAMING_SNAKE.
+- **Типы** — `xxx.ts` с `export type`. `.d.ts` — только для ambient-деклараций сторонних модулей.
+- **Vue-компоненты** — `PascalCase.vue` или `index.vue` для корневого компонента папки.
