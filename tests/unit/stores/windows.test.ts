@@ -3,7 +3,6 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { useBoundsStore } from "~/stores/bounds";
 import { useFocusStore } from "~/stores/focus";
 import { useFrameStore } from "~/stores/frame";
-import { useQueuedRouterStore } from "~/stores/queuedRouter";
 import { useWindowsStore } from "~/stores/windows";
 import type { FsFile } from "~~/shared/types/filesystem";
 
@@ -281,47 +280,37 @@ describe("windows store", () => {
 		});
 	});
 
-	describe("remove + router orchestration", () => {
-		it("remove(focusedId) → focusedId=null + queuedRouter.push('/') вызван", () => {
+	describe("remove + focus reset (store contract)", () => {
+		it("remove(focusedId) → focusedId=null + return true", () => {
 			const s = useWindowsStore();
 			const f = useFocusStore();
-			const q = useQueuedRouterStore();
-			const pushSpy = vi.spyOn(q, "push");
 			const w = s.create(file);
 			s.focus(w.id);
-			s.remove(w.id);
+			const wasFocused = s.remove(w.id);
 			expect(f.focusedId).toBeNull();
-			expect(pushSpy).toHaveBeenCalledWith("/");
+			expect(wasFocused).toBe(true);
 		});
 
-		it("remove(non-focusedId) → focusedId не сбрасывается + push НЕ вызван", () => {
+		it("remove(non-focusedId) → focusedId не сбрасывается + return false", () => {
 			const s = useWindowsStore();
 			const f = useFocusStore();
-			const q = useQueuedRouterStore();
-			const pushSpy = vi.spyOn(q, "push");
 			const w1 = s.create(file);
 			const w2 = s.create(file2);
 			s.focus(w1.id);
-			s.remove(w2.id);
+			const wasFocused = s.remove(w2.id);
 			expect(f.focusedId).toBe(w1.id);
-			expect(pushSpy).not.toHaveBeenCalled();
+			expect(wasFocused).toBe(false);
 		});
 
-		it("remove несуществующего id → push НЕ вызван", () => {
+		it("remove несуществующего id → return false", () => {
 			const s = useWindowsStore();
-			const q = useQueuedRouterStore();
-			const pushSpy = vi.spyOn(q, "push");
-			s.remove("ghost");
-			expect(pushSpy).not.toHaveBeenCalled();
+			expect(s.remove("ghost")).toBe(false);
 		});
 
-		it("remove когда нет фокуса → push НЕ вызван", () => {
+		it("remove когда нет фокуса → return false", () => {
 			const s = useWindowsStore();
-			const q = useQueuedRouterStore();
-			const pushSpy = vi.spyOn(q, "push");
 			const w = s.create(file);
-			s.remove(w.id);
-			expect(pushSpy).not.toHaveBeenCalled();
+			expect(s.remove(w.id)).toBe(false);
 		});
 	});
 });

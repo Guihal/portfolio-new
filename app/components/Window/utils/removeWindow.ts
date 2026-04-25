@@ -1,11 +1,13 @@
 import { useBoundsStore } from "~/stores/bounds";
 import { useFrameStore } from "~/stores/frame";
+import { useQueuedRouterStore } from "~/stores/queuedRouter";
 import { useWindowsStore } from "~/stores/windows";
 import { useWindowLoading } from "../composables/useWindowLoading";
 import type { WindowOb } from "../types";
 
 /**
- * Удаляет окно из глобального хранилища allWindows + каскад bounds/frame/loaders.
+ * Orchestrator: удаляет окно + каскад bounds/frame/loaders + router push("/")
+ * если удалённое окно было сфокусированным.
  *
  * @param windowOb - Объект окна для удаления
  */
@@ -19,6 +21,7 @@ export function useRemoveWindow(windowOb: WindowOb) {
 	useBoundsStore().remove(windowOb.id);
 	useFrameStore().remove(windowOb.id);
 
-	// Удаляем окно по ID из windows-стора (focus сбрасывается внутри store)
-	useWindowsStore().remove(windowOb.id);
+	// Store возвращает wasFocused — orchestrator сбрасывает router если так.
+	const wasFocused = useWindowsStore().remove(windowOb.id);
+	if (wasFocused) useQueuedRouterStore().push("/");
 }
