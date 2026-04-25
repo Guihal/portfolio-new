@@ -28,6 +28,13 @@ export function useResizeForDirectionsEvent(
 	const windowsStore = useWindowsStore();
 
 	const onPointerDown = (ev: PointerEvent) => {
+		// Re-entrance guard ДО setState — иначе setState→true сразу делает
+		// последующий self-guard через тот же state бесполезным.
+		if (windowOb.states.resize) return;
+		const el = ev.currentTarget as HTMLElement | null;
+		// SSR/jsdom guard: setPointerCapture отсутствует → resize недоступен.
+		if (!el?.setPointerCapture) return;
+
 		// setState 'resize' автоматически clear fullscreen/collapsed через
 		// INCOMPATIBLE table в windows store.
 		windowsStore.setState(windowOb.id, "resize", true);
@@ -36,32 +43,40 @@ export function useResizeForDirectionsEvent(
 		// Синхронизируем calculated bounds с target перед началом resize
 		syncBounds(windowOb);
 
-		// Захватываем pointer для элемента (чтобы события шли даже за пределами)
-		(ev.target as HTMLElement).setPointerCapture(ev.pointerId);
+		// Capture на capturing element (el = currentTarget): pointermove идёт
+		// к el даже за пределами окна, и второй pointerdown с другого pointer
+		// получит свой capture без orphan'ов на window.
+		el.setPointerCapture(ev.pointerId);
 
-		// Обработчик перемещения
-		const onPointerMove = (ev: PointerEvent) => {
-			// Вычисляем новые размеры для активных осей
-			if ("left" in controlled || "right" in controlled) {
-				const key = "left" in controlled ? "left" : "right";
-				controlled[key](ev.clientX, ev.clientY);
-			}
-			if ("top" in controlled || "bottom" in controlled) {
-				const key = "top" in controlled ? "top" : "bottom";
-				controlled[key](ev.clientX, ev.clientY);
-			}
-		};
+		const ctrl = new AbortController();
+		const { signal } = ctrl;
 
-		// Обработчик отпускания
-		const onPointerUp = () => {
+		el.addEventListener(
+			"pointermove",
+			(ev: PointerEvent) => {
+				// Вычисляем новые размеры для активных осей
+				if ("left" in controlled || "right" in controlled) {
+					const key = "left" in controlled ? "left" : "right";
+					controlled[key](ev.clientX, ev.clientY);
+				}
+				if ("top" in controlled || "bottom" in controlled) {
+					const key = "top" in controlled ? "top" : "bottom";
+					controlled[key](ev.clientX, ev.clientY);
+				}
+			},
+			{ signal },
+		);
+
+		// abort ПОСЛЕДНЯЯ строка: focus/clearState завершаются ДО listener
+		// removal, повторный fire (lostpointercapture после pointerup) — no-op.
+		const end = () => {
 			focusStore.focus(windowOb.id);
 			windowsStore.clearState(windowOb.id, "resize");
-			window.removeEventListener("pointermove", onPointerMove);
-			window.removeEventListener("pointerup", onPointerUp);
+			ctrl.abort();
 		};
-
-		window.addEventListener("pointermove", onPointerMove);
-		window.addEventListener("pointerup", onPointerUp);
+		el.addEventListener("pointerup", end, { signal });
+		el.addEventListener("pointercancel", end, { signal });
+		el.addEventListener("lostpointercapture", end, { signal });
 	};
 
 	return { onPointerDown };
