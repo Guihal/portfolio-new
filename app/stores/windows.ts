@@ -6,7 +6,6 @@ import type {
 	WindowStates,
 } from "~/components/Window/types";
 import type { FsFile, ProgramType } from "~~/shared/types/filesystem";
-import { useFocusStore } from "./focus";
 
 export const useWindowsStore = defineStore("windows", () => {
 	const windows = ref<Record<string, WindowOb>>({});
@@ -60,26 +59,14 @@ export const useWindowsStore = defineStore("windows", () => {
 	}
 
 	/**
-	 * Удалить окно. Возвращает `true` если удалённое окно было сфокусированным —
-	 * orchestrator (useRemoveWindow) использует это для router push("/").
-	 *
-	 * Cascade cleanup (bounds/frame/loaders/router) — в useRemoveWindow.
+	 * Удалить окно. Возвращает `true` если окно существовало и было удалено,
+	 * иначе `false`. Cascade focus reset / bounds / frame / loaders / router —
+	 * в useRemoveWindow.
 	 */
 	function remove(id: string): boolean {
 		if (!(id in windows.value)) return false;
-		const focus = useFocusStore();
-		const wasFocused = focus.focusedId === id;
 		Reflect.deleteProperty(windows.value, id);
-		if (wasFocused) focus.unFocus();
-		return wasFocused;
-	}
-
-	function focus(id: string) {
-		useFocusStore().focus(id);
-	}
-
-	function unFocus() {
-		useFocusStore().unFocus();
+		return true;
 	}
 
 	/**
@@ -184,8 +171,6 @@ export const useWindowsStore = defineStore("windows", () => {
 		byProgramMap,
 		create,
 		remove,
-		focus,
-		unFocus,
 		setState,
 		clearState,
 		setError,

@@ -32,26 +32,6 @@ describe("windows store", () => {
 		expect(s.byPath("/only-path")).toBe(w);
 	});
 
-	it("focus/unFocus делегируются в focus store", () => {
-		const s = useWindowsStore();
-		const f = useFocusStore();
-		const w = s.create(file);
-		s.focus(w.id);
-		expect(f.focusedId).toBe(w.id);
-		s.unFocus();
-		expect(f.focusedId).toBeNull();
-	});
-
-	it("remove сбрасывает focusedId если он совпадал", () => {
-		const s = useWindowsStore();
-		const f = useFocusStore();
-		const w = s.create(file);
-		s.focus(w.id);
-		s.remove(w.id);
-		expect(s.byId(w.id)).toBeUndefined();
-		expect(f.focusedId).toBeNull();
-	});
-
 	it("remove несуществующего id — no-op", () => {
 		const s = useWindowsStore();
 		expect(() => s.remove("doesNotExist")).not.toThrow();
@@ -84,11 +64,6 @@ describe("windows store", () => {
 		const w = s.create(file);
 		expect(() => s.clearState(w.id, "focused")).not.toThrow();
 		expect(w.states.focused).toBeUndefined();
-	});
-
-	it("focus несуществующего id — не бросает (caller contract)", () => {
-		const s = useWindowsStore();
-		expect(() => s.focus("ghost")).not.toThrow();
 	});
 
 	it("double create того же path → 2 разных id, byPath возвращает первое", () => {
@@ -280,26 +255,12 @@ describe("windows store", () => {
 		});
 	});
 
-	describe("remove + focus reset (store contract)", () => {
-		it("remove(focusedId) → focusedId=null + return true", () => {
+	describe("remove return contract", () => {
+		it("remove существующего окна → return true", () => {
 			const s = useWindowsStore();
-			const f = useFocusStore();
 			const w = s.create(file);
-			s.focus(w.id);
-			const wasFocused = s.remove(w.id);
-			expect(f.focusedId).toBeNull();
-			expect(wasFocused).toBe(true);
-		});
-
-		it("remove(non-focusedId) → focusedId не сбрасывается + return false", () => {
-			const s = useWindowsStore();
-			const f = useFocusStore();
-			const w1 = s.create(file);
-			const w2 = s.create(file2);
-			s.focus(w1.id);
-			const wasFocused = s.remove(w2.id);
-			expect(f.focusedId).toBe(w1.id);
-			expect(wasFocused).toBe(false);
+			expect(s.remove(w.id)).toBe(true);
+			expect(s.byId(w.id)).toBeUndefined();
 		});
 
 		it("remove несуществующего id → return false", () => {
@@ -307,10 +268,14 @@ describe("windows store", () => {
 			expect(s.remove("ghost")).toBe(false);
 		});
 
-		it("remove когда нет фокуса → return false", () => {
+		it("remove не trogает focus store (cascade — в orchestrator)", () => {
 			const s = useWindowsStore();
+			const f = useFocusStore();
 			const w = s.create(file);
-			expect(s.remove(w.id)).toBe(false);
+			f.focus(w.id);
+			s.remove(w.id);
+			// store-level remove НЕ сбрасывает focus — это контракт orchestrator'а.
+			expect(f.focusedId).toBe(w.id);
 		});
 	});
 });
