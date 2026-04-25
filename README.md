@@ -33,6 +33,7 @@ Pre-commit хуки настроены через lefthook (biome + eslint + typ
 
 ## Документация
 
+- [AGENTS.md](AGENTS.md) — архитектура, lifecycle окон, чек-листы расширения.
 - [План рефакторинга](docs/refactor/index.md) — разбивка работ по фазам/задачам.
 - [Backlog будущих фич](docs/backlog.md) — идеи вне текущего рефакторинга.
 
