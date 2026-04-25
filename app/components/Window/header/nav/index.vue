@@ -1,7 +1,8 @@
 <script setup lang="ts">
+    import { useInjectWindow } from '~/components/Window/composables/useInjectWindow';
     import type { WindowOb } from '../../types';
 
-    const windowOb = inject('windowOb') as WindowOb;
+    const windowOb = useInjectWindow();
 </script>
 <template>
     <div class="window__nav__wrapper">

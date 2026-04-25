@@ -1,8 +1,9 @@
 <script setup lang="ts">
+    import { useInjectWindow } from '~/components/Window/composables/useInjectWindow';
     import { getProgram } from '~/programs';
     import type { WindowOb } from '../types';
 
-    const windowOb = inject('windowOb') as WindowOb;
+    const windowOb = useInjectWindow();
 
     const icon = computed(() => {
         if (windowOb.file === null) return '';

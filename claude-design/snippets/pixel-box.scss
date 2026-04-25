@@ -1,0 +1,58 @@
+// .pixel-box — пиксельные срезы 4×4 во всех четырёх углах.
+//
+// Реализован через mask-image: четыре крошечных SVG (по одному на угол)
+// + linear-gradient на остальную площадь. mask-composite: exclude
+// (-webkit: xor) вырезает уголки прозрачными — получается чёткий
+// пиксельный «срезанный» край без bezier-кривых border-radius.
+//
+// Зачем mask вместо border-radius:
+//   1) border-radius = bezier-кривая → антиалиас → нечёткий subpixel-rendering
+//      на любом zoom-уровне → не вписывается в pixel-эстетику.
+//   2) SVG-углы 4×4 рисуют ровно те 4 «лестничных» пикселя, которые нужны.
+//   3) Cross-browser: Chrome/Safari через -webkit-mask-* (исторически
+//      лучше понимали), Firefox + современные через mask-* стандарт.
+//
+// Применять: на любом «карточном» контейнере. Размер mask 4×4 фиксирован,
+// если нужно увеличить угол — поменять SVG (увеличить grid).
+//
+// SVG-паттерны лежат в claude-design/assets/corners/ (копия app/assets/svg/).
+// В реальном репо: app/assets/svg/{top,bottom}-{left,right}.svg.
+
+.pixel-box {
+    /* Префиксная версия, так как Chrome исторически лучше понимает её */
+    -webkit-mask-image:
+        url('../svg/top-left.svg'), url('../svg/top-right.svg'),
+        url('../svg/bottom-left.svg'), url('../svg/bottom-right.svg'),
+        linear-gradient(white, white);
+
+    -webkit-mask-position:
+        top left,
+        top right,
+        bottom left,
+        bottom right,
+        center;
+
+    -webkit-mask-repeat: no-repeat;
+
+    /* 4×4 — точный размер пиксельного скруглённого SVG */
+    -webkit-mask-size:
+        4px 4px,
+        4px 4px,
+        4px 4px,
+        4px 4px,
+        100% 100%;
+
+    /* Ключевое: вырезать уголки прозрачными.
+       -webkit: xor; стандарт: exclude */
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+}
+
+// Использование (примеры из кодовой базы):
+//   <div class="window__wrapper pixel-box">         — Window/index.vue
+//   <nav class="taskbar pixel-box">                 — Taskbar/index.vue
+//   <div class="explorer__content pixel-box">       — Programs/Explorer/List.vue
+//   <div class="about__photo pixel-box">            — Programs/About/index.vue
+//   <div class="taskbar__tooltip pixel-box">        — Taskbar/.../Tooltip.vue
+//
+// .pixel-box обязателен на любых «карточных» контейнерах. ❌ border-radius.

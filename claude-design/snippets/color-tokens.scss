@@ -1,0 +1,72 @@
+// Цветовые токены Dimonya OS.
+//
+// Two-layer design:
+//   1) SCSS map $colors — single source of truth для имён + HEX.
+//      Compile-time валидация через c() (functions.scss): typo → @error.
+//   2) :root --color-* CSS-переменные — runtime-значения.
+//      c() возвращает var(--color-<name>), не статический цвет —
+//      это позволяет переключать темы через [data-theme] без rebuild.
+//
+// Каждый цвет дублируется как `*-rgb` channel triplet — для c-rgba()
+// (`rgb(var(--color-X-rgb) / $alpha)`). SCSS-функция rgba(var(...))
+// не работает в compile-time, поэтому синтезируем rgb()-вызов.
+
+// ─── SCSS map (vars.scss) ──────────────────────────────────────────
+$colors: (
+    'accent': #db481d,
+    'main': #40b567,
+    'default': #151515,
+    'default-1': #181818,
+    'default-2': #1d1a1a,
+    'default-3': #2f2626,
+    'default-contrast': #cecece,
+);
+
+// ─── CSS-vars (_settings.scss → :root) ─────────────────────────────
+:root {
+    --color-accent: #db481d;
+    --color-accent-rgb: 219 72 29;
+
+    --color-main: #40b567;
+    --color-main-rgb: 64 181 103;
+
+    --color-default: #151515;
+    --color-default-rgb: 21 21 21;
+
+    --color-default-1: #181818;
+    --color-default-1-rgb: 24 24 24;
+
+    --color-default-2: #1d1a1a;
+    --color-default-2-rgb: 29 26 26;
+
+    --color-default-3: #2f2626;
+    --color-default-3-rgb: 47 38 38;
+
+    --color-default-contrast: #cecece;
+    --color-default-contrast-rgb: 206 206 206;
+}
+
+// Stub для рантайм dark-темы (полная реализация в P7-02).
+// Селектор оставлен пустым, чтобы [data-theme="dark"] уже можно было
+// вешать без no-op selector warning.
+[data-theme='dark'] {
+    // overrides
+}
+
+// ─── Назначение ────────────────────────────────────────────────────
+// default                — корневой фон body (root)
+// default-1, default-2   — резервные слои (подготовлены, пока не активны)
+// default-3              — фон карточек: about__photo/info/content,
+//                          explorer__content, scrollbar-track
+// default-contrast       — основной текст
+// accent                 — hover, активные ссылки (db481d, оранжевый)
+// main                   — иконки в taskbar (--icon-color), spinner
+//                          loader-а, активный pill в taskbar (40b567, зелёный)
+
+// ─── Использование ─────────────────────────────────────────────────
+// SCSS:
+//   background: c('default-3');
+//   color: c('default-contrast');
+//   background: c-rgba('default', 0.6);
+//
+// Никогда не пиши hex/rgb напрямую в компонентах — только c()/c-rgba().

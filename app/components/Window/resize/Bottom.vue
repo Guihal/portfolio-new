@@ -1,10 +1,11 @@
 <script setup lang="ts">
+    import { useInjectWindow } from '~/components/Window/composables/useInjectWindow';
     import type { ChainedKey } from '../composables/useResizeForDirections';
     import type { WindowOb } from '../types';
 
     const directions: [ChainedKey] = ['bottom'];
 
-    const windowOb = inject('windowOb') as WindowOb;
+    const windowOb = useInjectWindow();
 </script>
 <template>
     <WindowResize :directions="directions" :windowOb />

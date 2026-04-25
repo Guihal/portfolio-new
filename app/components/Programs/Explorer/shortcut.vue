@@ -1,9 +1,11 @@
 <script setup lang="ts">
     
+    
     import ShortcutBase from '~/components/Shortcut/Base.vue';
+import { useInjectWindow } from '~/components/Window/composables/useInjectWindow';
 import type { WindowOb } from '~/components/Window/types';
 
-    const windowOb = inject('windowOb') as WindowOb;
+    const windowOb = useInjectWindow();
 
     const { file } = defineProps<{
         file: FsFile;

@@ -1,8 +1,9 @@
 import { createPinia, setActivePinia } from "pinia";
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { useBoundsStore } from "~/stores/bounds";
 import { useFocusStore } from "~/stores/focus";
 import { useFrameStore } from "~/stores/frame";
+import { useQueuedRouterStore } from "~/stores/queuedRouter";
 import { useWindowsStore } from "~/stores/windows";
 import type { FsFile } from "~~/shared/types/filesystem";
 
@@ -206,5 +207,121 @@ describe("windows store", () => {
 		w.remove(win.id);
 		expect(b.bounds[win.id]).toBeDefined();
 		expect(f.images[win.id]).toBe("data:x");
+	});
+
+	describe("setError", () => {
+		it("setError(id, 'msg') → states.error=true, errorMessage='msg'", () => {
+			const s = useWindowsStore();
+			const w = s.create(file);
+			s.setError(w.id, "404");
+			expect(w.states.error).toBe(true);
+			expect(w.errorMessage).toBe("404");
+		});
+
+		it("setError(id, null) когда error=true → cleared", () => {
+			const s = useWindowsStore();
+			const w = s.create(file);
+			s.setError(w.id, "x");
+			s.setError(w.id, null);
+			expect(w.states.error).toBeUndefined();
+			expect(w.errorMessage).toBeUndefined();
+		});
+
+		it("setError(id, null) когда error уже false → no churn", () => {
+			const s = useWindowsStore();
+			const w = s.create(file);
+			// initial state: error undefined, errorMessage undefined.
+			s.setError(w.id, null);
+			expect(w.states.error).toBeUndefined();
+			expect(w.errorMessage).toBeUndefined();
+		});
+
+		it("setError несуществующего id — no-op", () => {
+			const s = useWindowsStore();
+			expect(() => s.setError("ghost", "x")).not.toThrow();
+		});
+	});
+
+	describe("INCOMPATIBLE error/loading", () => {
+		it("setState(loading,true) когда error=true → error+errorMessage сброшены", () => {
+			const s = useWindowsStore();
+			const w = s.create(file);
+			s.setError(w.id, "msg");
+			s.setState(w.id, "loading", true);
+			expect(w.states.error).toBeUndefined();
+			expect(w.errorMessage).toBeUndefined();
+			expect(w.states.loading).toBe(true);
+		});
+
+		it("setState(error,true) когда loading=true → loading остаётся (one-way)", () => {
+			const s = useWindowsStore();
+			const w = s.create(file);
+			s.setState(w.id, "loading", true);
+			s.setState(w.id, "error", true);
+			expect(w.states.error).toBe(true);
+			expect(w.states.loading).toBe(true);
+		});
+
+		it("clearState(id,'error') → error+errorMessage сброшены", () => {
+			const s = useWindowsStore();
+			const w = s.create(file);
+			s.setError(w.id, "x");
+			s.clearState(w.id, "error");
+			expect(w.states.error).toBeUndefined();
+			expect(w.errorMessage).toBeUndefined();
+		});
+
+		it("setState(id,'error',false) → error+errorMessage сброшены", () => {
+			const s = useWindowsStore();
+			const w = s.create(file);
+			s.setError(w.id, "x");
+			s.setState(w.id, "error", false);
+			expect(w.states.error).toBeUndefined();
+			expect(w.errorMessage).toBeUndefined();
+		});
+	});
+
+	describe("remove + router orchestration", () => {
+		it("remove(focusedId) → focusedId=null + queuedRouter.push('/') вызван", () => {
+			const s = useWindowsStore();
+			const f = useFocusStore();
+			const q = useQueuedRouterStore();
+			const pushSpy = vi.spyOn(q, "push");
+			const w = s.create(file);
+			s.focus(w.id);
+			s.remove(w.id);
+			expect(f.focusedId).toBeNull();
+			expect(pushSpy).toHaveBeenCalledWith("/");
+		});
+
+		it("remove(non-focusedId) → focusedId не сбрасывается + push НЕ вызван", () => {
+			const s = useWindowsStore();
+			const f = useFocusStore();
+			const q = useQueuedRouterStore();
+			const pushSpy = vi.spyOn(q, "push");
+			const w1 = s.create(file);
+			const w2 = s.create(file2);
+			s.focus(w1.id);
+			s.remove(w2.id);
+			expect(f.focusedId).toBe(w1.id);
+			expect(pushSpy).not.toHaveBeenCalled();
+		});
+
+		it("remove несуществующего id → push НЕ вызван", () => {
+			const s = useWindowsStore();
+			const q = useQueuedRouterStore();
+			const pushSpy = vi.spyOn(q, "push");
+			s.remove("ghost");
+			expect(pushSpy).not.toHaveBeenCalled();
+		});
+
+		it("remove когда нет фокуса → push НЕ вызван", () => {
+			const s = useWindowsStore();
+			const q = useQueuedRouterStore();
+			const pushSpy = vi.spyOn(q, "push");
+			const w = s.create(file);
+			s.remove(w.id);
+			expect(pushSpy).not.toHaveBeenCalled();
+		});
 	});
 });

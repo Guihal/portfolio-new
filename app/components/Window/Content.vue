@@ -1,8 +1,9 @@
 <script setup lang="ts">
+    import { useInjectWindow } from '~/components/Window/composables/useInjectWindow';
     import { getProgram, type ProgramConfig, type ProgramMode } from '~/programs';
     import type { WindowOb } from './types';
 
-    const windowOb = inject('windowOb') as WindowOb;
+    const windowOb = useInjectWindow();
 
     const component: Ref<Component | null> = shallowRef(null);
     const programMode: Ref<ProgramMode | null> = shallowRef(null);
@@ -10,6 +11,12 @@
 
     provide('programMode', programMode);
     provide('programConfig', programConfig);
+
+    const hasError = computed(() => windowOb.states.error === true);
+    const isLoading = computed(() => windowOb.states.loading === true);
+    const errorText = computed(
+        () => windowOb.errorMessage || 'Не удалось открыть',
+    );
 
     const callback = () => {
         if (windowOb.file === null) {
@@ -54,7 +61,15 @@
 <template>
     <div class="window__content">
         <div class="window__content__wrapper">
-            <template v-if="component">
+            <template v-if="isLoading">
+                <!-- spinner живёт в WindowLoader (Window/index.vue) -->
+            </template>
+            <template v-else-if="hasError">
+                <div class="window__content__error">
+                    {{ errorText }}
+                </div>
+            </template>
+            <template v-else-if="component">
                 <component :is="component" />
             </template>
         </div>
@@ -77,6 +92,17 @@
             max-width: 100%;
             overflow: hidden;
             scrollbar-width: thin;
+        }
+
+        &__error {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            padding: 20px;
+            text-align: center;
+            color: c-rgba('text', 0.7);
         }
     }
 </style>

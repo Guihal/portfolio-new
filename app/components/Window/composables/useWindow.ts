@@ -1,10 +1,8 @@
 import { storeToRefs } from "pinia";
 import { useContentAreaStore } from "~/stores/contentArea";
-import { useFocusStore } from "~/stores/focus";
 import { useFrameStore } from "~/stores/frame";
-import { useQueuedRouterStore } from "~/stores/queuedRouter";
 import { useWindowsStore } from "~/stores/windows";
-import type { WindowOb } from "../types";
+import { type WindowOb, WindowObKey, WindowRouteKey } from "../types";
 import { useFetchEntity } from "./useFetchEntity";
 import { useFocusOnClick } from "./useFocusOnClick";
 import { useOnFullscreen } from "./useOnFullScreen";
@@ -32,18 +30,12 @@ import { useWindowRoute } from "./useWindowRoute";
 export async function useWindow(windowOb: WindowOb) {
 	// routing
 	const windowRoute = useWindowRoute(windowOb);
-	provide("windowRoute", windowRoute);
-	provide("windowOb", windowOb);
+	provide(WindowRouteKey, windowRoute);
+	provide(WindowObKey, windowOb);
 
 	// focus
 	useSetFocusState(windowOb);
 	const { focusWindow } = useFocusOnClick(windowOb);
-	const focusStore = useFocusStore();
-	const queuedRouter = useQueuedRouterStore();
-	const unFocus = () => {
-		focusStore.unFocus();
-		queuedRouter.push("/");
-	};
 
 	// states (fullscreen) — inline ex-useSetFullscreenObserver
 	const windowsStore = useWindowsStore();
@@ -104,7 +96,9 @@ export async function useWindow(windowOb: WindowOb) {
 		frameStore.createObserver(windowOb);
 	});
 	onUnmounted(() => {
-		unFocus();
+		// Router/focus reset на закрытие окна — orchestrated в windowsStore.remove(),
+		// см. app/stores/windows.ts. Здесь только cleanup observer (HMR/SSR teardown
+		// тоже триггерит unmount, но не должны пушить router).
 		frameStore.destroyObserver(windowOb.id);
 	});
 
@@ -116,6 +110,5 @@ export async function useWindow(windowOb: WindowOb) {
 		windowRoute,
 		isLoading,
 		focusWindow,
-		unFocus,
 	};
 }

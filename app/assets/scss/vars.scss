@@ -8,7 +8,6 @@ $colors: (
     'default-contrast': #cecece,
 );
 
-// Типографика — токены семейств шрифтов.
+// Типографика — единственный шрифтовой токен.
 // Используется как `font-family: $t-default;` в компонентах.
-$t-default: 'Ithaca', system-ui, sans-serif;
-$t-mono: 'IBM', monospace;
+$t-default: 'PixCyrillic', system-ui, sans-serif;

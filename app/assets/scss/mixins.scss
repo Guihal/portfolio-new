@@ -2,7 +2,7 @@
 @use './breakpoints' as bp;
 @use 'sass:map';
 
-@mixin t($fs: 15px, $lh: 1, $cName: 'default', $fw: 400, $family: 'Ithaca') {
+@mixin t($fs: 15px, $lh: 1, $cName: 'default', $fw: 400, $family: 'PixCyrillic') {
     $c: c($cName);
     color: #{$c};
     font-family: $family, system-ui;

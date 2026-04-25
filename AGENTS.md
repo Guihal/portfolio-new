@@ -43,7 +43,7 @@ app/
 ├── app.vue                       # Точка входа: viewport, окна, SEO bootstrap
 ├── error.vue                     # Страница ошибки
 ├── assets/
-│   ├── fonts/                    # IBMPlexMono, Ithaca, PixCyrillic.woff2
+│   ├── fonts/                    # PixCyrillic.woff2 (единственный шрифт)
 │   ├── icons/programs/           # SVG-иконки программ (импорт через ?raw)
 │   │   ├── about.svg
 │   │   ├── explorer.svg
@@ -393,7 +393,7 @@ $breakpoints: ('sm': 600px, 'md': 768px, 'lg': 1024px, 'xl': 1280px);
 
 ### Шрифты
 
-`Ithaca` — основной, `IBMPlexMono` — моноширинный, `PixCyrillic` — пиксельный (boot loader).
+`PixCyrillic` — единственный шрифт проекта. Используется везде: body, заголовки, breadcrumbs, ярлыки, badges, loader. Подключается через `$t-default` (значение `'PixCyrillic', system-ui, sans-serif`) или как default `$family` в `t()` миксине.
 
 ## API сервера
 

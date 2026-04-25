@@ -1,8 +1,9 @@
 <script setup lang="ts">
+    import { useInjectWindow } from '~/components/Window/composables/useInjectWindow';
     import type { WindowOb } from '../types';
     import { useMove } from './useMove';
 
-    const windowOb = inject('windowOb') as WindowOb;
+    const windowOb = useInjectWindow();
     const header = ref<null | HTMLElement>(null);
     // Обработчик pointerdown для перетаскивания окна
     const pointerdown = useMove(windowOb);
