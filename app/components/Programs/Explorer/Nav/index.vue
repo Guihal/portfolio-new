@@ -1,6 +1,6 @@
 <script setup lang="ts">
     import { useWindowLoading } from '~/components/Window/composables/useWindowLoading';
-    import type { WindowOb } from '~/components/Window/Window';
+    import type { WindowOb } from '~/components/Window/types';
 
     const windowOb = inject('windowOb') as WindowOb;
     const windowRoute = inject('windowRoute') as Ref<string>;
@@ -27,8 +27,7 @@
             if (!lastPath.value) return [];
             const result = await windowFetch(async () =>
                 $fetch<FsFile[]>('/api/filesystem/list', {
-                    body: { path: lastPath.value },
-                    method: 'POST',
+                    query: { path: lastPath.value },
                 }),
             );
             return result ?? [];
@@ -41,7 +40,7 @@
     );
 </script>
 <template>
-    <nav class="explorer__nav pixel-box" v-if="data?.length > 0">
+    <nav class="explorer__nav pixel-box" v-if="(data?.length ?? 0) > 0">
         <div class="explorer__nav_title">Прошлая папка</div>
         <ProgramsExplorerNavShortcut
             v-for="file in data"

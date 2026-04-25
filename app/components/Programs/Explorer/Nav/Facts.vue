@@ -1,7 +1,7 @@
 <script setup lang="ts">
     import { facts } from './facts-data';
 
-    const currentIndex = ref(Math.floor(Math.random() * facts.length));
+    const currentIndex = ref(0);
     let intervalId: ReturnType<typeof setInterval> | null = null;
 
     const currentFact = computed(() => facts[currentIndex.value] ?? '');
@@ -16,6 +16,9 @@
     }
 
     onMounted(() => {
+        if (facts.length > 0) {
+            currentIndex.value = Math.floor(Math.random() * facts.length);
+        }
         intervalId = setInterval(nextFact, 25000);
     });
 

@@ -1,17 +1,12 @@
-import { CACHE_LIFETIME } from '~~/server/utils/CACHELIFETIME';
-import { getAllEntitiesByPath } from '~~/server/utils/getAllEntitiesByPath';
+import { serverError } from "~~/server/utils/errors";
+import { listChildren } from "~~/server/utils/manifest";
+import { parsePathQuery } from "~~/server/utils/validation";
 
 export default defineEventHandler(async (event) => {
-    const body = await readBody(event);
-    const path = body.path as string;
-
-    if (!path) {
-        throw createError({
-            statusCode: 400,
-            statusMessage: 'Параметр "path" обязателен',
-        });
-    }
-
-    const fsFiles = await getAllEntitiesByPath(path);
-    return fsFiles;
+	const { path } = parsePathQuery(getQuery(event));
+	try {
+		return await listChildren(path);
+	} catch (e) {
+		throw serverError(e);
+	}
 });

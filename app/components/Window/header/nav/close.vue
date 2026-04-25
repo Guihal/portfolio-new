@@ -1,6 +1,7 @@
 <script setup lang="ts">
-    import { useRemoveWindow } from '../../utils/removeWindow';
-    import type { WindowOb } from '../../Window';
+    
+    import type { WindowOb } from '../../types';
+import { useRemoveWindow } from '../../utils/removeWindow';
 
     const windowOb = inject('windowOb') as WindowOb;
 

@@ -1,0 +1,15 @@
+pre-commit:
+  commands:
+    biome-check:
+      glob: "*.{ts,vue}"
+      run: bunx @biomejs/biome check --write {staged_files} && git add {staged_files}
+    eslint:
+      glob: "*.{ts,vue,mjs}"
+      run: bunx eslint {staged_files}
+    typecheck:
+      run: bunx nuxi typecheck
+
+pre-push:
+  commands:
+    test-unit:
+      run: bun run test:unit

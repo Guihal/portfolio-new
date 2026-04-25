@@ -1,5 +1,5 @@
 <script setup lang="ts">
-    import type { WindowOb } from '~/components/Window/Window';
+    import type { WindowOb } from '~/components/Window/types';
 
     const { windowObs } = defineProps<{
         windowObs: WindowOb[];

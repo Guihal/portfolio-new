@@ -1,6 +1,7 @@
 <script setup lang="ts">
+    import type { FsFile } from '~~/shared/types/filesystem';
     import { useWindowLoading } from '../composables/useWindowLoading';
-    import type { WindowOb } from '../Window';
+    import type { WindowOb } from '../types';
 
     const windowRoute = inject('windowRoute') as Ref<string>;
     const windowOb = inject('windowOb') as WindowOb;
@@ -14,16 +15,13 @@
         () => `breadcrumbs-${windowRoute.value}`,
         async () => {
             isLoading.value = true;
-            let resp = undefined;
+            let resp: FsFile[] | null | undefined;
             try {
-                resp = await $fetch('/api/filesystem/breadcrumbs', {
-                    method: 'POST',
-                    body: {
-                        path: windowRoute.value,
-                    },
+                resp = await $fetch<FsFile[] | null>('/api/filesystem/breadcrumbs', {
+                    query: { path: windowRoute.value },
                 });
             } catch (err) {
-                console.error(err);
+                logger.error('[breadcrumbs]', err);
             }
             isLoading.value = false;
 

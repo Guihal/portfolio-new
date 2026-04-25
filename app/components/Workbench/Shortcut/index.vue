@@ -1,89 +1,18 @@
 <script setup lang="ts">
-    import type { File } from '~~/shared/types/File';
-    import { useGetShortcut } from './useGetShortcut';
+    
+    import ShortcutBase from '~/components/Shortcut/Base.vue';
     import { useCreateAndRegisterWindow } from '~/components/Window/composables/useCreateAndRegisterWindow';
+import type { FsFile } from '~~/shared/types/filesystem';
 
     const { file } = defineProps<{
-        file: File;
+        file: FsFile;
     }>();
 
-    const { isRegisteredFile, icon, nameText } = useGetShortcut(file);
-
-    const onClick = getClickShortcutEvent(() => {
+    const activate = () => {
         useCreateAndRegisterWindow(file);
-    });
+    };
 </script>
+
 <template>
-    <a
-        v-if="isRegisteredFile"
-        :href="file.path"
-        class="shortcut"
-        @click="onClick">
-        <div class="shortcut_img" v-html="icon"></div>
-        <div class="shortcut_text">{{ nameText }}</div>
-    </a>
+    <ShortcutBase :file="file" variant="desktop" :on-activate="activate" />
 </template>
-<style lang="scss">
-    .shortcut {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: space-between;
-        padding: 10px;
-        box-sizing: border-box;
-
-        --color: #{c('default')};
-
-        gap: 10px;
-        width: 100%;
-        transition: opacity 0.3s ease-in-out;
-
-        @media (hover: hover) {
-            &:hover {
-                opacity: 0.9;
-
-                // --color: #{c('accent')};
-            }
-        }
-
-        &:active {
-            opacity: 0.9;
-            // --color: #{c('accent')};
-        }
-
-        &_text {
-            max-width: 100%;
-            text-overflow: ellipsis;
-            overflow: hidden;
-            font-family: Pix, system-ui;
-            font-size: 16px;
-            line-height: 1;
-            font-weight: 700;
-            color: var(--color);
-            letter-spacing: 0.02em;
-            flex-shrink: 0;
-            white-space: nowrap;
-            text-align: center;
-            transition: color 0.3s ease-in-out;
-        }
-
-        &_img {
-            aspect-ratio: 1 / 1;
-            width: 100%;
-            max-width: 70px;
-
-            svg {
-                width: 100%;
-                height: 100%;
-
-                --icon-color: #{var(--color)};
-
-                path {
-                    transition:
-                        fill 0.3s ease-in-out,
-                        stroke 0.3s ease-in-out;
-                }
-            }
-        }
-    }
-</style>

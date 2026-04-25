@@ -1,9 +1,7 @@
-import { CACHE_LIFETIME } from '~~/server/utils/CACHELIFETIME';
+import { getBreadcrumbs } from "~~/server/utils/manifest";
+import { parsePathQuery } from "~~/server/utils/validation";
 
 export default defineEventHandler(async (event) => {
-    const body = await readBody(event);
-    const path = body.path as string;
-    const breadcrumbs = await getBreadcrumbs(path);
-
-    return breadcrumbs;
+	const { path } = parsePathQuery(getQuery(event));
+	return await getBreadcrumbs(path);
 });

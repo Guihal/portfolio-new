@@ -1,25 +1,31 @@
 <script setup lang="ts">
-    import type { WindowOb } from '~/components/Window/Window';
-    import { useScale } from '../../useScale';
-    import { useFrameObserver } from '~/composables/useFrameObserver';
+    import { storeToRefs } from 'pinia';
+    import { computed, ref, watch } from 'vue';
+    import type { WindowOb } from '~/components/Window/types';
     import { useRemoveWindow } from '~/components/Window/utils/removeWindow';
-    import { getCalculatedBounds } from '~/composables/useWindowBounds';
+    import { useBoundsStore } from '~/stores/bounds';
+    import { useContentAreaStore } from '~/stores/contentArea';
+    import { useFocusStore } from '~/stores/focus';
+    import { useFrameStore } from '~/stores/frame';
+    import { useScale } from '../../useScale';
 
     const { windowOb } = defineProps<{
         windowOb: WindowOb;
     }>();
-    const { contentArea } = useContentArea();
+    const { area: contentArea } = storeToRefs(useContentAreaStore());
     const { scaledHeight, scaledWidth, scale } = useScale();
-    const { getSrc } = useFrameObserver();
+    const frameStore = useFrameStore();
 
-    const srcRaw = getSrc(windowOb.id);
+    const PLACEHOLDER_IMG =
+        'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=';
 
-    const src = ref(srcRaw.value);
-    watch(srcRaw, () => {
-        if (!srcRaw.value) return;
-        src.value = srcRaw.value;
+    const srcRaw = computed(() => frameStore.images[windowOb.id] ?? '');
+    const lastNonEmpty = ref<string>(srcRaw.value);
+    watch(srcRaw, (v) => {
+        if (v) lastNonEmpty.value = v;
     });
-    const calculated = getCalculatedBounds(windowOb.id);
+    const src = computed(() => lastNonEmpty.value || PLACEHOLDER_IMG);
+    const calculated = useBoundsStore().ensure(windowOb.id).calculated;
 
     const frameWidth = computed(() => {
         return calculated.width * scale.value;
@@ -57,8 +63,8 @@
 
     const { title } = useWindowTitle(file);
 
-    const { focus } = useFocusWindowController();
-    const onclickframe = () => focus(windowOb.id);
+    const focusStore = useFocusStore();
+    const onclickframe = () => focusStore.focus(windowOb.id);
     const close = () => {
         useRemoveWindow(windowOb);
     };

@@ -1,5 +1,8 @@
 <script setup lang="ts">
-    const { contentArea } = useContentArea();
+    import { storeToRefs } from 'pinia';
+    import { useContentAreaStore } from '~/stores/contentArea';
+
+    const { area: contentArea } = storeToRefs(useContentAreaStore());
 
     const width = computed(() => contentArea.value.width);
     const height = computed(() => contentArea.value.height);

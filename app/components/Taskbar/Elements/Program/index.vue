@@ -1,8 +1,8 @@
 <script setup lang="ts">
-    import { debounce } from '~/components/Window/utils/debounce';
-    import type { WindowOb } from '~/components/Window/Window';
-    import { PROGRAMS } from '~/utils/constants/PROGRAMS';
-    import type { ProgramType } from '~~/shared/types/Program';
+    import type { WindowOb } from '~/components/Window/types';
+    import { useFocusStore } from '~/stores/focus';
+    import { PROGRAMS } from '~/utils/constants/programs';
+    import type { ProgramType } from '~~/shared/types/filesystem';
 
     const { programType, windowObs } = defineProps<{
         programType: ProgramType;
@@ -14,7 +14,8 @@
         return PROGRAMS[programType].icon;
     });
 
-    const { focus } = useFocusWindowController();
+    const focusStore = useFocusStore();
+    const focus = (id: string) => focusStore.focus(id);
 
     const currentIndex = ref(0);
 
@@ -57,9 +58,11 @@
         },
     );
 
-    const onClick = debounce(() => currentIndex.value++, 50);
-    const onMouseover = debounce(() => show(programType), 16);
-    const onMouseout = debounce(() => hide(programType), 16);
+    const onClick = () => {
+        currentIndex.value++;
+    };
+    const onMouseenter = () => show(programType);
+    const onMouseleave = () => hide(programType);
 </script>
 
 <template>
@@ -67,8 +70,8 @@
         ref="container"
         class="taskbar__el"
         @click="onClick"
-        @mouseover="onMouseover"
-        @mouseout="onMouseout">
+        @mouseenter="onMouseenter"
+        @mouseleave="onMouseleave">
         <div class="taskbar__el_img" v-html="icon"></div>
     </button>
 </template>

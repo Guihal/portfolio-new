@@ -1,12 +1,17 @@
 // app/composables/useQueuedRouter.ts
-const lastPushedPath = ref<string | null>(null);
-
+// P1-09: очередь и флаги — client-only singletons. На SSR queuedPush — noop,
+// т.к. QueueItem.resolve — функция (несериализуема) и pushQueue shared между юзерами в payload.
 interface QueueItem {
-    path: string;
-    resolve: () => void;
+	path: string;
+	resolve: () => void;
 }
 
-const pushQueue = ref<QueueItem[]>([]);
+const lastPushedPath: Ref<string | null> | null = import.meta.client
+	? ref<string | null>(null)
+	: null;
+const pushQueue: Ref<QueueItem[]> | null = import.meta.client
+	? ref<QueueItem[]>([])
+	: null;
 let isProcessing = false;
 
 /**
@@ -16,49 +21,51 @@ let isProcessing = false;
  * - Возвращает промис, который резолвится когда путь обработан
  */
 export function useQueuedRouter() {
-    const router = useRouter();
-    const route = useRoute();
+	const router = useRouter();
+	const route = useRoute();
 
-    const isQueueEmpty = computed(() => pushQueue.value.length === 0);
+	const isQueueEmpty = computed(() =>
+		pushQueue ? pushQueue.value.length === 0 : true,
+	);
 
-    const processQueue = async () => {
-        if (isProcessing || pushQueue.value.length === 0) return;
+	const processQueue = async () => {
+		if (!pushQueue || !lastPushedPath) return;
+		if (isProcessing || pushQueue.value.length === 0) return;
 
-        isProcessing = true;
-        const item = pushQueue.value.shift()!;
+		isProcessing = true;
+		const item = pushQueue.value.shift();
+		if (!item) {
+			isProcessing = false;
+			return;
+		}
 
-        try {
-            // Дедупликация: не пушить если тот же путь
-            if (
-                item.path !== lastPushedPath.value &&
-                item.path !== route.path
-            ) {
-                lastPushedPath.value = item.path;
-                await router.push(item.path);
-            }
-        } finally {
-            // Резолвим промис вызывающей стороны
-            item.resolve();
-            isProcessing = false;
+		try {
+			if (item.path !== lastPushedPath.value && item.path !== route.path) {
+				lastPushedPath.value = item.path;
+				await router.push(item.path);
+			}
+		} finally {
+			item.resolve();
+			isProcessing = false;
 
-            // Обрабатываем следующий в очереди
-            if (pushQueue.value.length > 0) {
-                processQueue();
-            }
-        }
-    };
+			if (pushQueue.value.length > 0) {
+				processQueue();
+			}
+		}
+	};
 
-    const queuedPush = (path: string): Promise<void> => {
-        return new Promise((resolve) => {
-            pushQueue.value.push({ path, resolve });
-            processQueue();
-        });
-    };
+	const queuedPush = (path: string): Promise<void> => {
+		if (!pushQueue) return Promise.resolve();
+		return new Promise((resolve) => {
+			pushQueue.value.push({ path, resolve });
+			processQueue();
+		});
+	};
 
-    return {
-        queuedPush,
-        lastPushedPath,
-        pushQueue,
-        isQueueEmpty,
-    };
+	return {
+		queuedPush,
+		lastPushedPath,
+		pushQueue,
+		isQueueEmpty,
+	};
 }

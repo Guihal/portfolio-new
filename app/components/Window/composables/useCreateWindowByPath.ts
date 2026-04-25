@@ -1,39 +1,30 @@
-import { useCreateAndRegisterWindow } from './useCreateAndRegisterWindow';
+import type { FsFile } from "~~/shared/types/filesystem";
+import { useCreateAndRegisterWindow } from "./useCreateAndRegisterWindow";
 
-export async function useCreateWindowByPath(path: string) {
-    let entity = undefined;
-    try {
-        entity = await $fetch('/api/filesystem/get', {
-            responseType: 'json',
-            method: 'POST',
-            body: {
-                path,
-            },
-        });
-    } catch (err) {
-        console.error(err);
-    }
+export async function useCreateWindowByPath(path: string): Promise<boolean> {
+	let entity: FsFile | undefined;
+	try {
+		entity = await $fetch<FsFile>("/api/filesystem/get", {
+			responseType: "json",
+			query: { path },
+		});
+	} catch (err) {
+		logger.error("[useCreateWindowByPath] fetch", err);
+	}
 
-    if (!entity) {
-        console.error('Не найдено по такому пути окна');
-    }
+	if (!entity) {
+		logger.error("[useCreateWindowByPath] entity not found for path", path);
+		return false;
+	}
 
-    let file = {
-        path,
-    };
+	// entity.path wins (server canonicalisation); fallback to requested path.
+	const file: FsFile = { ...entity, path: entity.path ?? path };
 
-    if (entity) {
-        file = {
-            ...file,
-            ...entity,
-        };
-    }
-
-    try {
-        useCreateAndRegisterWindow(file);
-    } catch (e) {
-        console.error(e);
-    }
-
-    return true;
+	try {
+		useCreateAndRegisterWindow(file);
+		return true;
+	} catch (e) {
+		logger.error("[useCreateWindowByPath] register", e);
+		return false;
+	}
 }

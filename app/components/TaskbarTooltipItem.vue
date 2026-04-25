@@ -1,6 +1,8 @@
 <script setup lang="ts">
-    import type { WindowOb } from '~/components/Window/Window';
-    import type { ProgramType } from '~~/shared/types/Program';
+    import { storeToRefs } from 'pinia';
+    import type { WindowOb } from '~/components/Window/types';
+    import { useContentAreaStore } from '~/stores/contentArea';
+    import type { ProgramType } from '~~/shared/types/filesystem';
 
     const props = defineProps<{
         programType: ProgramType;
@@ -26,7 +28,7 @@
     useResizeObserver(tooltip, setTooltipBounds);
     useResizeObserver(content, setContentBounds);
 
-    const { contentArea } = useContentArea();
+    const { area: contentArea } = storeToRefs(useContentAreaStore());
     const { cancelHide, hide } = useTaskbarTooltips();
 
     const maxWidth = computed(() => contentArea.value.width);
@@ -70,8 +72,8 @@
             '--c-w': contentBounds?.width ?? 0,
         }"
         class="taskbar__tooltip pixel-box"
-        @mouseover="onMouseover"
-        @mouseout="onMouseout">
+        @mouseenter="onMouseover"
+        @mouseleave="onMouseout">
         <div ref="content" class="taskbar__tooltip__content">
             <TaskbarElementsProgramAllFrames :window-obs="windowObs" />
         </div>

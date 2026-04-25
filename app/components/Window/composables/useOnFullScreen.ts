@@ -1,9 +1,7 @@
-import type { WindowOb } from '../Window';
-import {
-    getTargetBounds,
-    getCalculatedBounds,
-    type WindowBoundsKey,
-} from '~/composables/useWindowBounds';
+import { storeToRefs } from "pinia";
+import { useBoundsStore, type WindowBoundsKey } from "~/stores/bounds";
+import { useContentAreaStore } from "~/stores/contentArea";
+import type { WindowOb } from "../types";
 
 /**
  * Устанавливает размеры окна на всю контентную область (fullscreen).
@@ -12,26 +10,26 @@ import {
  * @param isForce - Если true, синхронизирует calculated с target (для мгновенной установки без анимации)
  */
 export function useOnFullscreen(windowOb: WindowOb, isForce = false) {
-    const { contentArea } = useContentArea();
+	const { area: contentArea } = storeToRefs(useContentAreaStore());
 
-    const target = getTargetBounds(windowOb.id);
-    const calculated = getCalculatedBounds(windowOb.id);
+	const slot = useBoundsStore().ensure(windowOb.id);
+	const { target, calculated } = slot;
 
-    /**
-     * Устанавливает значение свойства.
-     * Если isForce — также обновляет calculated для мгновенного перехода.
-     */
-    const set = (prop: WindowBoundsKey, value: number) => {
-        target[prop] = value;
-        if (isForce) {
-            // Синхронизием calculated с target для мгновенной установки
-            calculated[prop] = value;
-        }
-    };
+	/**
+	 * Устанавливает значение свойства.
+	 * Если isForce — также обновляет calculated для мгновенного перехода.
+	 */
+	const set = (prop: WindowBoundsKey, value: number) => {
+		target[prop] = value;
+		if (isForce) {
+			// Синхронизием calculated с target для мгновенной установки
+			calculated[prop] = value;
+		}
+	};
 
-    // Устанавливаем fullscreen размеры (0, 0, full width, full height)
-    set('left', 0);
-    set('top', 0);
-    set('width', contentArea.value.width);
-    set('height', contentArea.value.height);
+	// Устанавливаем fullscreen размеры (0, 0, full width, full height)
+	set("left", 0);
+	set("top", 0);
+	set("width", contentArea.value.width);
+	set("height", contentArea.value.height);
 }

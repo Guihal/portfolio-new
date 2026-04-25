@@ -1,0 +1,123 @@
+import { createPinia, setActivePinia } from "pinia";
+import { beforeEach, describe, expect, it } from "vitest";
+import { useBoundsStore } from "~/stores/bounds";
+import { useFocusStore } from "~/stores/focus";
+import { useFrameStore } from "~/stores/frame";
+import { useWindowsStore } from "~/stores/windows";
+import type { FsFile } from "~~/shared/types/filesystem";
+
+const file: FsFile = { name: "a", path: "/a", programType: "project" };
+const file2: FsFile = { name: "b", path: "/b", programType: "explorer" };
+
+beforeEach(() => {
+	setActivePinia(createPinia());
+});
+
+describe("windows store", () => {
+	it("create сохраняет окно, заполняет индексы", () => {
+		const s = useWindowsStore();
+		const w = s.create(file);
+		expect(s.list).toHaveLength(1);
+		expect(s.byId(w.id)).toBe(w);
+		expect(s.byPath("/a")).toBe(w);
+		expect(s.byProgram("project")).toHaveLength(1);
+		expect(s.byProgram("explorer")).toHaveLength(0);
+	});
+
+	it("create со строкой → file=null, targetFile.value=path", () => {
+		const s = useWindowsStore();
+		const w = s.create("/only-path");
+		expect(w.file).toBeNull();
+		expect(w.targetFile.value).toBe("/only-path");
+		expect(s.byPath("/only-path")).toBe(w);
+	});
+
+	it("focus/unFocus делегируются в focus store", () => {
+		const s = useWindowsStore();
+		const f = useFocusStore();
+		const w = s.create(file);
+		s.focus(w.id);
+		expect(f.focusedId).toBe(w.id);
+		s.unFocus();
+		expect(f.focusedId).toBeNull();
+	});
+
+	it("remove сбрасывает focusedId если он совпадал", () => {
+		const s = useWindowsStore();
+		const f = useFocusStore();
+		const w = s.create(file);
+		s.focus(w.id);
+		s.remove(w.id);
+		expect(s.byId(w.id)).toBeUndefined();
+		expect(f.focusedId).toBeNull();
+	});
+
+	it("remove несуществующего id — no-op", () => {
+		const s = useWindowsStore();
+		expect(() => s.remove("doesNotExist")).not.toThrow();
+	});
+
+	it("setState(id, key, true) ставит true, setState(…, false) удаляет", () => {
+		const s = useWindowsStore();
+		const w = s.create(file);
+		s.setState(w.id, "focused", true);
+		expect(w.states.focused).toBe(true);
+		s.setState(w.id, "focused", false);
+		expect(w.states.focused).toBeUndefined();
+	});
+
+	it("setState несуществующего id — no-op", () => {
+		const s = useWindowsStore();
+		expect(() => s.setState("ghost", "focused", true)).not.toThrow();
+	});
+
+	it("clearState — no-op синоним setState(id, key, false)", () => {
+		const s = useWindowsStore();
+		const w = s.create(file);
+		s.setState(w.id, "focused", true);
+		s.clearState(w.id, "focused");
+		expect(w.states.focused).toBeUndefined();
+	});
+
+	it("clearState несуществующего ключа — no-op", () => {
+		const s = useWindowsStore();
+		const w = s.create(file);
+		expect(() => s.clearState(w.id, "focused")).not.toThrow();
+		expect(w.states.focused).toBeUndefined();
+	});
+
+	it("focus несуществующего id — не бросает (caller contract)", () => {
+		const s = useWindowsStore();
+		expect(() => s.focus("ghost")).not.toThrow();
+	});
+
+	it("double create того же path → 2 разных id, byPath возвращает первое", () => {
+		const s = useWindowsStore();
+		const w1 = s.create(file);
+		const w2 = s.create(file);
+		expect(w1.id).not.toBe(w2.id);
+		expect(s.byPath("/a")).toBe(w1);
+		expect(s.list).toHaveLength(2);
+	});
+
+	it("byPath для несуществующего пути → undefined", () => {
+		const s = useWindowsStore();
+		s.create(file2);
+		expect(s.byPath("/nonexistent")).toBeUndefined();
+	});
+
+	// Контрактный тест: фиксирует deferred cross-store cleanup (TODO P2-03).
+	// Пока консюмеры не мигрированы, windows.remove НЕ трогает bounds/frame.
+	// Орфан-slot bounds[id] ожидается жить до явного вызова boundsStore.remove.
+	it("remove пока НЕ чистит bounds/frame (P2-03 orchestration)", () => {
+		const w = useWindowsStore();
+		const b = useBoundsStore();
+		const f = useFrameStore();
+		const win = w.create(file);
+		b.setTarget(win.id, { left: 10 });
+		f.set(win.id, "data:x");
+		w.remove(win.id);
+		expect(b.bounds[win.id]).toBeDefined();
+		expect(f.images[win.id]).toBe("data:x");
+	});
+});

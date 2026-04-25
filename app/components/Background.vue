@@ -1,4 +1,7 @@
 <script setup lang="ts">
+    import { useQueuedRouter } from '~/composables/useQueuedRouter';
+    import { useFocusStore } from '~/stores/focus';
+
     // Параметры линий сетки
     const lineWidth = 1;
     const lineColor = `rgba(21, 21, 21, 0.1)`;
@@ -72,7 +75,12 @@
     // Реактивная перерисовка при изменении размеров
     watchEffect(draw);
 
-    const { unFocus } = useFocusWindowController();
+    const focusStore = useFocusStore();
+    const { queuedPush } = useQueuedRouter();
+    const unFocus = () => {
+        focusStore.unFocus();
+        queuedPush('/');
+    };
 
     onMounted(() => {
         subscribe();

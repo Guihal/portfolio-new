@@ -1,26 +1,26 @@
 import type {
-    WatchCallback,
-    WatchHandle,
-    WatchOptions,
-    WatchSource,
-} from 'vue';
+	WatchCallback,
+	WatchHandle,
+	WatchOptions,
+	WatchSource,
+} from "vue";
 
 // Хранит функции очистки для main и chained watchers
 export type UseSetChainedWatchersCleaners = {
-    main?: WatchHandle;
-    chained?: WatchHandle;
+	main?: WatchHandle;
+	chained?: WatchHandle;
 };
 
 // Тип watcher'а: [source, callback, options?]
 export type UseSetChainedWatchersWatcher = [
-    WatchSource<unknown>,
-    WatchCallback<any, unknown>,
-    WatchOptions?,
+	WatchSource<unknown>,
+	WatchCallback<unknown, unknown>,
+	WatchOptions?,
 ];
 
 // Функция очистки для конкретного ключа
 export type UseSetChainedWatchersCleaner = (
-    key: keyof UseSetChainedWatchersCleaners,
+	key: keyof UseSetChainedWatchersCleaners,
 ) => void;
 
 /**
@@ -41,60 +41,62 @@ export type UseSetChainedWatchersCleaner = (
  * @param mainCallback - Callback для main watcher
  */
 export function useSetChainedWatchers(
-    getter: () => boolean,
-    source: WatchSource<unknown>,
-    callback: WatchCallback<any, unknown>,
-    options: WatchOptions | undefined = undefined,
-    mainCallback: (v: boolean) => void = () => {},
+	getter: () => boolean,
+	source: WatchSource<unknown>,
+	callback: WatchCallback<unknown, unknown>,
+	options: WatchOptions | undefined = undefined,
+	mainCallback: (v: boolean) => void = () => {},
 ) {
-    // Хранилище функций очистки
-    const cleaners: UseSetChainedWatchersCleaners = {};
+	// Хранилище функций очистки
+	const cleaners: UseSetChainedWatchersCleaners = {};
 
-    // Очистка watcher'а по ключу
-    const clean: UseSetChainedWatchersCleaner = (key) => {
-        if (cleaners[key] === undefined) return;
-        cleaners[key]();
-        delete cleaners[key];
-    };
+	// Очистка watcher'а по ключу
+	const clean: UseSetChainedWatchersCleaner = (key) => {
+		const handle = cleaners[key];
+		if (handle === undefined) return;
+		handle();
+		cleaners[key] = undefined;
+	};
 
-    // Очистка всех watchers
-    const cleanAll = () => {
-        for (const key in cleaners) {
-            const typedKey = key as keyof UseSetChainedWatchersCleaners;
-            clean(typedKey);
-        }
-    };
+	// Очистка всех watchers
+	const cleanAll = () => {
+		for (const key in cleaners) {
+			const typedKey = key as keyof UseSetChainedWatchersCleaners;
+			clean(typedKey);
+		}
+	};
 
-    // Создание watcher'а (если ещё не создан)
-    const create = (
-        key: keyof UseSetChainedWatchersCleaners,
-        ...args: UseSetChainedWatchersWatcher
-    ) => {
-        if (cleaners[key] !== undefined) return;
-        cleaners[key] = watch(...args);
-    };
+	// Создание watcher'а (если ещё не создан)
+	const create = (
+		key: keyof UseSetChainedWatchersCleaners,
+		...args: UseSetChainedWatchersWatcher
+	) => {
+		if (cleaners[key] !== undefined) return;
+		cleaners[key] = watch(...args);
+	};
 
-    // Создаём main watcher — следит за условием активации
-    create(
-        'main',
-        getter,
-        (v) => {
-            mainCallback(v);
-            if (v) {
-                // Условие истинно — создаём chained watcher
-                create('chained', source, callback, options);
-            } else {
-                // Условие ложно — удаляем chained watcher
-                clean('chained');
-            }
-        },
-        { immediate: true },
-    );
+	// Создаём main watcher — следит за условием активации
+	create(
+		"main",
+		getter,
+		(v) => {
+			const bool = Boolean(v);
+			mainCallback(bool);
+			if (bool) {
+				// Условие истинно — создаём chained watcher
+				create("chained", source, callback, options);
+			} else {
+				// Условие ложно — удаляем chained watcher
+				clean("chained");
+			}
+		},
+		{ immediate: true },
+	);
 
-    // Очищаем все watchers при размонтировании
-    onBeforeUnmount(() => {
-        cleanAll();
-    });
+	// Очищаем все watchers при размонтировании
+	onBeforeUnmount(() => {
+		cleanAll();
+	});
 
-    return { cleanAll };
+	return { cleanAll };
 }

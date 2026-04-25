@@ -1,13 +1,13 @@
 <script setup lang="ts">
     import { useCreateAndRegisterWindow } from './components/Window/composables/useCreateAndRegisterWindow';
+    import { useViewportObserver } from './composables/useViewportObserver';
+    import { useWindowsStore } from './stores/windows';
 
-    const { setViewportObserver } = useContentArea();
-
-    setViewportObserver();
+    useViewportObserver();
 
     const route = useRoute();
 
-    clearAllWindowsState();
+    useWindowsStore().$reset();
 
     if (route.fullPath !== '/') {
         useCreateAndRegisterWindow(route.fullPath);
@@ -15,10 +15,8 @@
 
     onMounted(() => {
         const nuxtApp = useNuxtApp();
-        nuxtApp.vueApp.config.warnHandler = (msg, instance, trace) => {
-            console.warn(msg);
-            console.log(instance);
-            console.log(trace);
+        nuxtApp.vueApp.config.warnHandler = (msg) => {
+            logger.warn(msg);
         };
     });
 </script>

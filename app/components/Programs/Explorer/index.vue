@@ -1,27 +1,24 @@
 <script setup lang="ts">
-    import type { WindowOb } from '~/components/Window/Window';
+    import type { WindowOb } from '~/components/Window/types';
 
     const windowOb = inject('windowOb') as WindowOb;
     const windowRoute = inject('windowRoute') as Ref<string>;
-    watchEffect(() => console.log(windowRoute.value));
     const { windowFetch } = useWindowFetch(windowOb.id);
 
     const { data } = await useAsyncData(
-        () => `explorer-${windowRoute.value}f`,
+        () => `explorer-${windowRoute.value}`,
         async () => {
-            console.log(windowRoute.value);
             if (!windowRoute.value) return [];
 
             const result = await windowFetch(async () =>
                 $fetch<FsFile[]>('/api/filesystem/list', {
-                    body: { path: windowRoute.value },
-                    method: 'POST',
+                    query: { path: windowRoute.value },
                 }),
             );
             return result ?? [];
         },
         {
-            server: import.meta.server ? true : false,
+            server: import.meta.server,
             immediate: true,
         },
     );
@@ -35,7 +32,7 @@
             </ClientOnly>
         </div>
         <div class="explorer__content pixel-box">
-            <template v-if="data?.length > 0">
+            <template v-if="(data?.length ?? 0) > 0">
                 <ProgramsExplorerShortcut
                     v-for="file in data"
                     :key="file.path"
@@ -93,7 +90,7 @@
         }
 
         &__empty {
-            font-family: Pix, systen-ui;
+            font-family: Pix, system-ui;
             font-size: 40px;
             line-height: 100%;
             color: c('default-contrast');

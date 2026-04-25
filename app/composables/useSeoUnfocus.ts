@@ -1,31 +1,24 @@
-export async function useSeoUnfocus() {
-    const { data } = useAsyncData(
-        'entity-/',
-        async () => {
-            let resp = undefined;
-            try {
-                resp = await $fetch('/api/filesystem/get', {
-                    method: 'POST',
-                    body: {
-                        path: '/',
-                    },
-                });
-            } catch (err) {
-                console.error(err);
-            }
+import { storeToRefs } from "pinia";
+import { useFocusStore } from "~/stores/focus";
 
-            return resp;
-        },
-        {
-            immediate: true,
-            server: true,
-        },
-    );
+export function useSeoUnfocus() {
+	const { data } = useAsyncData(
+		"entity-/",
+		async () => {
+			try {
+				return await $fetch("/api/filesystem/get", {
+					query: { path: "/" },
+				});
+			} catch (err) {
+				logger.error("[useSeoUnfocus]", err);
+			}
+		},
+		{ immediate: true, server: true },
+	);
 
-    watchEffect(() => {
-        if (focusedWindowId.value) return;
-        useSeoMeta({
-            title: data.value?.name,
-        });
-    });
+	const { focusedId } = storeToRefs(useFocusStore());
+
+	useSeoMeta({
+		title: () => (focusedId.value ? undefined : data.value?.name),
+	});
 }
