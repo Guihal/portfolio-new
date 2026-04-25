@@ -1,8 +1,8 @@
 <script setup lang="ts">
     import { storeToRefs } from 'pinia';
-    import { useQueuedRouter } from '~/composables/useQueuedRouter';
     import { useContentAreaStore } from '~/stores/contentArea';
     import { useFocusStore } from '~/stores/focus';
+    import { useQueuedRouterStore } from '~/stores/queuedRouter';
     import type { FsFile } from '~~/shared/types/filesystem';
 
     const workbench: Ref<null | HTMLElement> = ref(null);
@@ -53,10 +53,10 @@
     );
 
     const focusStore = useFocusStore();
-    const { queuedPush } = useQueuedRouter();
+    const queuedRouter = useQueuedRouterStore();
     const unFocus = () => {
         focusStore.unFocus();
-        queuedPush('/');
+        queuedRouter.push('/');
     };
 </script>
 <template>

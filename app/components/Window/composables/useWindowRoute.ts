@@ -1,9 +1,10 @@
+import { useQueuedRouterStore } from "~/stores/queuedRouter";
 import type { WindowOb } from "../types";
 import { debounce } from "../utils/debounce";
 
 export function useWindowRoute(windowOb: WindowOb) {
 	const route = useRoute();
-	const { queuedPush } = useQueuedRouter();
+	const queuedRouter = useQueuedRouterStore();
 
 	const windowRoute = ref(windowOb.targetFile.value);
 	const syncSource = ref<"route" | "window" | "idle">("idle");
@@ -18,7 +19,7 @@ export function useWindowRoute(windowOb: WindowOb) {
 			windowRoute.value = newPath;
 			if (!focused || route.path === newPath) return;
 			syncSource.value = "window";
-			queuedPush(newPath).finally(() => {
+			queuedRouter.push(newPath).finally(() => {
 				if (syncSource.value === "window") syncSource.value = "idle";
 			});
 		},
