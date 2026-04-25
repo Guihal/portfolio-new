@@ -1,9 +1,18 @@
 <script setup lang="ts">
     import { useWindowLoading } from '~/components/Window/composables/useWindowLoading';
     import type { WindowOb } from '~/components/Window/types';
+    import type { ProgramConfig } from '~/programs';
 
     const windowOb = inject('windowOb') as WindowOb;
     const windowRoute = inject('windowRoute') as Ref<string>;
+    const programConfig = inject<Ref<ProgramConfig | null>>(
+        'programConfig',
+        ref(null),
+    );
+
+    const canNavigate = computed(
+        () => programConfig.value?.canNavigate ?? true,
+    );
 
     const isLoading = ref(false);
     useWindowLoading().register(windowOb.id, isLoading);
@@ -35,7 +44,7 @@
 <template>
     <div class="explorer">
         <div class="explorer__left">
-            <ProgramsExplorerNav />
+            <ProgramsExplorerNav v-if="canNavigate" />
             <ClientOnly>
                 <ProgramsExplorerNavFacts />
             </ClientOnly>
