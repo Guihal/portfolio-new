@@ -1,7 +1,7 @@
 import { defineStore, getActivePinia } from "pinia";
 import { ref } from "vue";
 import type { WindowOb } from "~/components/Window/types";
-import { debounce } from "~/components/Window/utils/debounce";
+import { debounce } from "~/utils/debounce";
 import { useBoundsStore } from "./bounds";
 
 /**

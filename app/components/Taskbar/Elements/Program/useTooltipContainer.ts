@@ -1,4 +1,4 @@
-import { debounce } from "~/components/Window/utils/debounce";
+import { debounce } from "~/utils/debounce";
 
 export function useTooltipContainer() {
 	const container = ref<HTMLElement | null>(null);

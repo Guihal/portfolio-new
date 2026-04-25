@@ -1,6 +1,6 @@
 // P0-06: debounce вызывает callback один раз после серии в окне time.
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { debounce } from "~/components/Window/utils/debounce";
+import { debounce } from "~/utils/debounce";
 
 beforeEach(() => vi.useFakeTimers());
 afterEach(() => vi.useRealTimers());
