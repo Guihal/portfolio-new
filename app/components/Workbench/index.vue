@@ -13,21 +13,12 @@
         height: 120,
     });
 
-    const width = computed(() => contentArea.value.width);
-    const height = computed(() => contentArea.value.height);
-
-    const columns = computed(() => {
-        const count = cellsInElement.x;
-        const size = realCell.value.width;
-
-        return `repeat(${count}, ${size}px)`;
-    });
-
-    const rows = computed(() => {
-        const count = cellsInElement.y;
-        const size = realCell.value.height;
-        return `repeat(${count}, ${size}px)`;
-    });
+    const gridStyle = computed(() => ({
+        width: `calc(${contentArea.value.width}px - var(--offset) * 2)`,
+        height: `calc(${contentArea.value.height}px - var(--offset) * 2)`,
+        gridTemplateColumns: `repeat(${cellsInElement.x}, ${realCell.value.width}px)`,
+        gridTemplateRows: `repeat(${cellsInElement.y}, ${realCell.value.height}px)`,
+    }));
 
     onMounted(subscribe);
 
@@ -58,9 +49,14 @@
         focusStore.unFocus();
         queuedRouter.push('/');
     };
+
 </script>
 <template>
-    <div ref="workbench" class="workbench" @click="unFocus">
+    <div
+        ref="workbench"
+        class="workbench"
+        :style="gridStyle"
+        @click="unFocus">
         <WorkbenchShortcut
             v-for="file in data"
             :key="file.path"
@@ -73,11 +69,7 @@
         left: 0;
         top: 0;
         --offset: 10px;
-        width: calc(v-bind(width) * 1px - var(--offset) * 2);
-        height: calc(v-bind(height) * 1px - var(--offset) * 2);
         display: grid;
-        grid-template-columns: v-bind(columns);
-        grid-template-rows: v-bind(rows);
         box-sizing: border-box;
         margin: var(--offset);
         z-index: 1;

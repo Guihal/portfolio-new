@@ -7,11 +7,12 @@ import { useContentAreaStore } from "~/stores/contentArea";
  */
 export const useViewportObserver = () => {
 	if (!import.meta.client) return;
-	const store = useContentAreaStore();
-	if (store.viewportObserverInitialised) return;
-	store.markViewportObserverInitialised();
 
 	onMounted(() => {
+		const store = useContentAreaStore();
+		if (store.viewportObserverInitialised) return;
+		store.markViewportObserverInitialised();
+
 		const element = document.documentElement;
 		if (!element) return;
 
@@ -33,11 +34,12 @@ export const useViewportObserver = () => {
  */
 export const useTaskbarObserver = (elementRef: Ref<HTMLElement | null>) => {
 	if (!import.meta.client) return;
-	const store = useContentAreaStore();
-	if (store.taskbarObserverInitialised) return;
-	store.markTaskbarObserverInitialised();
 
 	onMounted(() => {
+		const store = useContentAreaStore();
+		if (store.taskbarObserverInitialised) return;
+		store.markTaskbarObserverInitialised();
+
 		if (!elementRef.value) return;
 
 		const observer = new ResizeObserver((entries) => {

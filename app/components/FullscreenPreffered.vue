@@ -4,19 +4,19 @@
 
     const { area: contentArea } = storeToRefs(useContentAreaStore());
 
-    const width = computed(() => contentArea.value.width);
-    const height = computed(() => contentArea.value.height);
+    const sizeStyle = computed(() => ({
+        width: `${contentArea.value.width}px`,
+        height: `${contentArea.value.height}px`,
+    }));
 </script>
 <template>
-    <div class="fullscreen_preffered"></div>
+    <div class="fullscreen_preffered" :style="sizeStyle"></div>
 </template>
 <style lang="scss">
     .fullscreen_preffered {
         position: fixed;
         left: 0;
         top: 0;
-        width: calc(v-bind(width) * 1px);
-        height: calc(v-bind(height) * 1px);
         border: 5px solid c('default-contrast');
         box-sizing: border-box;
         transition:
