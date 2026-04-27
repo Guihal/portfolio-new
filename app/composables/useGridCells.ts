@@ -1,106 +1,47 @@
 import type { TemplateRef } from "vue";
+import { calcGrid } from "~/services/gridCalculator";
 
-export type Cell = {
-	width: number;
-	height: number;
-};
+export type Cell = { width: number; height: number };
+export type CellsInElement = { x: number; y: number };
 
-export type CellsInElement = {
-	x: number;
-	y: number;
-};
+// Сколько ячеек размером `size` помещается в `area` (legacy ceil, gap=0).
+const axis = (area: number, size: number) =>
+	calcGrid({ areaWidth: area, areaHeight: 1, cellSize: size, gap: 0 }).cols;
 
 /**
- * Вычисляет сетку ячеек для элемента на основе его размеров.
- * Использует ResizeObserver для отслеживания изменений размера.
- *
- * Логика:
- * 1. При изменении размера элемента — пересчитывает количество ячеек
- * 2. Вычисляет реальный размер ячеек (elementSize / cellsCount)
- *
- * @param element - Ref на DOM-элемент
- * @param preferredCell - Желаемый размер ячейки (для расчёта количества)
+ * Vue-обёртка над `calcGrid`: ResizeObserver + refs (RULES.md §2b/§4.2).
+ * `realCell` — растянутый размер ячейки (elementSize / cellsCount).
  */
-export function useGridCells(
-	element: TemplateRef<HTMLElement | null>,
-	preferredCell: Cell,
-) {
-	// Текущие размеры элемента
-	const elementBounds: Ref<{
-		width: number;
-		height: number;
-	}> = ref({
-		width: 0,
-		height: 0,
-	});
-
-	// Количество ячеек по осям X и Y
-	const cellsInElement: CellsInElement = reactive({
-		x: 0,
-		y: 0,
-	});
-
-	/**
-	 * Реальный размер одной ячейки.
-	 * Если ячеек 0 — возвращает preferredCell.
-	 */
-	const realCell: ComputedRef<Cell> = computed(() => {
-		if (cellsInElement.x === 0 || cellsInElement.y === 0) {
-			return {
-				width: preferredCell.width,
-				height: preferredCell.height,
-			};
-		}
-
-		// Делим размеры элемента на количество ячеек
-		return {
-			width: elementBounds.value.width / cellsInElement.x,
-			height: elementBounds.value.height / cellsInElement.y,
-		};
-	});
-
-	// Вычисляет размеры элемента и количество ячеек
-	const calculateCells = () => {
-		if (!element.value) return;
-
-		const bounds = element.value.getBoundingClientRect();
-		elementBounds.value.width = bounds.width;
-		elementBounds.value.height = bounds.height;
-
-		// Округляем вверх до ближайшего целого числа ячеек
-		cellsInElement.x = Math.ceil(
-			elementBounds.value.width / preferredCell.width,
-		);
-		cellsInElement.y = Math.ceil(
-			elementBounds.value.height / preferredCell.height,
-		);
+export function useGridCells(el: TemplateRef<HTMLElement | null>, pref: Cell) {
+	const elementBounds = ref({ width: 0, height: 0 });
+	const cellsInElement: CellsInElement = reactive({ x: 0, y: 0 });
+	const realCell: ComputedRef<Cell> = computed(() =>
+		cellsInElement.x && cellsInElement.y
+			? {
+					width: elementBounds.value.width / cellsInElement.x,
+					height: elementBounds.value.height / cellsInElement.y,
+				}
+			: pref,
+	);
+	const recalc = () => {
+		if (!el.value) return;
+		const { width, height } = el.value.getBoundingClientRect();
+		elementBounds.value = { width, height };
+		cellsInElement.x = axis(width, pref.width);
+		cellsInElement.y = axis(height, pref.height);
 	};
-
-	// ResizeObserver — single instance per composable scope;
-	// re-subscribe disconnect'ит предыдущий, onScopeDispose на уровне setup.
-	let resizeObserver: ResizeObserver | null = null;
-
+	let ro: ResizeObserver | null = null;
 	const subscribe = () => {
 		if (!import.meta.client) return;
-		if (!element.value) {
-			logger.error("useGridCells: Элемент не найден");
-			return;
-		}
-		calculateCells();
-		resizeObserver?.disconnect();
-		resizeObserver = new ResizeObserver(calculateCells);
-		resizeObserver.observe(element.value);
+		if (!el.value) return logger.error("useGridCells: Элемент не найден");
+		recalc();
+		ro?.disconnect();
+		ro = new ResizeObserver(recalc);
+		ro.observe(el.value);
 	};
-
 	onScopeDispose(() => {
-		resizeObserver?.disconnect();
-		resizeObserver = null;
+		ro?.disconnect();
+		ro = null;
 	});
-
-	return {
-		subscribe,
-		realCell,
-		cellsInElement,
-		elementBounds,
-	};
+	return { subscribe, realCell, cellsInElement, elementBounds };
 }
