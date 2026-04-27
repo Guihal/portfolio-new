@@ -28,21 +28,33 @@ export function useWindowPreviewObserver(windowOb: WindowOb): () => void {
 	const frameStore = useFrameStore();
 	const slot = useBoundsStore().ensure(windowOb.id);
 	let alive = true;
+	let lastBoundsKey = "";
+	let lastMutationCount = 0;
+	let mutationCount = 0;
 	const shouldSkip = () =>
 		windowOb.states.drag || windowOb.states.resize || windowOb.states.collapsed;
 
 	const regenerate = debounce(async () => {
 		if (!alive || shouldSkip()) return;
+		const boundsKey = `${slot.calculated.width}x${slot.calculated.height}`;
+		if (boundsKey === lastBoundsKey && mutationCount === lastMutationCount)
+			return;
+		const localMutationCount = mutationCount;
 		const jpeg = await generatePreview(wrapper, {
 			width: slot.calculated.width,
 			height: slot.calculated.height,
 		});
 		// Финальный alive guard после await: scope мог dispose'нуться.
 		if (!alive || !jpeg) return;
+		lastBoundsKey = boundsKey;
+		lastMutationCount = localMutationCount;
 		frameStore.set(windowOb.id, jpeg);
 	}, PREVIEW_DEBOUNCE_MS);
 
-	const observer = new MutationObserver(() => regenerate());
+	const observer = new MutationObserver(() => {
+		mutationCount++;
+		regenerate();
+	});
 	observer.observe(content, { childList: true, subtree: true });
 	regenerate();
 
