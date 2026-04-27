@@ -59,8 +59,7 @@
 | Path | Current LOC | Allowed | Reason | Sunset-PR |
 |---|---|---|---|---|
 | `app/components/Programs/Explorer/Nav/facts-data.ts` | 157 | 300 | Контентные данные (57 фактов) | permanent |
-| `app/programs/index.ts` | ~80 | 200 | REGISTRY map (room для роста до ~10 программ) | permanent |
-| `app/stores/windows.ts` | 182 | 200 | Core registry + 5 computed indexes | P8-11 (target ≤150) |
+| `app/programs/index.ts` | ~80 | 300 | REGISTRY map (room для роста до ~10 программ) | permanent |
 | `app/assets/scss/_settings.scss` | 246 | unlimited | SCSS, не парсится ESLint | permanent |
 | `app/assets/scss/reset.scss` | 121 | unlimited | SCSS reset стандарт | permanent |
 | `tests/**` | varies | 400 | Тесты часто длинные | permanent (already in eslint root ignores) |
