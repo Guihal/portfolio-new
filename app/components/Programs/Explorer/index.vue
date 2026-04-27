@@ -3,7 +3,7 @@
     import { useInjectWindowRoute } from '~/components/Window/composables/lifecycle/useInjectWindowRoute';
     import { useWindowLoading } from '~/components/Window/composables/route/useWindowLoading';
     import { ProgramViewKey } from '~/components/Window/types';
-    import { useProgramFetch } from '~/composables/useProgramFetch';
+    import { useProgramFetch } from '~/composables/window/useProgramFetch';
 
     const windowOb = useInjectWindow();
     const windowRoute = useInjectWindowRoute();

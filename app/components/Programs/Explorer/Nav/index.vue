@@ -2,7 +2,7 @@
     import { useInjectWindow } from '~/components/Window/composables/lifecycle/useInjectWindow';
     import { useInjectWindowRoute } from '~/components/Window/composables/lifecycle/useInjectWindowRoute';
     import { useWindowLoading } from '~/components/Window/composables/route/useWindowLoading';
-    import { useProgramFetch } from '~/composables/useProgramFetch';
+    import { useProgramFetch } from '~/composables/window/useProgramFetch';
 
     const windowOb = useInjectWindow();
     const windowRoute = useInjectWindowRoute();
