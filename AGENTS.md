@@ -4,6 +4,37 @@
 
 Портфолио-сайт в стиле десктопной ОС (Windows-подобный интерфейс). Название — **Dimonya OS**. Реализован на Nuxt 4 с TypeScript, SCSS, Pinia. Развёртывается на Vercel.
 
+## Архитектурные слои
+
+> Введён в Phase 8 (см. [docs/refactor/REFACTOR-PLAN.md](docs/refactor/REFACTOR-PLAN.md), [docs/RULES.md](docs/RULES.md)).
+
+Каждый файл принадлежит ровно одному слою. Размер ≤ 150 LOC (исключения — whitelist в `eslint.config.mjs` + `docs/RULES.md`).
+
+| Слой | Где | Назначение | Запрет |
+|---|---|---|---|
+| **View** | `app/components/**/*.vue` | Template + минимум script (props, refs, single composable call) | `$fetch`, `MutationObserver`, raw `setTimeout(>100ms)` |
+| **Logic** | `app/composables/**`, `app/components/**/composables/**` | Vue reactivity, lifecycle, watch | DOM mutation, magic numbers |
+| **State** | `app/stores/**` | Pinia: domain state + readonly accessors + actions | `MutationObserver`, dynamic imports, transient UI-state |
+| **Service** | `app/services/**` (создаётся в P8-02) | Pure функции ИЛИ thin DOM wrapper | module-scope mutable state (SSR leak) |
+| **Data** | `server/api/**`, `app/services/filesystem/**` | Fetch + validation + cache | бизнес-логика |
+| **Util** | `app/utils/**`, `server/utils/**`, `shared/utils/**` | Pure helpers | Vue/DOM/storage deps в `app/utils/` и `shared/utils/` |
+| **Types** | `shared/types/**` | Type defs | runtime code |
+
+### SSR-контракт `app/services/`
+
+`app/services/` импортируется из браузера И из SSR-кода. Правила:
+
+- **Module-scope mutable state ЗАПРЕЩЁН** (см. P1-09 incident). State в Pinia OR closures.
+- **DOM-доступ только под guard** `if (import.meta.client)` или из `onMounted`-ленивого пути.
+- **Fetch via `$fetch`** (Nitro umbrella), не `window.fetch`.
+
+### Boundary `app/services/` vs `app/utils/` vs `server/utils/`
+
+- `app/services/` — stateful или DOM-aware логика. Импортится из composables/SFC.
+- `app/utils/` — pure, no Vue/DOM/storage. Тестируется без mount.
+- `server/utils/` — h3 server-only. **Никогда** не импортится из `app/`.
+- `shared/utils/` — pure cross-runtime (нужно и в app, и в server).
+
 ## Стек
 
 | Слой             | Технология                                             |

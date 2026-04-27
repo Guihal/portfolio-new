@@ -106,6 +106,33 @@
 | P7-01 | [Обновить AGENTS.md](P7-01-update-agents-md.md) | low | 1.5ч | Фаза 4 |
 | P7-02 | [Backlog будущих фич](P7-02-backlog-future-features.md) ✅ | low | 0.5ч | — |
 
+### Фаза 8 — Architecture limits & separation
+
+> Главный план: [REFACTOR-PLAN.md](REFACTOR-PLAN.md). Правила: [docs/RULES.md](../RULES.md). +29ч к общей оценке (новый total ≈ 41–44 рабочих дня).
+
+Цели: max 150 LOC/файл (ESLint + custom Vue SFC check), `app/services/` слой, выкидывание `$fetch` из SFC, `MutationObserver` из stores, magic numbers в constants, view-state из global stores.
+
+| ID | Задача | Приоритет | Оценка | Зависит от |
+|----|--------|-----------|--------|-----------|
+| P8-01 | [Rules + ESLint + lefthook + drift-check](P8-01-rules-and-lint.md) | high | 2ч | — |
+| P8-02 | [services-layer skeleton](P8-02-services-layer-skeleton.md) | high | 1ч | P8-01 |
+| P8-03 | [filesystem client](P8-03-filesystem-client.md) | high | 2ч | P8-02 |
+| P8-04 | [shared entity cache](P8-04-entities-cache.md) | medium | 2ч | P8-03 |
+| P8-05 | [fetch в SFC → useProgramFetch](P8-05-fetch-in-sfc-extraction.md) | high | 1.5ч | P8-03 |
+| P8-06 | [stores/frame.ts split](P8-06-frame-store-split.md) | high | 1.5ч | P8-02 |
+| P8-07 | [tooltip — pure positioning](P8-07-tooltip-purify.md) | medium | 1.5ч | P8-02 |
+| P8-08 | [useGridCells — pure calculator](P8-08-grid-calc-purify.md) | medium | 1ч | P8-02 |
+| P8-09 | [magic numbers → constants/timing.ts](P8-09-magic-numbers-constants.md) | low | 1ч | P8-02 |
+| P8-10 | [Window/Content.vue — useProgramSetup](P8-10-content-vue-extract.md) | medium | 1.5ч | P8-02 |
+| P8-11 | [UI-state из global stores](P8-11-ui-state-split.md) | medium | 2ч | P8-02 |
+| P8-12 | [Window/composables/ subfolders](P8-12-window-composables-grouping.md) | low | 2ч | Group C |
+| P8-13 | [app/composables/ global vs window](P8-13-app-composables-boundary.md) | low | 2ч | Group C |
+| P8-14 | [server/utils/manifest split](P8-14-server-utils-split.md) | medium | 1ч | P8-02 |
+| P8-15 | [About.vue 271 → ≤150](P8-15-about-vue-split.md) | medium | 2ч | P8-01 |
+| P8-16 | [Shortcut/Base.vue → SCSS module](P8-16-shortcut-base-split.md) | low | 1.5ч | P8-01 |
+| P8-17 | [Tooltip.vue → useTooltipPosition](P8-17-tooltip-position-composable.md) | low | 1.5ч | P8-01 |
+| P8-18 | [cleanup + warn→error switch](P8-18-cleanup-and-metrics.md) | high | 2ч | A–E |
+
 ## Общие критерии готовности рефакторинга
 
 - [ ] Все 5 Playwright-smoke тестов зелёные.

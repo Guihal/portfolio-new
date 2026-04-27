@@ -39,4 +39,32 @@ export default withNuxt(
       'vue/multi-word-component-names': 'off',
     },
   },
+  // ──────────────────────────────────────────────────────────────────────────
+  // Phase 8 — Architecture limits & separation
+  // См. docs/RULES.md, docs/refactor/REFACTOR-PLAN.md.
+  // Уровень `warn` сохраняется до P8-18, который переключает на `error` после
+  // завершения всех splits (P8-15..P8-17 + P8-11) — bootstrap paradox устранён.
+  // ──────────────────────────────────────────────────────────────────────────
+  {
+    files: ['app/**/*.ts', 'app/**/*.vue', 'server/**/*.ts', 'shared/**/*.ts'],
+    ignores: ['shared/types/**'],
+    rules: {
+      'max-lines': ['warn', { max: 150, skipBlankLines: true, skipComments: true }],
+      'max-lines-per-function': ['warn', { max: 60, skipBlankLines: true, skipComments: true, IIFEs: true }],
+      complexity: ['warn', { max: 12 }],
+    },
+  },
+  // Permanent whitelist — data, registries
+  {
+    files: [
+      'app/components/Programs/Explorer/Nav/facts-data.ts',
+      'app/programs/index.ts',
+    ],
+    rules: { 'max-lines': ['warn', { max: 300, skipBlankLines: true, skipComments: true }] },
+  },
+  // Temporary whitelist — sunset P8-11
+  {
+    files: ['app/stores/windows.ts'],
+    rules: { 'max-lines': ['warn', { max: 200, skipBlankLines: true, skipComments: true }] },
+  },
 )
