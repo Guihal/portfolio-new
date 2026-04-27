@@ -1,36 +1,17 @@
 <script setup lang="ts">
-    import { computed } from 'vue';
-    import type { WindowOb } from '~/components/Window/types';
-    import { hasProgram } from '~/programs';
+    import { storeToRefs } from 'pinia';
     import { useWindowsStore } from '~/stores/windows';
-    import type { ProgramType } from '~~/shared/types/filesystem';
 
     const store = useWindowsStore();
-
-    const windowsGroupByProgram = computed<
-        Partial<Record<ProgramType, WindowOb[]>>
-    >(() => {
-        const result: Partial<Record<ProgramType, WindowOb[]>> = {};
-
-        for (const w of store.list) {
-            if (!w?.file) continue;
-            const t = w.file.programType;
-            if (!hasProgram(t)) continue;
-            const bucket = result[t] ?? [];
-            bucket.push(w);
-            result[t] = bucket;
-        }
-
-        return result;
-    });
+    const { byProgramMap } = storeToRefs(store);
 </script>
 
 <template>
     <TransitionGroup name="taskbar__el">
         <TaskbarElementsProgram
-            v-for="(windows, programType) in windowsGroupByProgram"
+            v-for="[programType, windows] in byProgramMap"
             :key="programType"
-            :window-obs="windows ?? []"
+            :window-obs="windows"
             :program-type="programType" />
     </TransitionGroup>
 </template>
