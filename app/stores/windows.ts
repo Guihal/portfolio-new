@@ -6,6 +6,7 @@ import type {
 	WindowStates,
 } from "~/components/Window/types";
 import type { FsFile, ProgramType } from "~~/shared/types/filesystem";
+import { useWindowsUIStore } from "./windowsUI";
 
 export const useWindowsStore = defineStore("windows", () => {
 	const windows = ref<Record<string, WindowOb>>({});
@@ -97,12 +98,12 @@ export const useWindowsStore = defineStore("windows", () => {
 			if (conflicts) {
 				for (const k of conflicts) {
 					Reflect.deleteProperty(w.states, k);
-					if (k === "error") w.errorMessage = undefined;
+					if (k === "error") useWindowsUIStore().clear(id);
 				}
 			}
 		} else {
 			Reflect.deleteProperty(w.states, key);
-			if (key === "error") w.errorMessage = undefined;
+			if (key === "error") useWindowsUIStore().clear(id);
 		}
 	}
 
@@ -110,18 +111,7 @@ export const useWindowsStore = defineStore("windows", () => {
 		const w = windows.value[id];
 		if (!w) return;
 		Reflect.deleteProperty(w.states, key);
-		if (key === "error") w.errorMessage = undefined;
-	}
-
-	function setError(id: string, message: string | null) {
-		const w = windows.value[id];
-		if (!w) return;
-		if (typeof message === "string") {
-			setState(id, "error", true);
-			w.errorMessage = message;
-		} else if (w.states.error || w.errorMessage !== undefined) {
-			clearState(id, "error");
-		}
+		if (key === "error") useWindowsUIStore().clear(id);
 	}
 
 	function toggleState(id: string, key: WindowState) {
@@ -173,7 +163,6 @@ export const useWindowsStore = defineStore("windows", () => {
 		remove,
 		setState,
 		clearState,
-		setError,
 		toggleState,
 		setFile,
 		setTargetFile,

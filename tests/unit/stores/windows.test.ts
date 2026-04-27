@@ -4,6 +4,7 @@ import { useBoundsStore } from "~/stores/bounds";
 import { useFocusStore } from "~/stores/focus";
 import { useFrameStore } from "~/stores/frame";
 import { useWindowsStore } from "~/stores/windows";
+import { useWindowsUIStore } from "~/stores/windowsUI";
 import type { FsFile } from "~~/shared/types/filesystem";
 
 const file: FsFile = { name: "a", path: "/a", programType: "project" };
@@ -183,47 +184,15 @@ describe("windows store", () => {
 		expect(f.images[win.id]).toBe("data:x");
 	});
 
-	describe("setError", () => {
-		it("setError(id, 'msg') → states.error=true, errorMessage='msg'", () => {
+	describe("INCOMPATIBLE error/loading (cross-store cleanup via windowsUI)", () => {
+		it("setState(loading,true) когда error=true → error+UI message сброшены", () => {
 			const s = useWindowsStore();
+			const ui = useWindowsUIStore();
 			const w = s.create(file);
-			s.setError(w.id, "404");
-			expect(w.states.error).toBe(true);
-			expect(w.errorMessage).toBe("404");
-		});
-
-		it("setError(id, null) когда error=true → cleared", () => {
-			const s = useWindowsStore();
-			const w = s.create(file);
-			s.setError(w.id, "x");
-			s.setError(w.id, null);
-			expect(w.states.error).toBeUndefined();
-			expect(w.errorMessage).toBeUndefined();
-		});
-
-		it("setError(id, null) когда error уже false → no churn", () => {
-			const s = useWindowsStore();
-			const w = s.create(file);
-			// initial state: error undefined, errorMessage undefined.
-			s.setError(w.id, null);
-			expect(w.states.error).toBeUndefined();
-			expect(w.errorMessage).toBeUndefined();
-		});
-
-		it("setError несуществующего id — no-op", () => {
-			const s = useWindowsStore();
-			expect(() => s.setError("ghost", "x")).not.toThrow();
-		});
-	});
-
-	describe("INCOMPATIBLE error/loading", () => {
-		it("setState(loading,true) когда error=true → error+errorMessage сброшены", () => {
-			const s = useWindowsStore();
-			const w = s.create(file);
-			s.setError(w.id, "msg");
+			ui.setError(w.id, "msg");
 			s.setState(w.id, "loading", true);
 			expect(w.states.error).toBeUndefined();
-			expect(w.errorMessage).toBeUndefined();
+			expect(ui.getError(w.id)).toBeUndefined();
 			expect(w.states.loading).toBe(true);
 		});
 
@@ -236,22 +205,24 @@ describe("windows store", () => {
 			expect(w.states.loading).toBe(true);
 		});
 
-		it("clearState(id,'error') → error+errorMessage сброшены", () => {
+		it("clearState(id,'error') → error+UI message сброшены", () => {
 			const s = useWindowsStore();
+			const ui = useWindowsUIStore();
 			const w = s.create(file);
-			s.setError(w.id, "x");
+			ui.setError(w.id, "x");
 			s.clearState(w.id, "error");
 			expect(w.states.error).toBeUndefined();
-			expect(w.errorMessage).toBeUndefined();
+			expect(ui.getError(w.id)).toBeUndefined();
 		});
 
-		it("setState(id,'error',false) → error+errorMessage сброшены", () => {
+		it("setState(id,'error',false) → error+UI message сброшены", () => {
 			const s = useWindowsStore();
+			const ui = useWindowsUIStore();
 			const w = s.create(file);
-			s.setError(w.id, "x");
+			ui.setError(w.id, "x");
 			s.setState(w.id, "error", false);
 			expect(w.states.error).toBeUndefined();
-			expect(w.errorMessage).toBeUndefined();
+			expect(ui.getError(w.id)).toBeUndefined();
 		});
 	});
 

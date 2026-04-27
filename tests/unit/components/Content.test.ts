@@ -12,6 +12,7 @@ vi.mock("~/programs", () => ({
 import Content from "~/components/Window/Content.vue";
 import { type WindowOb, WindowObKey } from "~/components/Window/types";
 import { useWindowsStore } from "~/stores/windows";
+import { useWindowsUIStore } from "~/stores/windowsUI";
 
 const makeOb = (overrides: Partial<WindowOb> = {}): WindowOb =>
 	reactive({
@@ -34,18 +35,17 @@ const mountContent = (windowOb: WindowOb) =>
 	});
 
 describe("Content.vue render branches", () => {
-	it("error=true + errorMessage='404' → виден .window__content__error с '404'", () => {
-		const ob = makeOb({
-			states: { error: true },
-			errorMessage: "404",
-		});
+	it("error=true + windowsUI.setError('404') → виден .window__content__error с '404'", () => {
+		const ui = useWindowsUIStore();
+		const ob = makeOb({ states: { error: true } });
+		ui.errors[ob.id] = "404";
 		const wrapper = mountContent(ob);
 		const errEl = wrapper.find(".window__content__error");
 		expect(errEl.exists()).toBe(true);
 		expect(errEl.text()).toBe("404");
 	});
 
-	it("error=true + errorMessage undefined → fallback 'Не удалось открыть'", () => {
+	it("error=true + UI errors empty → fallback 'Не удалось открыть'", () => {
 		const ob = makeOb({ states: { error: true } });
 		const wrapper = mountContent(ob);
 		const errEl = wrapper.find(".window__content__error");
@@ -54,10 +54,9 @@ describe("Content.vue render branches", () => {
 	});
 
 	it("loading=true И error=true → loading wins, error block НЕ виден", () => {
-		const ob = makeOb({
-			states: { loading: true, error: true },
-			errorMessage: "x",
-		});
+		const ui = useWindowsUIStore();
+		const ob = makeOb({ states: { loading: true, error: true } });
+		ui.errors[ob.id] = "x";
 		const wrapper = mountContent(ob);
 		expect(wrapper.find(".window__content__error").exists()).toBe(false);
 	});
@@ -71,15 +70,16 @@ describe("Content.vue render branches", () => {
 		).toBe(0);
 	});
 
-	it("реактивно: error=true → false через store → block убран и errorMessage cleared", async () => {
+	it("реактивно: error=true → false через store → block убран и UI message cleared", async () => {
 		const s = useWindowsStore();
+		const ui = useWindowsUIStore();
 		const w = s.create("/a");
-		s.setError(w.id, "msg");
+		ui.setError(w.id, "msg");
 		const wrapper = mountContent(w);
 		expect(wrapper.find(".window__content__error").exists()).toBe(true);
-		s.setError(w.id, null);
+		ui.setError(w.id, null);
 		await nextTick();
 		expect(wrapper.find(".window__content__error").exists()).toBe(false);
-		expect(w.errorMessage).toBeUndefined();
+		expect(ui.getError(w.id)).toBeUndefined();
 	});
 });

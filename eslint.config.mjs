@@ -62,11 +62,6 @@ export default withNuxt(
     ],
     rules: { 'max-lines': ['warn', { max: 300, skipBlankLines: true, skipComments: true }] },
   },
-  // Temporary whitelist — sunset P8-11
-  {
-    files: ['app/stores/windows.ts'],
-    rules: { 'max-lines': ['warn', { max: 200, skipBlankLines: true, skipComments: true }] },
-  },
   // ──────────────────────────────────────────────────────────────────────────
   // P8-02 — services/ layer import isolation
   // app/services/ изолирован от Vue/Pinia слоёв (composables/stores/components).
