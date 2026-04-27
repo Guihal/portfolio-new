@@ -1,5 +1,5 @@
 <script setup lang="ts">
-    const { tooltips } = useTaskbarTooltips();
+    const { tooltips } = useTooltipState();
 
     const visibleTooltips = computed(() =>
         Object.values(tooltips).filter((t) => t.isShow),

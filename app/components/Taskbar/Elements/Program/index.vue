@@ -17,7 +17,7 @@
     const currentIndex = ref(0);
 
     const { register, unregister, setContainer, show, hide, updateWindowObs } =
-        useTaskbarTooltips();
+        useTooltipState();
 
     const container = ref<HTMLElement | null>(null);
 
