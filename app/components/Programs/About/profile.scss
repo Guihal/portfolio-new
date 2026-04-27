@@ -1,0 +1,125 @@
+.about {
+    &__left {
+        width: 300px;
+        min-width: 300px;
+        flex-shrink: 0;
+        display: flex;
+        max-height: 100%;
+        flex-direction: column;
+        gap: 10px;
+        box-sizing: border-box;
+
+        @include cwh('sm') {
+            background: c('default-3');
+            overflow-y: auto;
+        }
+
+        @include cw('sm') {
+            height: fit-content;
+            max-height: fit-content;
+            width: 100%;
+            padding: 10px;
+        }
+    }
+
+    &__photo {
+        background: c('default-3');
+        padding: 10px;
+        box-sizing: border-box;
+        height: auto;
+        flex-shrink: 0;
+        aspect-ratio: 1 / 1;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        max-height: 100%;
+
+        &-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            image-rendering: auto;
+        }
+
+        @include ch('sm') {
+            padding-bottom: 0;
+        }
+
+        @include cw('sm') {
+            padding: 0;
+        }
+    }
+
+    &__info {
+        background: c('default-3');
+        padding: 10px;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        flex: 1;
+        min-height: 0;
+        overflow: auto;
+
+        @include cwh('sm') {
+            padding-top: 0;
+            overflow: visible;
+            height: fit-content;
+            min-height: fit-content;
+            flex-shrink: 0;
+        }
+
+        @include cw('sm') {
+            padding: 0;
+        }
+    }
+
+    &__name {
+        @include t(20px, 1.2, 'default-contrast', 600);
+        margin: 0;
+    }
+
+    &__socials {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    &__social-link {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+        color: c('default-contrast');
+        transition: color 0.2s ease-in-out;
+
+        @media (hover: hover) {
+            &:hover {
+                color: c('accent');
+            }
+        }
+
+        &:active {
+            color: c('accent');
+        }
+    }
+
+    &__social-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 24px;
+        height: 24px;
+        flex-shrink: 0;
+
+        svg {
+            width: 20px;
+            height: 20px;
+        }
+    }
+
+    &__social-label {
+        @include t(14px, 1, 'default-contrast');
+    }
+}
