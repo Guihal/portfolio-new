@@ -2,6 +2,7 @@ import { createPinia, setActivePinia } from "pinia";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { effectScope, ref } from "vue";
 import { useFetchEntity } from "~/components/Window/composables/useFetchEntity";
+import { useEntitiesStore } from "~/stores/entities";
 import { useWindowsStore } from "~/stores/windows";
 import type { FsFile } from "~~/shared/types/filesystem";
 
@@ -11,6 +12,17 @@ const makeFile = (path = "/a"): FsFile => ({
 	programType: "project",
 });
 
+// P8-04: useFetchEntity тянет данные через useEntitiesStore().fetch.
+// Стабим store.fetch — это даёт прямой контроль над resolve/reject и
+// позволяет передавать произвольные error-объекты (включая legacy форму
+// `{statusMessage}` для проверки extractMsg).
+function stubEntitiesFetch(): ReturnType<typeof vi.fn> {
+	const fn = vi.fn();
+	const store = useEntitiesStore();
+	store.fetch = fn as unknown as typeof store.fetch;
+	return fn;
+}
+
 beforeEach(() => {
 	setActivePinia(createPinia());
 	vi.mocked($fetch).mockReset();
@@ -19,10 +31,11 @@ beforeEach(() => {
 
 describe("useFetchEntity", () => {
 	it("success path → windowOb.file установлен, error undefined", async () => {
+		const fetch = stubEntitiesFetch();
 		const s = useWindowsStore();
 		const w = s.create("/a");
 		const route = ref("/a");
-		vi.mocked($fetch).mockResolvedValueOnce(makeFile("/a"));
+		fetch.mockResolvedValueOnce(makeFile("/a"));
 
 		const scope = effectScope();
 		await scope.run(() => useFetchEntity(w, route));
@@ -35,11 +48,12 @@ describe("useFetchEntity", () => {
 	});
 
 	it("non-abort error → setError, errorMessage установлен", async () => {
+		const fetch = stubEntitiesFetch();
 		const s = useWindowsStore();
 		const w = s.create("/a");
 		const route = ref("/a");
 		const err = Object.assign(new Error("not found"), { statusMessage: "404" });
-		vi.mocked($fetch).mockRejectedValueOnce(err);
+		fetch.mockRejectedValueOnce(err);
 
 		const scope = effectScope();
 		await scope.run(() => useFetchEntity(w, route));
@@ -51,13 +65,14 @@ describe("useFetchEntity", () => {
 	});
 
 	it("abort error НЕ триггерит setError", async () => {
+		const fetch = stubEntitiesFetch();
 		const s = useWindowsStore();
 		const w = s.create("/a");
 		const route = ref("/a");
 		const abortErr = Object.assign(new Error("aborted"), {
 			name: "AbortError",
 		});
-		vi.mocked($fetch).mockRejectedValueOnce(abortErr);
+		fetch.mockRejectedValueOnce(abortErr);
 
 		const scope = effectScope();
 		await scope.run(() => useFetchEntity(w, route));
@@ -68,14 +83,33 @@ describe("useFetchEntity", () => {
 		scope.stop();
 	});
 
+	it("FsAbortedError (kind=aborted) НЕ триггерит setError", async () => {
+		const fetch = stubEntitiesFetch();
+		const s = useWindowsStore();
+		const w = s.create("/a");
+		const route = ref("/a");
+		const fsAbort = Object.assign(new Error("Filesystem request aborted"), {
+			name: "FsAbortedError",
+			kind: "aborted",
+		});
+		fetch.mockRejectedValueOnce(fsAbort);
+
+		const scope = effectScope();
+		await scope.run(() => useFetchEntity(w, route));
+
+		expect(w.states.error).toBeUndefined();
+		scope.stop();
+	});
+
 	it("multi-window isolation: ошибка в одном не аффектит другое", async () => {
+		const fetch = stubEntitiesFetch();
 		const s = useWindowsStore();
 		const w1 = s.create("/a");
 		const w2 = s.create("/b");
 		const r1 = ref("/a");
 		const r2 = ref("/b");
 
-		vi.mocked($fetch)
+		fetch
 			.mockRejectedValueOnce(
 				Object.assign(new Error("server"), { statusMessage: "500" }),
 			)
@@ -96,10 +130,11 @@ describe("useFetchEntity", () => {
 	});
 
 	it("default message при пустом error", async () => {
+		const fetch = stubEntitiesFetch();
 		const s = useWindowsStore();
 		const w = s.create("/a");
 		const route = ref("/a");
-		vi.mocked($fetch).mockRejectedValueOnce({});
+		fetch.mockRejectedValueOnce({});
 
 		const scope = effectScope();
 		await scope.run(() => useFetchEntity(w, route));
@@ -111,6 +146,7 @@ describe("useFetchEntity", () => {
 	});
 
 	it("per-window cache key: разные id → разные ключи", async () => {
+		const fetch = stubEntitiesFetch();
 		const s = useWindowsStore();
 		const w1 = s.create("/a");
 		const w2 = s.create("/a");
@@ -121,7 +157,7 @@ describe("useFetchEntity", () => {
 			"useAsyncData",
 		);
 
-		vi.mocked($fetch)
+		fetch
 			.mockResolvedValueOnce(makeFile("/a"))
 			.mockResolvedValueOnce(makeFile("/a"));
 
@@ -142,12 +178,13 @@ describe("useFetchEntity", () => {
 	});
 
 	it("recovery: успешный data после ошибки очищает error в store", async () => {
+		const fetch = stubEntitiesFetch();
 		const s = useWindowsStore();
 		const w = s.create("/a");
 		const route = ref("/a");
 		// pre-set error (имитируем stuck state после refresh без loading-cycle).
 		s.setError(w.id, "stale");
-		vi.mocked($fetch).mockResolvedValueOnce(makeFile("/a"));
+		fetch.mockResolvedValueOnce(makeFile("/a"));
 
 		const scope = effectScope();
 		await scope.run(() => useFetchEntity(w, route));
@@ -160,10 +197,11 @@ describe("useFetchEntity", () => {
 	});
 
 	it("dispose cleanup: clearNuxtData вызван с predicate match'ащим windowOb.id", async () => {
+		const fetch = stubEntitiesFetch();
 		const s = useWindowsStore();
 		const w = s.create("/a");
 		const route = ref("/a");
-		vi.mocked($fetch).mockResolvedValueOnce(makeFile("/a"));
+		fetch.mockResolvedValueOnce(makeFile("/a"));
 
 		const scope = effectScope();
 		await scope.run(() => useFetchEntity(w, route));

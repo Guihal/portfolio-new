@@ -1,3 +1,4 @@
+import { useEntitiesStore } from "~/stores/entities";
 import { useWindowsStore } from "~/stores/windows";
 import type { FsFile } from "~~/shared/types/filesystem";
 import type { WindowOb } from "../types";
@@ -9,17 +10,17 @@ function isAbortError(err: unknown): boolean {
 	if (!err || typeof err !== "object") return false;
 	const e = err as {
 		name?: string;
+		kind?: string;
 		cause?: { name?: string };
 		message?: string;
 	};
-	if (e.name === "AbortError") return true;
+	// FsAbortedError → kind="aborted" (services/filesystem/errors.ts).
+	if (e.kind === "aborted") return true;
+	if (e.name === "AbortError" || e.name === "FsAbortedError") return true;
 	if (e.cause?.name === "AbortError") return true;
-	if (
-		e.message?.includes("aborted") ||
-		e.message?.includes("signal is aborted")
-	)
-		return true;
-	return false;
+	return Boolean(
+		e.message?.includes("aborted") || e.message?.includes("signal is aborted"),
+	);
 }
 
 function extractMsg(err: unknown): string {
@@ -30,18 +31,20 @@ function extractMsg(err: unknown): string {
 
 /**
  * Слитый fetch для окна: грузит сущность по `windowRoute` и регистрирует
- * `isLoading` в global window-loading registry. Заменяет
- * `useFetchWindowEntity` + `useWindowFetch`.
+ * `isLoading` в global window-loading registry.
  *
- * Per-window cache key (включает windowOb.id) — два окна на одинаковом path
- * не делят data/error через useAsyncData. Stale Nuxt payload entries
- * чистятся per-route (watch на windowRoute) и per-window (onScopeDispose).
+ * P8-04: данные тянутся через `useEntitiesStore().fetch(path)` — shared cache
+ * + in-flight dedup. Два окна на одинаковом path делят underlying request,
+ * но per-window useAsyncData key (включает windowOb.id) сохраняет отдельный
+ * Nuxt payload entry для SSR hydration. Stale Nuxt payload entries чистятся
+ * per-route (watch на windowRoute) и per-window (onScopeDispose).
  */
 export async function useFetchEntity(
 	windowOb: WindowOb,
 	windowRoute: Readonly<Ref<string>>,
 ) {
 	const windowsStore = useWindowsStore();
+	const entitiesStore = useEntitiesStore();
 
 	const isNeedLoading = computed(() => {
 		return (
@@ -96,8 +99,7 @@ export async function useFetchEntity(
 
 			inFlightCount.value++;
 			try {
-				return await $fetch("/api/filesystem/get", {
-					query: { path: windowRoute.value },
+				return await entitiesStore.fetch(windowRoute.value, {
 					signal: controller.signal,
 				});
 			} finally {
