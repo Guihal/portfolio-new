@@ -1,6 +1,7 @@
 <script setup lang="ts">
     import { storeToRefs } from 'pinia';
     import type { WindowOb } from '~/components/Window/types';
+    import { positionTooltip } from '~/services/tooltipState';
     import { useContentAreaStore } from '~/stores/contentArea';
     import type { ProgramType } from '~~/shared/types/filesystem';
 
@@ -29,34 +30,17 @@
     useResizeObserver(content, setContentBounds);
 
     const { area: contentArea } = storeToRefs(useContentAreaStore());
-    const { cancelHide, hide } = useTaskbarTooltips();
+    const { cancelHide, hide } = useTooltipState();
 
     const maxWidth = computed(() => contentArea.value.width);
 
-    const top = computed(() => {
-        if (!props.containerBounds || !tooltipBounds.value) return 0;
-
-        return props.containerBounds.top - tooltipBounds.value.height;
-    });
-
-    const left = computed(() => {
-        if (!props.containerBounds || !tooltipBounds.value) return 0;
-
-        const value =
-            props.containerBounds.left +
-            props.containerBounds.width / 2 -
-            tooltipBounds.value.width / 2;
-
-        const valueClamped = Math.max(
-            Math.min(
-                value,
-                contentArea.value.width - tooltipBounds.value.width,
-            ),
-            0,
-        );
-
-        return valueClamped;
-    });
+    const position = computed(() =>
+        positionTooltip({
+            target: props.containerBounds,
+            tooltip: tooltipBounds.value,
+            viewportWidth: contentArea.value.width,
+        }),
+    );
 
     const onMouseover = () => cancelHide(props.programType);
     const onMouseout = () => hide(props.programType);
@@ -66,8 +50,8 @@
     <div
         ref="tooltip"
         :style="{
-            '--top': top,
-            '--left': left,
+            '--top': position.top,
+            '--left': position.left,
             '--mxw': maxWidth,
             '--c-w': contentBounds?.width ?? 0,
         }"

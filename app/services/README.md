@@ -49,7 +49,7 @@ setup. Reactivity и lifecycle — забота composable-обёртки над
 |---|---|---|
 | `filesystem/FsClient.ts`, `filesystem/parseEntity.ts` | P8-03 | extract `$fetch` из SFC |
 | `windowPreviewGenerator.ts` | P8-06 | `stores/frame.ts` MutationObserver |
-| `tooltipState.ts` | P8-07 | `useTaskbarTooltips.ts` DOM calc |
+| `tooltipState.ts` | P8-07 | `TaskbarTooltipItem.vue` positioning math |
 | `gridCalculator.ts` | P8-08 | `useGridCells.ts` pure compute |
 
 Все .ts файлы в текущей версии — TODO-stubs (валидные TS-модули,
