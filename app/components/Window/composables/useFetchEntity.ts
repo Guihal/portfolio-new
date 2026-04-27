@@ -1,5 +1,6 @@
 import { useEntitiesStore } from "~/stores/entities";
 import { useWindowsStore } from "~/stores/windows";
+import { useWindowsUIStore } from "~/stores/windowsUI";
 import type { FsFile } from "~~/shared/types/filesystem";
 import type { WindowOb } from "../types";
 import { useWindowLoading } from "./useWindowLoading";
@@ -44,6 +45,7 @@ export async function useFetchEntity(
 	windowRoute: Readonly<Ref<string>>,
 ) {
 	const windowsStore = useWindowsStore();
+	const uiStore = useWindowsUIStore();
 	const entitiesStore = useEntitiesStore();
 
 	const isNeedLoading = computed(() => {
@@ -115,13 +117,13 @@ export async function useFetchEntity(
 	);
 
 	if (error.value && !isAbortError(error.value)) {
-		windowsStore.setError(windowOb.id, extractMsg(error.value));
+		uiStore.setError(windowOb.id, extractMsg(error.value));
 	}
 
 	watch(error, (newVal) => {
 		if (!newVal) return;
 		if (isAbortError(newVal)) return;
-		windowsStore.setError(windowOb.id, extractMsg(newVal));
+		uiStore.setError(windowOb.id, extractMsg(newVal));
 	});
 
 	watch(
@@ -131,7 +133,7 @@ export async function useFetchEntity(
 			windowsStore.setFile(windowOb.id, data.value);
 			// Symmetric к watch(error): успешный fetch очищает прошлую ошибку
 			// если она задержалась (refresh без loading-transition cycle).
-			windowsStore.setError(windowOb.id, null);
+			uiStore.setError(windowOb.id, null);
 		},
 		{
 			immediate: true,

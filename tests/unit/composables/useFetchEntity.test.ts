@@ -4,6 +4,7 @@ import { effectScope, ref } from "vue";
 import { useFetchEntity } from "~/components/Window/composables/useFetchEntity";
 import { useEntitiesStore } from "~/stores/entities";
 import { useWindowsStore } from "~/stores/windows";
+import { useWindowsUIStore } from "~/stores/windowsUI";
 import type { FsFile } from "~~/shared/types/filesystem";
 
 const makeFile = (path = "/a"): FsFile => ({
@@ -40,16 +41,18 @@ describe("useFetchEntity", () => {
 		const scope = effectScope();
 		await scope.run(() => useFetchEntity(w, route));
 
+		const ui = useWindowsUIStore();
 		expect(w.file).toEqual(makeFile("/a"));
 		expect(w.states.error).toBeUndefined();
-		expect(w.errorMessage).toBeUndefined();
+		expect(ui.getError(w.id)).toBeUndefined();
 
 		scope.stop();
 	});
 
-	it("non-abort error → setError, errorMessage установлен", async () => {
+	it("non-abort error → setError, UI message установлен", async () => {
 		const fetch = stubEntitiesFetch();
 		const s = useWindowsStore();
+		const ui = useWindowsUIStore();
 		const w = s.create("/a");
 		const route = ref("/a");
 		const err = Object.assign(new Error("not found"), { statusMessage: "404" });
@@ -59,7 +62,7 @@ describe("useFetchEntity", () => {
 		await scope.run(() => useFetchEntity(w, route));
 
 		expect(w.states.error).toBe(true);
-		expect(w.errorMessage).toBe("404");
+		expect(ui.getError(w.id)).toBe("404");
 
 		scope.stop();
 	});
@@ -67,6 +70,7 @@ describe("useFetchEntity", () => {
 	it("abort error НЕ триггерит setError", async () => {
 		const fetch = stubEntitiesFetch();
 		const s = useWindowsStore();
+		const ui = useWindowsUIStore();
 		const w = s.create("/a");
 		const route = ref("/a");
 		const abortErr = Object.assign(new Error("aborted"), {
@@ -78,7 +82,7 @@ describe("useFetchEntity", () => {
 		await scope.run(() => useFetchEntity(w, route));
 
 		expect(w.states.error).toBeUndefined();
-		expect(w.errorMessage).toBeUndefined();
+		expect(ui.getError(w.id)).toBeUndefined();
 
 		scope.stop();
 	});
@@ -104,6 +108,7 @@ describe("useFetchEntity", () => {
 	it("multi-window isolation: ошибка в одном не аффектит другое", async () => {
 		const fetch = stubEntitiesFetch();
 		const s = useWindowsStore();
+		const ui = useWindowsUIStore();
 		const w1 = s.create("/a");
 		const w2 = s.create("/b");
 		const r1 = ref("/a");
@@ -121,7 +126,7 @@ describe("useFetchEntity", () => {
 		await scope2.run(() => useFetchEntity(w2, r2));
 
 		expect(w1.states.error).toBe(true);
-		expect(w1.errorMessage).toBe("500");
+		expect(ui.getError(w1.id)).toBe("500");
 		expect(w2.states.error).toBeUndefined();
 		expect(w2.file).toEqual(makeFile("/b"));
 
@@ -132,6 +137,7 @@ describe("useFetchEntity", () => {
 	it("default message при пустом error", async () => {
 		const fetch = stubEntitiesFetch();
 		const s = useWindowsStore();
+		const ui = useWindowsUIStore();
 		const w = s.create("/a");
 		const route = ref("/a");
 		fetch.mockRejectedValueOnce({});
@@ -140,7 +146,7 @@ describe("useFetchEntity", () => {
 		await scope.run(() => useFetchEntity(w, route));
 
 		expect(w.states.error).toBe(true);
-		expect(w.errorMessage).toBe("Не удалось открыть");
+		expect(ui.getError(w.id)).toBe("Не удалось открыть");
 
 		scope.stop();
 	});
@@ -180,17 +186,18 @@ describe("useFetchEntity", () => {
 	it("recovery: успешный data после ошибки очищает error в store", async () => {
 		const fetch = stubEntitiesFetch();
 		const s = useWindowsStore();
+		const ui = useWindowsUIStore();
 		const w = s.create("/a");
 		const route = ref("/a");
 		// pre-set error (имитируем stuck state после refresh без loading-cycle).
-		s.setError(w.id, "stale");
+		ui.setError(w.id, "stale");
 		fetch.mockResolvedValueOnce(makeFile("/a"));
 
 		const scope = effectScope();
 		await scope.run(() => useFetchEntity(w, route));
 
 		expect(w.states.error).toBeUndefined();
-		expect(w.errorMessage).toBeUndefined();
+		expect(ui.getError(w.id)).toBeUndefined();
 		expect(w.file).toEqual(makeFile("/a"));
 
 		scope.stop();

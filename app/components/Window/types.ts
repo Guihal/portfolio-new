@@ -28,7 +28,6 @@ export type WindowOb = {
 		value: string;
 	};
 	file: WindowFile;
-	errorMessage?: string;
 };
 
 export const WindowObKey: InjectionKey<WindowOb> = Symbol("WindowOb");

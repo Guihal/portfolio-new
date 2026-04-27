@@ -3,6 +3,7 @@ import { useFocusStore } from "~/stores/focus";
 import { useFrameStore } from "~/stores/frame";
 import { useQueuedRouterStore } from "~/stores/queuedRouter";
 import { useWindowsStore } from "~/stores/windows";
+import { useWindowsUIStore } from "~/stores/windowsUI";
 import { useWindowLoading } from "../composables/useWindowLoading";
 import type { WindowOb } from "../types";
 
@@ -22,9 +23,10 @@ export function useRemoveWindow(windowOb: WindowOb) {
 	// Очистка loaders ДО bounds: watchEffect в initWindowLoading может читать loaders[id]
 	unregister(windowOb.id);
 
-	// Удаляем bounds + frame observer/image из соответствующих сторов
+	// Удаляем bounds + frame observer/image + UI message из соответствующих сторов
 	useBoundsStore().remove(windowOb.id);
 	useFrameStore().remove(windowOb.id);
+	useWindowsUIStore().clear(windowOb.id);
 
 	const removed = useWindowsStore().remove(windowOb.id);
 	if (removed && wasFocused) {

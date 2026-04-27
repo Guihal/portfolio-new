@@ -1,14 +1,16 @@
 <script setup lang="ts">
     import { useInjectWindow } from '~/components/Window/composables/useInjectWindow';
     import { useProgramSetup } from '~/components/Window/composables/useProgramSetup';
+    import { useWindowsUIStore } from '~/stores/windowsUI';
 
     const windowOb = useInjectWindow();
     const { programView } = useProgramSetup(windowOb);
+    const uiStore = useWindowsUIStore();
 
     const hasError = computed(() => windowOb.states.error === true);
     const isLoading = computed(() => windowOb.states.loading === true);
     const errorText = computed(
-        () => windowOb.errorMessage || 'Не удалось открыть',
+        () => uiStore.getError(windowOb.id) || 'Не удалось открыть',
     );
 </script>
 
