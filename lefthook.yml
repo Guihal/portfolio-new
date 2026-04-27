@@ -10,7 +10,7 @@ pre-commit:
       run: bunx nuxi typecheck
     vue-sfc-size:
       glob: "*.vue"
-      run: bun run scripts/check-vue-sfc-size.ts {staged_files}
+      run: bun run scripts/check-vue-sfc-size.ts --strict {staged_files}
 
 pre-push:
   commands:

@@ -145,23 +145,31 @@ app/
 │   │   ├── Loader.vue
 │   │   ├── types.ts                  # WindowOb, WindowState, WindowStates
 │   │   ├── _nav.scss
-│   │   ├── composables/
-│   │   │   ├── useWindow.ts          # Фасад: routing+entity+focus+bounds-anim+states+seo+preview
-│   │   │   ├── useWindowRoute.ts     # window ↔ URL
-│   │   │   ├── useFetchEntity.ts     # GET /api/filesystem/get → windowOb.file
-│   │   │   ├── useWindowLoading.ts
-│   │   │   ├── useCollapsed.ts
-│   │   │   ├── useOnFullScreen.ts
-│   │   │   ├── useWindowFullscreenAutoSet.ts
-│   │   │   ├── useSetFocusState.ts
-│   │   │   ├── useFocusOnClick.ts
-│   │   │   ├── useSeoWindow.ts
-│   │   │   ├── useCreateAndRegisterWindow.ts
-│   │   │   ├── useCreateWindowByPath.ts
-│   │   │   ├── useClampTargetOnResizeEnd.ts
-│   │   │   ├── useResizeForDirections.ts
-│   │   │   ├── useResizeForDirectionsEvent.ts
-│   │   │   └── useWindowBoundsAnimation/
+│   │   ├── composables/              # P8-12: сгруппированы по назначению
+│   │   │   ├── useWindow.ts          # Фасад: вызывается из Window/index.vue
+│   │   │   ├── lifecycle/            # create/inject/observers
+│   │   │   │   ├── useCreateAndRegisterWindow.ts, useCreateWindowByPath.ts
+│   │   │   │   ├── useInjectWindow.ts, useInjectWindowRoute.ts
+│   │   │   │   ├── useFrameObserverLifecycle.ts, useWindowPreviewObserver.ts
+│   │   │   ├── fetch/                # entity loading
+│   │   │   │   ├── useFetchEntity.ts, useLoadingStateSync.ts
+│   │   │   ├── focus/                # focus/blur
+│   │   │   │   ├── useFocusOnClick.ts, useSetFocusState.ts
+│   │   │   ├── fullscreen/           # fullscreen mode
+│   │   │   │   ├── useFullscreenOnMount.ts, useOnFullScreen.ts
+│   │   │   │   ├── useWindowFullscreenAutoSet.ts
+│   │   │   ├── collapse/             # сворачивание + memory
+│   │   │   │   ├── useCollapsed.ts, useCollapseTrigger.ts
+│   │   │   │   ├── useCollapseBoundsMemory.ts, useCollapseOffscreenPosition.ts
+│   │   │   ├── resize/               # drag-resize hooks
+│   │   │   │   ├── useResizeForDirections.ts, useResizeForDirectionsEvent.ts
+│   │   │   ├── route/                # window ↔ URL
+│   │   │   │   ├── useWindowRoute.ts, useWindowLoading.ts
+│   │   │   ├── seo/
+│   │   │   │   └── useSeoWindow.ts
+│   │   │   ├── program/
+│   │   │   │   └── useProgramSetup.ts
+│   │   │   └── anim/useWindowBoundsAnimation/
 │   │   │       ├── index.ts          # Public composable (RAF + CSS-vars)
 │   │   │       ├── controller.ts     # Animation step / lerp
 │   │   │       └── easing.ts
@@ -184,17 +192,22 @@ app/
 │   └── Workbench/
 │       ├── index.vue                 # Рабочий стол (grid ярлыков)
 │       └── Shortcut/index.vue        # Адаптер над Shortcut/Base
-├── composables/
-│   ├── useAppBootstrap.ts            # Init top-level effects (viewport, taskbar)
-│   ├── useBatchedRef.ts              # queueMicrotask-batched ref
-│   ├── useGetShortcut.ts             # Метаданные ярлыка по FsFile (icon, name, isRegistered)
-│   ├── useGridCells.ts
-│   ├── useResizeObserver.ts
-│   ├── useSeoUnfocus.ts
-│   ├── useSetChainedWatchers.ts      # Условные watchers (active by predicate)
-│   ├── useTaskbarTooltips.ts
-│   ├── useViewportObserver.ts
-│   └── useWindowTitle.ts
+├── composables/                      # P8-13: разделение global/window/shared
+│   ├── index.ts                      # barrel re-export
+│   ├── global/                       # cross-app singletons (init at app mount)
+│   │   ├── useAppBootstrap.ts        # Init top-level effects (viewport, taskbar)
+│   │   ├── useViewportObserver.ts
+│   │   └── useWindowTitle.ts
+│   ├── window/                       # per-window OR per-component helpers
+│   │   ├── useBatchedRef.ts          # queueMicrotask-batched ref
+│   │   ├── useGridCells.ts
+│   │   ├── useProgramFetch.ts        # SSR-aware fetch для program SFCs
+│   │   ├── useResizeObserver.ts
+│   │   ├── useSeoUnfocus.ts
+│   │   ├── useSetChainedWatchers.ts  # Условные watchers (active by predicate)
+│   │   └── useTooltipState.ts        # Taskbar tooltip show/hide state
+│   └── shared/                       # used by both global+window
+│       └── useGetShortcut.ts         # Метаданные ярлыка по FsFile
 ├── programs/                         # Data-driven program registry
 │   ├── index.ts                      # REGISTRY + getProgram/getAllPrograms/hasProgram
 │   ├── about.ts

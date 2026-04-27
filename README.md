@@ -1,6 +1,10 @@
 # Dimonya OS — Portfolio
 
+![architecture](https://img.shields.io/badge/file_limit-150_LOC-2f8a2f) ![sfc](https://img.shields.io/badge/Vue_SFC-strict-2f8a2f) ![phase8](https://img.shields.io/badge/Phase_8-complete-2f8a2f)
+
 > **Менеджер пакетов: только [Bun](https://bun.sh).** Не использовать npm/pnpm/yarn — только `bun`.
+
+> **Architecture limits** — max 150 LOC per file (ESLint `max-lines: error` + Vue SFC strict check), enforced via lefthook pre-commit. Whitelist + rules: [docs/RULES.md](docs/RULES.md).
 
 ## Setup
 
