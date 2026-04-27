@@ -58,7 +58,7 @@
             height: 100%;
             padding: 20px;
             text-align: center;
-            color: c-rgba('text', 0.7);
+            color: c-rgba('default-contrast', 0.7);
         }
     }
 </style>
