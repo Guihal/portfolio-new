@@ -1,14 +1,11 @@
 import { reactive } from "vue";
 import type { WindowOb } from "~/components/Window/types";
+import { TOOLTIP_HIDE_DELAY_MS } from "~/utils/constants/timing";
 import type { ProgramType } from "~~/shared/types/filesystem";
 
 // P8-07: переименование из useTaskbarTooltips. Метод-логика — module-level
 // функции (closure-free, max-lines-per-function < 60). Module-state guarded
 // by import.meta.client (SSR-safe: на сервере state=null, методы no-op).
-//
-// Грейс перед скрытием тултипа — защита от мерцания при перелёте курсора между
-// program items. Магия 150 → P8-09 (TOOLTIP_HIDE_DELAY_MS из utils/constants/timing.ts).
-const HIDE_DELAY_MS = 150;
 
 export type TooltipEntry = {
 	programType: ProgramType;
@@ -88,7 +85,7 @@ function hide(programType: ProgramType) {
 			const entry = state[programType];
 			if (entry) entry.isShow = false;
 			hideTimers.delete(programType);
-		}, HIDE_DELAY_MS),
+		}, TOOLTIP_HIDE_DELAY_MS),
 	);
 }
 
