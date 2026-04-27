@@ -1,21 +1,24 @@
 import type { WatchHandle } from "vue";
+import {
+	animationScheduler,
+	type Tickable,
+} from "~/services/animationScheduler";
 import { useBoundsStore, type WindowBoundsKey } from "~/stores/bounds";
 import type { WindowOb } from "../../../types";
 import { easeTowards } from "./easing";
 
 /**
  * Контроллер анимационного цикла для плавного изменения границ окна.
- * Использует один RAF-цикл для всех свойств (left, top, height, width).
- * Пишет cssText напрямую в DOM, минуя Vue reactivity.
+ * tick(deltaTime) зовётся глобальным animationScheduler'ом (PR-C) —
+ * один rAF-loop на страницу вместо N локальных. Пишет cssText напрямую в DOM,
+ * минуя Vue reactivity.
  */
-export class WindowAnimationController {
+export class WindowAnimationController implements Tickable {
 	windowOb: WindowOb;
 	keys: WindowBoundsKey[] = ["left", "top", "height", "width"];
 
 	activeKeys = new Set<WindowBoundsKey>();
 	watchers: WatchHandle[] = [];
-	rafId: number | null = null;
-	lastTimestamp = 0;
 	element: HTMLElement | null = null;
 	prevCssText = "";
 
@@ -34,18 +37,12 @@ export class WindowAnimationController {
 				() => target[key],
 				() => {
 					this.activeKeys.add(key);
-					this.ensureRunning();
+					animationScheduler.register(this);
 				},
 				{ immediate: true },
 			);
 			this.watchers.push(wh);
 		}
-	}
-
-	ensureRunning() {
-		if (this.rafId !== null) return;
-		this.lastTimestamp = performance.now();
-		this.rafId = requestAnimationFrame(this.tick);
 	}
 
 	/** Пишет cssText в element только при изменении строки. */
@@ -58,11 +55,7 @@ export class WindowAnimationController {
 		this.element.style.cssText = cssText;
 	}
 
-	tick = () => {
-		const now = performance.now();
-		const deltaTime = now - this.lastTimestamp;
-		this.lastTimestamp = now;
-
+	tick(deltaTime: number): boolean {
 		const slot = useBoundsStore().ensure(this.windowOb.id);
 		const { target, calculated } = slot;
 		const interacting = Boolean(
@@ -87,18 +80,11 @@ export class WindowAnimationController {
 
 		this.flushToDOM();
 
-		if (this.activeKeys.size > 0) {
-			this.rafId = requestAnimationFrame(this.tick);
-		} else {
-			this.rafId = null;
-		}
-	};
+		return this.activeKeys.size > 0;
+	}
 
 	destroy() {
-		if (this.rafId !== null) {
-			cancelAnimationFrame(this.rafId);
-			this.rafId = null;
-		}
+		animationScheduler.unregister(this);
 		for (const wh of this.watchers) {
 			wh();
 		}
