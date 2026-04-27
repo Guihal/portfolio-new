@@ -19,6 +19,13 @@ export type Entity = {
 
 export type FsFile = Entity & { path: string };
 
+// P8-03 — алиасы для FsClient API. Сервер /api/filesystem/list возвращает FsFile[],
+// /api/filesystem/breadcrumbs возвращает FsFile[]. Отдельные имена сохраняют
+// семантику в сигнатурах клиента и упрощают будущую эволюцию (если breadcrumb
+// получит дополнительные поля — менять только Breadcrumb).
+export type FsList = FsFile[];
+export type Breadcrumb = FsFile;
+
 export type ManifestEntry = {
 	name: string;
 	path: string;

@@ -1,4 +1,6 @@
-// TODO: P8-03 — re-export FsClient + parseEntity.
-// Реализация (FsClient.get/list/getBreadcrumbs, parseEntity type guard) приходит в P8-03.
+// P8-03 — публичный API filesystem-сервиса.
+// См. docs/refactor/P8-03-filesystem-client.md, docs/RULES.md §2a (SSR-контракт).
 
-export {};
+export * from "./errors";
+export { FsClient } from "./FsClient";
+export { isFsFile, parseFsFile } from "./parseEntity";
