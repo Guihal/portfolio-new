@@ -1,6 +1,6 @@
 import { onMounted, onScopeDispose, ref } from "vue";
 import { useWindowsStore } from "~/stores/windows";
-import type { WindowOb } from "../types";
+import type { WindowOb } from "../../types";
 
 /**
  * On mount: ставит state.fullscreen=true, чистит fullscreen-ready,

@@ -1,8 +1,8 @@
 import { storeToRefs } from "pinia";
 import { useBoundsStore } from "~/stores/bounds";
 import { useContentAreaStore } from "~/stores/contentArea";
-import type { WindowOb } from "../types";
-import { type ClampFn, clampHandlers } from "../utils/clampers";
+import type { WindowOb } from "../../types";
+import { type ClampFn, clampHandlers } from "../../utils/clampers";
 
 /**
  * Конфигурация цепочек свойств для изменения размера.

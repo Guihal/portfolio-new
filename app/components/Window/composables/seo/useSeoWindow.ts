@@ -1,4 +1,4 @@
-import type { WindowOb } from "../types";
+import type { WindowOb } from "../../types";
 
 export function useSeoWindow(windowOb: WindowOb) {
 	const { title } = useWindowTitle(computed(() => windowOb.file));

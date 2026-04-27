@@ -1,6 +1,6 @@
 <script setup lang="ts">
-    import { useInjectWindow } from '~/components/Window/composables/useInjectWindow';
-    import { useProgramSetup } from '~/components/Window/composables/useProgramSetup';
+    import { useInjectWindow } from '~/components/Window/composables/lifecycle/useInjectWindow';
+    import { useProgramSetup } from '~/components/Window/composables/program/useProgramSetup';
     import { useWindowsUIStore } from '~/stores/windowsUI';
 
     const windowOb = useInjectWindow();

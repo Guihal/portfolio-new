@@ -1,7 +1,7 @@
 import { createPinia, setActivePinia } from "pinia";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { effectScope, ref } from "vue";
-import { useFetchEntity } from "~/components/Window/composables/useFetchEntity";
+import { useFetchEntity } from "~/components/Window/composables/fetch/useFetchEntity";
 import { useEntitiesStore } from "~/stores/entities";
 import { useWindowsStore } from "~/stores/windows";
 import { useWindowsUIStore } from "~/stores/windowsUI";

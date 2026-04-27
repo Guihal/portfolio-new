@@ -1,5 +1,5 @@
 import { onMounted, onUnmounted } from "vue";
-import type { WindowOb } from "../types";
+import type { WindowOb } from "../../types";
 import { useWindowPreviewObserver } from "./useWindowPreviewObserver";
 
 /**

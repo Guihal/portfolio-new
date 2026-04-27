@@ -1,5 +1,5 @@
 <script setup lang="ts">
-    import { useInjectWindow } from '~/components/Window/composables/useInjectWindow';
+    import { useInjectWindow } from '~/components/Window/composables/lifecycle/useInjectWindow';
     import { useBoundsStore } from '~/stores/bounds';
     import { useWindowsStore } from '~/stores/windows';
     import { OFFSET } from '~/utils/constants/offset';

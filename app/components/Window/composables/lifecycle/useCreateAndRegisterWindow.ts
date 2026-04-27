@@ -1,8 +1,8 @@
 import { useFocusStore } from "~/stores/focus";
 import { useWindowsStore } from "~/stores/windows";
 import type { FsFile } from "~~/shared/types/filesystem";
-import type { WindowOb, WindowStates } from "../types";
-import { useGetId } from "../utils/useGetId";
+import type { WindowOb, WindowStates } from "../../types";
+import { useGetId } from "../../utils/useGetId";
 
 interface UseCreateAndRegisterWindowOptions {
 	isForce?: boolean; // Игнорировать проверку на дубликаты

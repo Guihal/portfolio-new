@@ -2,8 +2,8 @@ import { useEntitiesStore } from "~/stores/entities";
 import { useWindowsStore } from "~/stores/windows";
 import { useWindowsUIStore } from "~/stores/windowsUI";
 import type { FsFile } from "~~/shared/types/filesystem";
-import type { WindowOb } from "../types";
-import { useWindowLoading } from "./useWindowLoading";
+import type { WindowOb } from "../../types";
+import { useWindowLoading } from "../route/useWindowLoading";
 
 const DEFAULT_ERR_MSG = "Не удалось открыть";
 

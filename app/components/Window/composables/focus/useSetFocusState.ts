@@ -1,6 +1,6 @@
 import { useFocusStore } from "~/stores/focus";
 import { useWindowsStore } from "~/stores/windows";
-import type { WindowOb } from "../types";
+import type { WindowOb } from "../../types";
 
 export function useSetFocusState(windowOb: WindowOb) {
 	const focusStore = useFocusStore();

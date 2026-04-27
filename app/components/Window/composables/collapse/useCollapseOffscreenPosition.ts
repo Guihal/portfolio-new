@@ -1,7 +1,7 @@
 import { storeToRefs } from "pinia";
 import { useBoundsStore } from "~/stores/bounds";
 import { useContentAreaStore } from "~/stores/contentArea";
-import type { WindowOb } from "../types";
+import type { WindowOb } from "../../types";
 
 /**
  * При collapsed=true перемещает окно за пределы видимой области

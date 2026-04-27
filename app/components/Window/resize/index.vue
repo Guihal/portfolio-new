@@ -1,6 +1,6 @@
 <script setup lang="ts">
-    import type { ChainedKey } from '../composables/useResizeForDirections';
-    import { useResizeForDirectionsEvent } from '../composables/useResizeForDirectionsEvent';
+    import type { ChainedKey } from '../composables/resize/useResizeForDirections';
+    import { useResizeForDirectionsEvent } from '../composables/resize/useResizeForDirectionsEvent';
     import type { WindowOb } from '../types';
 
     const { directions, windowOb } = defineProps<{

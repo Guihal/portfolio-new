@@ -26,7 +26,7 @@ vi.mock("~/programs", () => ({
 	}),
 }));
 
-import { useProgramSetup } from "~/components/Window/composables/useProgramSetup";
+import { useProgramSetup } from "~/components/Window/composables/program/useProgramSetup";
 import { ProgramViewKey, type WindowOb } from "~/components/Window/types";
 
 const makeFile = (programType: FsFile["programType"]): FsFile => ({

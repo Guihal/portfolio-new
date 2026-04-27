@@ -4,7 +4,7 @@ import { useContentAreaStore } from "~/stores/contentArea";
 import { useWindowsStore } from "~/stores/windows";
 import { OFFSET } from "~/utils/constants/offset";
 import { FULLSCREEN_AUTO_SET_DELAY_MS } from "~/utils/constants/timing";
-import type { WindowOb } from "../types";
+import type { WindowOb } from "../../types";
 
 /**
  * Автоматический переход в fullscreen при перетаскивании окна за границы.
