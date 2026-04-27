@@ -41,7 +41,10 @@ class AnimationScheduler {
 
 	private ensureRunning(): void {
 		if (this.rafId !== null) return;
-		if (typeof document !== "undefined" && document.visibilityState === "hidden")
+		if (
+			typeof document !== "undefined" &&
+			document.visibilityState === "hidden"
+		)
 			return;
 		this.lastTimestamp = performance.now();
 		this.rafId = requestAnimationFrame(this.loop);
