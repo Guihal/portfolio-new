@@ -1,5 +1,5 @@
 <script setup lang="ts">
-    import { useTaskbarObserver } from '~/composables/useViewportObserver';
+    import { useTaskbarObserver } from '~/composables/global/useViewportObserver';
     import { useFocusStore } from '~/stores/focus';
     import { useQueuedRouterStore } from '~/stores/queuedRouter';
 

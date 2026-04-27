@@ -1,7 +1,7 @@
 <script setup lang="ts">
     
-    import { useAppBootstrap } from './composables/useAppBootstrap';
-import { useViewportObserver } from './composables/useViewportObserver';
+    import { useAppBootstrap } from './composables/global/useAppBootstrap';
+import { useViewportObserver } from './composables/global/useViewportObserver';
 
     useViewportObserver();
 

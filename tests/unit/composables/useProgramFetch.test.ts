@@ -36,7 +36,7 @@ vi.mock("~/services/filesystem", () => ({
 	},
 }));
 
-import { useProgramFetch } from "~/composables/useProgramFetch";
+import { useProgramFetch } from "~/composables/window/useProgramFetch";
 import { FsClient, FsServerError } from "~/services/filesystem";
 import { useEntitiesStore } from "~/stores/entities";
 

@@ -1,6 +1,6 @@
 <script setup lang="ts">
     import { useCreateAndRegisterWindow } from './components/Window/composables/lifecycle/useCreateAndRegisterWindow';
-    import { useViewportObserver } from './composables/useViewportObserver';
+    import { useViewportObserver } from './composables/global/useViewportObserver';
     import { useWindowsStore } from './stores/windows';
 
     useViewportObserver();
