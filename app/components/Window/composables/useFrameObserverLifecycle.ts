@@ -1,22 +1,23 @@
 import { onMounted, onUnmounted } from "vue";
-import { useFrameStore } from "~/stores/frame";
 import type { WindowOb } from "../types";
+import { useWindowPreviewObserver } from "./useWindowPreviewObserver";
 
 /**
- * Lifecycle: при mount — initial focus + create frame observer; при unmount —
- * destroy observer. Router/focus reset при закрытии окна — orchestrator
- * useRemoveWindow (см. utils/removeWindow.ts).
+ * Lifecycle: при mount — initial focus + start preview observer; при unmount —
+ * stop observer (через cleanup из useWindowPreviewObserver). Router/focus
+ * reset при закрытии окна — orchestrator useRemoveWindow (см. utils/removeWindow.ts).
  */
 export function useFrameObserverLifecycle(
 	windowOb: WindowOb,
 	focusWindow: () => void,
 ) {
-	const frameStore = useFrameStore();
+	let cleanup: (() => void) | null = null;
 	onMounted(() => {
 		focusWindow();
-		frameStore.createObserver(windowOb);
+		cleanup = useWindowPreviewObserver(windowOb);
 	});
 	onUnmounted(() => {
-		frameStore.destroyObserver(windowOb.id);
+		cleanup?.();
+		cleanup = null;
 	});
 }
