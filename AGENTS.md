@@ -35,6 +35,17 @@
 - `server/utils/` — h3 server-only. **Никогда** не импортится из `app/`.
 - `shared/utils/` — pure cross-runtime (нужно и в app, и в server).
 
+### Импорты `app/services/` (P8-02)
+
+`app/services/**` изолирован от Vue/Pinia слоёв — enforced ESLint
+`no-restricted-imports` в `eslint.config.mjs`.
+
+- **Допустимо**: `app/services/foo.ts` → `app/utils/bar.ts`, `shared/utils/*`, `shared/types/*`.
+- **Запрещено**: `app/services/foo.ts` → `app/composables/x.ts`, `app/stores/y.ts`, `app/components/Z.vue`.
+
+Reactivity и lifecycle — забота composable-обёртки над services. См.
+[app/services/README.md](app/services/README.md).
+
 ## Стек
 
 | Слой             | Технология                                             |

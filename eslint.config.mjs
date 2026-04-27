@@ -67,4 +67,21 @@ export default withNuxt(
     files: ['app/stores/windows.ts'],
     rules: { 'max-lines': ['warn', { max: 200, skipBlankLines: true, skipComments: true }] },
   },
+  // ──────────────────────────────────────────────────────────────────────────
+  // P8-02 — services/ layer import isolation
+  // app/services/ изолирован от Vue/Pinia слоёв (composables/stores/components).
+  // См. docs/RULES.md §2a/§2b и app/services/README.md.
+  // ──────────────────────────────────────────────────────────────────────────
+  {
+    files: ['app/services/**'],
+    rules: {
+      'no-restricted-imports': ['error', {
+        patterns: [
+          { group: ['**/composables/**'], message: 'services/ не импортит composables/' },
+          { group: ['**/stores/**'], message: 'services/ не импортит stores/' },
+          { group: ['**/components/**'], message: 'services/ не импортит components/' },
+        ],
+      }],
+    },
+  },
 )
