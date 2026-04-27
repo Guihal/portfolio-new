@@ -1,7 +1,7 @@
 import type { InjectionKey, Ref } from "vue";
 import type { ProgramView } from "~/programs";
 import type { FsFile } from "~~/shared/types/filesystem";
-import type { ChainedKey } from "./composables/useResizeForDirections";
+import type { ChainedKey } from "./composables/resize/useResizeForDirections";
 
 export type WindowState =
 	| "fullscreen"

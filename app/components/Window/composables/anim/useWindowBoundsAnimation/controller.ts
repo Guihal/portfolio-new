@@ -1,6 +1,6 @@
 import type { WatchHandle } from "vue";
 import { useBoundsStore, type WindowBoundsKey } from "~/stores/bounds";
-import type { WindowOb } from "../../types";
+import type { WindowOb } from "../../../types";
 import { easeTowards } from "./easing";
 
 /**

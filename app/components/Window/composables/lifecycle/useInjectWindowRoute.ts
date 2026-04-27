@@ -1,5 +1,5 @@
 import { inject, type Ref } from "vue";
-import { WindowRouteKey } from "../types";
+import { WindowRouteKey } from "../../types";
 
 /**
  * Type-safe inject для windowRoute Ref. Бросает если используется вне

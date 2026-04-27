@@ -1,5 +1,5 @@
 import { inject } from "vue";
-import { type WindowOb, WindowObKey } from "../types";
+import { type WindowOb, WindowObKey } from "../../types";
 
 /**
  * Type-safe inject для WindowOb. Бросает если используется вне Window/index.vue

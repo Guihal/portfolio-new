@@ -1,7 +1,7 @@
 <script setup lang="ts">
-    import { useInjectWindow } from '~/components/Window/composables/useInjectWindow';
-    import { useInjectWindowRoute } from '~/components/Window/composables/useInjectWindowRoute';
-    import { useWindowLoading } from '~/components/Window/composables/useWindowLoading';
+    import { useInjectWindow } from '~/components/Window/composables/lifecycle/useInjectWindow';
+    import { useInjectWindowRoute } from '~/components/Window/composables/lifecycle/useInjectWindowRoute';
+    import { useWindowLoading } from '~/components/Window/composables/route/useWindowLoading';
     import { useProgramFetch } from '~/composables/useProgramFetch';
 
     const windowOb = useInjectWindow();

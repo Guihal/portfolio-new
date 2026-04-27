@@ -1,5 +1,5 @@
 import { useBoundsStore, type WindowBoundsKey } from "~/stores/bounds";
-import type { WindowOb } from "../types";
+import type { WindowOb } from "../../types";
 
 /**
  * Сохраняет bounds окна при сворачивании и восстанавливает при разворачивании.

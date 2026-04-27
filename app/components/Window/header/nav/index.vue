@@ -1,5 +1,5 @@
 <script setup lang="ts">
-    import { useInjectWindow } from '~/components/Window/composables/useInjectWindow';
+    import { useInjectWindow } from '~/components/Window/composables/lifecycle/useInjectWindow';
     import type { WindowOb } from '../../types';
 
     const windowOb = useInjectWindow();

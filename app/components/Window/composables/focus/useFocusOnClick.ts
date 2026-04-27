@@ -1,5 +1,5 @@
 import { useFocusStore } from "~/stores/focus";
-import type { WindowOb } from "../types";
+import type { WindowOb } from "../../types";
 
 /**
  * Хелпер для фокуса окна по клику.

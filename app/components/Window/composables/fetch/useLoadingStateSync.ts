@@ -1,6 +1,6 @@
 import { type Ref, watch } from "vue";
 import { useWindowsStore } from "~/stores/windows";
-import type { WindowOb } from "../types";
+import type { WindowOb } from "../../types";
 
 /**
  * Зеркалит локальный isLoading флаг (из useWindowLoading) в Pinia

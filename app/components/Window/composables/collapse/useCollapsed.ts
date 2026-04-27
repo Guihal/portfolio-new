@@ -1,4 +1,4 @@
-import type { WindowOb } from "../types";
+import type { WindowOb } from "../../types";
 import { useCollapseBoundsMemory } from "./useCollapseBoundsMemory";
 import { useCollapseOffscreenPosition } from "./useCollapseOffscreenPosition";
 import { useCollapseTrigger } from "./useCollapseTrigger";

@@ -1,6 +1,6 @@
 import { isNavigationFailure } from "vue-router";
 import { callWithNuxt } from "#app";
-import { useCreateAndRegisterWindow } from "~/components/Window/composables/useCreateAndRegisterWindow";
+import { useCreateAndRegisterWindow } from "~/components/Window/composables/lifecycle/useCreateAndRegisterWindow";
 import { useWindowsStore } from "~/stores/windows";
 
 const CANONICAL_ENTRY = "/about";

@@ -1,7 +1,7 @@
 import { useFocusStore } from "~/stores/focus";
 import { useQueuedRouterStore } from "~/stores/queuedRouter";
 import { useWindowsStore } from "~/stores/windows";
-import type { WindowOb } from "../types";
+import type { WindowOb } from "../../types";
 
 /**
  * Возвращает функцию, инициирующую сворачивание окна.

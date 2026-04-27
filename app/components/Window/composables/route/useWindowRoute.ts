@@ -1,6 +1,6 @@
 import { useQueuedRouterStore } from "~/stores/queuedRouter";
 import { useWindowsStore } from "~/stores/windows";
-import type { WindowOb } from "../types";
+import type { WindowOb } from "../../types";
 
 /**
  * Двухсторонняя синхронизация пути окна с URL (только когда окно focused).

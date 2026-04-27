@@ -1,6 +1,6 @@
 // P3-04: easeTowards — чистая функция easing для bounds-анимации.
 import { describe, expect, it } from "vitest";
-import { easeTowards } from "~/components/Window/composables/useWindowBoundsAnimation/easing";
+import { easeTowards } from "~/components/Window/composables/anim/useWindowBoundsAnimation/easing";
 
 describe("easeTowards", () => {
 	it("при coeff=0.9 (non-interacting), 16ms — продвигает ~10% дельты", () => {

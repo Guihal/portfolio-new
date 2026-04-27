@@ -4,7 +4,7 @@ import { useFrameStore } from "~/stores/frame";
 import { useQueuedRouterStore } from "~/stores/queuedRouter";
 import { useWindowsStore } from "~/stores/windows";
 import { useWindowsUIStore } from "~/stores/windowsUI";
-import { useWindowLoading } from "../composables/useWindowLoading";
+import { useWindowLoading } from "../composables/route/useWindowLoading";
 import type { WindowOb } from "../types";
 
 /**

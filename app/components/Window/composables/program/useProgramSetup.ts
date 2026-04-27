@@ -1,6 +1,6 @@
 import { type ComputedRef, computed, provide } from "vue";
 import { getProgram, type ProgramView } from "~/programs";
-import { ProgramViewKey, type WindowOb } from "../types";
+import { ProgramViewKey, type WindowOb } from "../../types";
 
 /**
  * Резолвит ProgramView для окна по `windowOb.file.programType` и provide'ит

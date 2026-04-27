@@ -1,7 +1,7 @@
 import { storeToRefs } from "pinia";
 import { useBoundsStore, type WindowBoundsKey } from "~/stores/bounds";
 import { useContentAreaStore } from "~/stores/contentArea";
-import type { WindowOb } from "../types";
+import type { WindowOb } from "../../types";
 
 /**
  * Устанавливает размеры окна на всю контентную область (fullscreen).

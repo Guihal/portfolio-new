@@ -2,18 +2,18 @@ import { storeToRefs } from "pinia";
 import { ref } from "vue";
 import { useContentAreaStore } from "~/stores/contentArea";
 import { type WindowOb, WindowObKey, WindowRouteKey } from "../types";
-import { useFetchEntity } from "./useFetchEntity";
-import { useFocusOnClick } from "./useFocusOnClick";
-import { useFrameObserverLifecycle } from "./useFrameObserverLifecycle";
-import { useFullscreenOnMount } from "./useFullscreenOnMount";
-import { useLoadingStateSync } from "./useLoadingStateSync";
-import { useOnFullscreen } from "./useOnFullScreen";
-import { useSeoWindow } from "./useSeoWindow";
-import { useSetFocusState } from "./useSetFocusState";
-import { useWindowBoundsAnimation } from "./useWindowBoundsAnimation";
-import { useWindowFullscreenAutoSet } from "./useWindowFullscreenAutoSet";
-import { useWindowLoading } from "./useWindowLoading";
-import { useWindowRoute } from "./useWindowRoute";
+import { useWindowBoundsAnimation } from "./anim/useWindowBoundsAnimation";
+import { useFetchEntity } from "./fetch/useFetchEntity";
+import { useLoadingStateSync } from "./fetch/useLoadingStateSync";
+import { useFocusOnClick } from "./focus/useFocusOnClick";
+import { useSetFocusState } from "./focus/useSetFocusState";
+import { useFullscreenOnMount } from "./fullscreen/useFullscreenOnMount";
+import { useOnFullscreen } from "./fullscreen/useOnFullScreen";
+import { useWindowFullscreenAutoSet } from "./fullscreen/useWindowFullscreenAutoSet";
+import { useFrameObserverLifecycle } from "./lifecycle/useFrameObserverLifecycle";
+import { useWindowLoading } from "./route/useWindowLoading";
+import { useWindowRoute } from "./route/useWindowRoute";
+import { useSeoWindow } from "./seo/useSeoWindow";
 
 /**
  * Фасад жизненного цикла окна. Группирует все per-window composable'ы +

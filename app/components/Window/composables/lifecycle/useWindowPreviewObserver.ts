@@ -3,7 +3,7 @@ import { useBoundsStore } from "~/stores/bounds";
 import { useFrameStore } from "~/stores/frame";
 import { PREVIEW_DEBOUNCE_MS } from "~/utils/constants/timing";
 import { debounce } from "~/utils/debounce";
-import type { WindowOb } from "../types";
+import type { WindowOb } from "../../types";
 
 /**
  * P8-06: lifecycle MutationObserver + screenshot generator.

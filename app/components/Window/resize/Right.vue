@@ -1,6 +1,6 @@
 <script setup lang="ts">
-    import { useInjectWindow } from '~/components/Window/composables/useInjectWindow';
-    import type { ChainedKey } from '../composables/useResizeForDirections';
+    import { useInjectWindow } from '~/components/Window/composables/lifecycle/useInjectWindow';
+    import type { ChainedKey } from '../composables/resize/useResizeForDirections';
     import type { WindowOb } from '../types';
 
     const directions: [ChainedKey] = ['right'];
