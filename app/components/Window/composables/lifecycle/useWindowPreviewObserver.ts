@@ -31,14 +31,21 @@ export function useWindowPreviewObserver(windowOb: WindowOb): () => void {
 	let lastBoundsKey = "";
 	let lastMutationCount = 0;
 	let mutationCount = 0;
+	// sequenceId: защита от out-of-order resolution двух in-flight generatePreview
+	// (slow toJpeg + повторная debounce-fire). Коммитим только если наш seq —
+	// последний; иначе старый jpeg перезаписал бы новый → flicker.
+	let sequenceId = 0;
 	const shouldSkip = () =>
 		windowOb.states.drag || windowOb.states.resize || windowOb.states.collapsed;
 
 	const regenerate = debounce(async () => {
 		if (!alive || shouldSkip()) return;
-		const boundsKey = `${slot.calculated.width}x${slot.calculated.height}`;
+		// DPR в ключе: переезд окна между мониторами с разным devicePixelRatio
+		// меняет растр toJpeg при идентичных CSS-bounds — нужен инвалидатор.
+		const boundsKey = `${slot.calculated.width}x${slot.calculated.height}@${window.devicePixelRatio}`;
 		if (boundsKey === lastBoundsKey && mutationCount === lastMutationCount)
 			return;
+		const mySeq = ++sequenceId;
 		const localMutationCount = mutationCount;
 		const jpeg = await generatePreview(wrapper, {
 			width: slot.calculated.width,
@@ -46,6 +53,7 @@ export function useWindowPreviewObserver(windowOb: WindowOb): () => void {
 		});
 		// Финальный alive guard после await: scope мог dispose'нуться.
 		if (!alive || !jpeg) return;
+		if (mySeq !== sequenceId) return;
 		lastBoundsKey = boundsKey;
 		lastMutationCount = localMutationCount;
 		frameStore.set(windowOb.id, jpeg);
