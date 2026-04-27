@@ -4,7 +4,7 @@ import type { WindowOb, WindowStates } from "~/components/Window/types";
 import { useRemoveWindow } from "~/components/Window/utils/removeWindow";
 import { useBoundsStore } from "~/stores/bounds";
 import { useFocusStore } from "~/stores/focus";
-import { __resetFrameObservers, useFrameStore } from "~/stores/frame";
+import { __resetFrameImages, useFrameStore } from "~/stores/frame";
 import { useWindowsStore } from "~/stores/windows";
 import type { FsFile } from "~~/shared/types/filesystem";
 
@@ -19,11 +19,11 @@ beforeEach(() => {
 		globalThis as unknown as { useRouter: () => { push: typeof pushMock } }
 	).useRouter = () => ({ push: pushMock });
 	setActivePinia(createPinia());
-	__resetFrameObservers();
+	__resetFrameImages();
 });
 
 afterEach(() => {
-	__resetFrameObservers();
+	__resetFrameImages();
 });
 
 describe("useRemoveWindow orchestrator", () => {

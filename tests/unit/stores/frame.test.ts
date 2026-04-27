@@ -1,25 +1,13 @@
 import { createPinia, setActivePinia } from "pinia";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import type { WindowOb, WindowStates } from "~/components/Window/types";
-import { __resetFrameObservers, useFrameStore } from "~/stores/frame";
-
-const makeWindow = (id: string): WindowOb => ({
-	id,
-	states: {} as WindowStates,
-	targetFile: { value: `/p/${id}` },
-	file: null,
-});
+import { beforeEach, describe, expect, it } from "vitest";
+import { __resetFrameImages, useFrameStore } from "~/stores/frame";
 
 beforeEach(() => {
 	setActivePinia(createPinia());
-	__resetFrameObservers();
+	__resetFrameImages();
 });
 
-afterEach(() => {
-	__resetFrameObservers();
-});
-
-describe("frame store", () => {
+describe("frame store (P8-06: state-only)", () => {
 	it("set/remove images", () => {
 		const s = useFrameStore();
 		s.set("1", "data:image/x");
@@ -28,24 +16,23 @@ describe("frame store", () => {
 		expect(s.images["1"]).toBeUndefined();
 	});
 
-	it("createObserver без DOM-узла window-* — noop", () => {
+	it("remove несуществующего id — no-op (не падает)", () => {
 		const s = useFrameStore();
-		s.createObserver(makeWindow("ghost"));
-		expect(s.images.ghost).toBeUndefined();
+		expect(() => s.remove("ghost")).not.toThrow();
 	});
 
-	it("destroyObserver несуществующего id — no-op", () => {
+	it("set перезаписывает существующее значение", () => {
 		const s = useFrameStore();
-		expect(() => s.destroyObserver("ghost")).not.toThrow();
+		s.set("1", "data:a");
+		s.set("1", "data:b");
+		expect(s.images["1"]).toBe("data:b");
 	});
 
-	it("createObserver в node-env (observers=null) безопасен, images остаются пустыми", () => {
-		// В vitest без jsdom `import.meta.client` false → createObserver ранний return.
-		// Фиксирует contract: никакой race-запись не может произойти в SSR-фазе.
+	it("__resetFrameImages чистит state", () => {
 		const s = useFrameStore();
-		s.createObserver(makeWindow("w1"));
-		expect(s.images.w1).toBeUndefined();
-		s.destroyObserver("w1");
-		expect(s.images.w1).toBeUndefined();
+		s.set("1", "x");
+		s.set("2", "y");
+		__resetFrameImages();
+		expect(s.images).toEqual({});
 	});
 });
