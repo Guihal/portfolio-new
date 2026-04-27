@@ -1,50 +1,27 @@
 <script setup lang="ts">
-    
     import { useInjectWindow } from '~/components/Window/composables/useInjectWindow';
-import { useInjectWindowRoute } from '~/components/Window/composables/useInjectWindowRoute';
+    import { useInjectWindowRoute } from '~/components/Window/composables/useInjectWindowRoute';
     import { useWindowLoading } from '~/components/Window/composables/useWindowLoading';
-    import type { WindowOb } from '~/components/Window/types';
-    import type { ProgramConfig } from '~/programs';
+    import { ProgramViewKey } from '~/components/Window/types';
+    import { useProgramFetch } from '~/composables/useProgramFetch';
 
     const windowOb = useInjectWindow();
     const windowRoute = useInjectWindowRoute();
-    const programConfig = inject<Ref<ProgramConfig | null>>(
-        'programConfig',
-        ref(null),
-    );
+    // P8-10: переход с string-key 'programConfig' на типизированный
+    // ProgramViewKey. ProgramView содержит config; canNavigate берём оттуда.
+    const programView = inject(ProgramViewKey, null);
 
     const canNavigate = computed(
-        () => programConfig.value?.canNavigate ?? true,
+        () => programView?.value?.config.canNavigate ?? true,
     );
 
-    const isLoading = ref(false);
+    const { data, isLoading } = await useProgramFetch({
+        path: () => windowRoute.value,
+        kind: 'list',
+    });
     useWindowLoading().register(windowOb.id, isLoading);
 
-    const { data } = await useAsyncData<FsFile[]>(
-        () => `explorer-${windowRoute.value}`,
-        async () => {
-            if (!windowRoute.value) return [];
-            isLoading.value = true;
-            try {
-                return (
-                    (await $fetch<FsFile[]>('/api/filesystem/list', {
-                        query: { path: windowRoute.value },
-                    })) ?? []
-                );
-            } catch (err) {
-                logger.error('[explorer]', err);
-                return [];
-            } finally {
-                isLoading.value = false;
-            }
-        },
-        {
-            server: true,
-            immediate: true,
-            transform: (d) => d ?? [],
-            default: () => [],
-        },
-    );
+    const items = computed<FsFile[]>(() => data.value ?? []);
 </script>
 <template>
     <div class="explorer">
@@ -54,7 +31,7 @@ import { useInjectWindowRoute } from '~/components/Window/composables/useInjectW
                 <ProgramsExplorerNavFacts />
             </ClientOnly>
         </div>
-        <ProgramsExplorerList :items="data" />
+        <ProgramsExplorerList :items="items" />
     </div>
 </template>
 <style lang="scss">
