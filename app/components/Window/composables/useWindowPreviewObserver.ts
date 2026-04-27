@@ -1,13 +1,9 @@
 import { generatePreview } from "~/services/windowPreviewGenerator";
 import { useBoundsStore } from "~/stores/bounds";
 import { useFrameStore } from "~/stores/frame";
+import { PREVIEW_DEBOUNCE_MS } from "~/utils/constants/timing";
 import { debounce } from "~/utils/debounce";
 import type { WindowOb } from "../types";
-
-// Дебаунс перегенерации preview — частые DOM-мутации (typing, scroll, hover)
-// не должны дёргать html-to-image (тяжёлая операция, ~50–200ms на средний layout).
-// Магический литерал — сохраняется до P8-09 (выносится в utils/constants/timing.ts).
-const PREVIEW_DEBOUNCE_MS = 500;
 
 /**
  * P8-06: lifecycle MutationObserver + screenshot generator.

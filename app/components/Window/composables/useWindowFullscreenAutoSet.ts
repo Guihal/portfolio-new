@@ -3,6 +3,7 @@ import { useBoundsStore } from "~/stores/bounds";
 import { useContentAreaStore } from "~/stores/contentArea";
 import { useWindowsStore } from "~/stores/windows";
 import { OFFSET } from "~/utils/constants/offset";
+import { FULLSCREEN_AUTO_SET_DELAY_MS } from "~/utils/constants/timing";
 import type { WindowOb } from "../types";
 
 /**
@@ -11,7 +12,7 @@ import type { WindowOb } from "../types";
  * Логика:
  * 1. Во время drag — следит за позицией окна через chained watcher
  * 2. Если окно вышло за границы — устанавливает fullscreen-ready
- * 3. После завершения drag — с задержкой 10ms включает fullscreen
+ * 3. После завершения drag — с задержкой FULLSCREEN_AUTO_SET_DELAY_MS включает fullscreen
  *
  * @param windowOb - Объект окна
  */
@@ -69,7 +70,7 @@ export function useWindowFullscreenAutoSet(windowOb: WindowOb) {
 						windowsStore.setState(windowOb.id, "fullscreen", true);
 					}
 					windowsStore.clearState(windowOb.id, "fullscreen-ready");
-				}, 10);
+				}, FULLSCREEN_AUTO_SET_DELAY_MS);
 			}
 		},
 		{
