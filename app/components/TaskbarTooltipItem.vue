@@ -1,8 +1,6 @@
 <script setup lang="ts">
-    import { storeToRefs } from 'pinia';
+    import { useTooltipPosition } from '~/components/Taskbar/Elements/Program/useTooltipPosition';
     import type { WindowOb } from '~/components/Window/types';
-    import { positionTooltip } from '~/services/tooltipState';
-    import { useContentAreaStore } from '~/stores/contentArea';
     import type { ProgramType } from '~~/shared/types/filesystem';
 
     const props = defineProps<{
@@ -14,33 +12,13 @@
     const tooltip = ref<HTMLElement | null>(null);
     const content = ref<HTMLElement | null>(null);
 
-    const tooltipBounds = ref<DOMRect | null>(null);
-    const contentBounds = ref<DOMRect | null>(null);
-
-    const setTooltipBounds = () => {
-        if (!tooltip.value) return;
-        tooltipBounds.value = tooltip.value.getBoundingClientRect();
-    };
-    const setContentBounds = () => {
-        if (!content.value) return;
-        contentBounds.value = content.value.getBoundingClientRect();
-    };
-
-    useResizeObserver(tooltip, setTooltipBounds);
-    useResizeObserver(content, setContentBounds);
-
-    const { area: contentArea } = storeToRefs(useContentAreaStore());
-    const { cancelHide, hide } = useTooltipState();
-
-    const maxWidth = computed(() => contentArea.value.width);
-
-    const position = computed(() =>
-        positionTooltip({
-            target: props.containerBounds,
-            tooltip: tooltipBounds.value,
-            viewportWidth: contentArea.value.width,
-        }),
+    const { top, left, contentBounds, maxWidth } = useTooltipPosition(
+        tooltip,
+        content,
+        () => props.containerBounds,
     );
+
+    const { cancelHide, hide } = useTooltipState();
 
     const onMouseover = () => cancelHide(props.programType);
     const onMouseout = () => hide(props.programType);
@@ -50,8 +28,8 @@
     <div
         ref="tooltip"
         :style="{
-            '--top': position.top,
-            '--left': position.left,
+            '--top': top,
+            '--left': left,
             '--mxw': maxWidth,
             '--c-w': contentBounds?.width ?? 0,
         }"
