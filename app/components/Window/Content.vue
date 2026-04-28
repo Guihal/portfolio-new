@@ -1,4 +1,5 @@
 <script setup lang="ts">
+    import { computed, onErrorCaptured } from 'vue';
     import { useInjectWindow } from '~/components/Window/composables/lifecycle/useInjectWindow';
     import { useProgramSetup } from '~/components/Window/composables/program/useProgramSetup';
     import { useWindowsUIStore } from '~/stores/windowsUI';
