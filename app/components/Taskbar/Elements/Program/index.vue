@@ -29,7 +29,6 @@
     watch(
         () => windowObs,
         (obs) => updateWindowObs(programType, obs),
-        { deep: true },
     );
 
     onBeforeUnmount(() => {
