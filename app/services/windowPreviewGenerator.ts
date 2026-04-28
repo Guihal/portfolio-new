@@ -8,10 +8,13 @@ export type GeneratePreviewOpts = {
 };
 
 /**
- * Создаёт JPEG dataURL из DOM-элемента. На SSR / при ошибке html-to-image
+ * Создаёт JPEG Blob URL из DOM-элемента. На SSR / при ошибке html-to-image
  * (элемент скрыт, DPR 0, фоновое окно) возвращает null — caller хранит
  * последний успешный preview, чтобы не показывать placeholder во время
  * transient мутаций.
+ *
+ * Возвращает `blob:` URL вместо data:URL — освобождается через
+ * `URL.revokeObjectURL` (frame store handle revoke на set/remove).
  */
 export async function generatePreview(
 	el: HTMLElement,
@@ -20,12 +23,15 @@ export async function generatePreview(
 	if (typeof window === "undefined") return null;
 	try {
 		const htmlToImage = await import("html-to-image");
-		return await htmlToImage.toJpeg(el, {
+		const blob = await htmlToImage.toBlob(el, {
 			width: opts.width,
 			height: opts.height,
 			cacheBust: true,
 			quality: 1,
+			type: "image/jpeg",
 		});
+		if (!blob) return null;
+		return URL.createObjectURL(blob);
 	} catch {
 		return null;
 	}
