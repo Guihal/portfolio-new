@@ -20,5 +20,9 @@ export const useFocusStore = defineStore("focus", () => {
 		focusedId.value = null;
 	}
 
-	return { focusedId, isFocused, focus, unFocus };
+	function $reset() {
+		focusedId.value = null;
+	}
+
+	return { focusedId, isFocused, focus, unFocus, $reset };
 });

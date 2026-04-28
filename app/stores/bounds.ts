@@ -123,5 +123,9 @@ export const useBoundsStore = defineStore("bounds", () => {
 		slot.calculated.height = slot.target.height;
 	}
 
-	return { bounds, ensure, remove, setTarget, syncCalculated };
+	function $reset() {
+		bounds.value = {};
+	}
+
+	return { bounds, ensure, remove, setTarget, syncCalculated, $reset };
 });

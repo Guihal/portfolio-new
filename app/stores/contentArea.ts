@@ -34,6 +34,13 @@ export const useContentAreaStore = defineStore("contentArea", () => {
 		taskbarObserverInitialised.value = true;
 	}
 
+	function $reset() {
+		viewport.value = { width: 0, height: 0 };
+		taskbarHeight.value = 0;
+		viewportObserverInitialised.value = false;
+		taskbarObserverInitialised.value = false;
+	}
+
 	return {
 		viewport,
 		taskbarHeight,
@@ -44,5 +51,6 @@ export const useContentAreaStore = defineStore("contentArea", () => {
 		setTaskbarHeight,
 		markViewportObserverInitialised,
 		markTaskbarObserverInitialised,
+		$reset,
 	};
 });

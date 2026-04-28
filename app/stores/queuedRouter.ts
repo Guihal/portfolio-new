@@ -58,11 +58,23 @@ export const useQueuedRouterStore = defineStore("queuedRouter", () => {
 		});
 	};
 
+	/**
+	 * Замыканный `queue` array тоже должен быть очищен — иначе ghost-pushes
+	 * между SSR-запросами на одном Vercel function instance.
+	 */
+	function $reset() {
+		queue.length = 0;
+		queueLength.value = 0;
+		isProcessing.value = false;
+		lastPushedPath.value = null;
+	}
+
 	return {
 		lastPushedPath,
 		isProcessing,
 		isEmpty,
 		queue: queueRef,
 		push,
+		$reset,
 	};
 });

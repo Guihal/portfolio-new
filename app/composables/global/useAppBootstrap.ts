@@ -1,7 +1,13 @@
 import { isNavigationFailure } from "vue-router";
 import { callWithNuxt } from "#app";
 import { useCreateAndRegisterWindow } from "~/components/Window/composables/lifecycle/useCreateAndRegisterWindow";
+import { useBoundsStore } from "~/stores/bounds";
+import { useContentAreaStore } from "~/stores/contentArea";
+import { useFocusStore } from "~/stores/focus";
+import { useFrameStore } from "~/stores/frame";
+import { useQueuedRouterStore } from "~/stores/queuedRouter";
 import { useWindowsStore } from "~/stores/windows";
+import { useWindowsUIStore } from "~/stores/windowsUI";
 
 const CANONICAL_ENTRY = "/about";
 const COOKIE_MAX_AGE = 60 * 60 * 24 * 365;
@@ -48,10 +54,18 @@ export async function useAppBootstrap() {
 	}
 
 	await callWithNuxt(nuxtApp, () => {
-		// Per-request stateless SSR render: allWindows обнуляется каждый SSR hit.
+		// Per-request stateless SSR render: все stores обнуляются каждый SSR hit.
 		// На клиенте (hydration + lifecycle) — НЕ clear'ить: payload корректен.
+		// Без полного reset Vercel/Nitro worker leak'ает state между запросами
+		// (windows, bounds, focus, frame, queue) разных user sessions.
 		if (import.meta.server) {
 			useWindowsStore().$reset();
+			useBoundsStore().$reset();
+			useFocusStore().$reset();
+			useFrameStore().$reset();
+			useContentAreaStore().$reset();
+			useQueuedRouterStore().$reset();
+			useWindowsUIStore().$reset();
 		}
 		if (effectivePath !== "/") {
 			try {
