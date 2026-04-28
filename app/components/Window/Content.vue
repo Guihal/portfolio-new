@@ -26,7 +26,9 @@
                 </div>
             </template>
             <template v-else-if="programView">
-                <component :is="programView.component" />
+                <Suspense>
+                    <component :is="programView.component" />
+                </Suspense>
             </template>
         </div>
     </div>
