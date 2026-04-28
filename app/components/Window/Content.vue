@@ -12,6 +12,18 @@
     const errorText = computed(
         () => uiStore.getError(windowOb.id) || 'Не удалось открыть',
     );
+
+    onErrorCaptured((err, _instance, info) => {
+        logger.error('[window/content] async program component threw', {
+            windowId: windowOb.id,
+            info,
+            err,
+        });
+        const message =
+            err instanceof Error ? err.message : 'Внутренняя ошибка программы';
+        uiStore.setError(windowOb.id, message);
+        return false;
+    });
 </script>
 
 <template>
@@ -28,6 +40,9 @@
             <template v-else-if="programView">
                 <Suspense>
                     <component :is="programView.component" />
+                    <template #fallback>
+                        <div class="window__content__suspense-fallback" />
+                    </template>
                 </Suspense>
             </template>
         </div>
@@ -61,6 +76,12 @@
             padding: 20px;
             text-align: center;
             color: c-rgba('default-contrast', 0.7);
+        }
+
+        &__suspense-fallback {
+            width: 100%;
+            height: 100%;
+            background: c('default-1');
         }
     }
 </style>
