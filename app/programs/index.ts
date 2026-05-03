@@ -20,7 +20,7 @@ export type ProgramView = Program & {
 	config: ProgramConfig;
 };
 
-const REGISTRY: Record<ProgramType, ProgramView> = {
+const REGISTRY: Partial<Record<ProgramType, ProgramView>> = {
 	explorer,
 	project,
 	tproject,
@@ -31,7 +31,7 @@ export function getProgram(type: ProgramType): ProgramView | null {
 	return REGISTRY[type] ?? null;
 }
 
-export function getAllPrograms(): Record<ProgramType, ProgramView> {
+export function getAllPrograms(): Partial<Record<ProgramType, ProgramView>> {
 	return REGISTRY;
 }
 

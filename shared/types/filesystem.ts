@@ -1,4 +1,10 @@
-export type ProgramType = "explorer" | "project" | "tproject" | "about";
+export type ProgramType =
+	| "explorer"
+	| "project"
+	| "tproject"
+	| "about"
+	| "code"
+	| "showcase";
 
 export type Program = {
 	extension?: string;
@@ -11,10 +17,19 @@ export type SocialLink = {
 	icon: string;
 };
 
+export type EntityLink = {
+	label: string;
+	href: string;
+};
+
 export type Entity = {
 	name: string;
 	programType: ProgramType;
 	hidden?: boolean;
+	year?: string;
+	tags?: string[];
+	description?: string;
+	links?: EntityLink[];
 };
 
 export type FsFile = Entity & { path: string };
