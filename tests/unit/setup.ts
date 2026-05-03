@@ -4,7 +4,9 @@ import { vi } from "vitest";
 import {
 	computed,
 	inject,
+	onMounted,
 	onScopeDispose,
+	onUnmounted,
 	provide,
 	ref,
 	shallowRef,
@@ -33,7 +35,9 @@ import {
 Object.assign(globalThis, {
 	computed,
 	inject,
+	onMounted,
 	onScopeDispose,
+	onUnmounted,
 	provide,
 	ref,
 	shallowRef,
