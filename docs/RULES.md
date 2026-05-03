@@ -1,6 +1,6 @@
 # Project Rules — Dimonya OS
 
-> **Last updated:** 26ad51d
+> **Last updated:** 81b4425
 > **Status:** active (introduced by P8-01, enforced level=error in P8-18).
 > **Scope:** `app/`, `server/`, `shared/`. Тесты, скрипты, генерируемые манифесты — исключены.
 
