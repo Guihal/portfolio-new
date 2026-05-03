@@ -1,5 +1,6 @@
 import { defineStore } from "pinia";
 import { customRef, markRaw, type Ref, ref } from "vue";
+import { CASCADE_OFFSET_X, CASCADE_OFFSET_Y } from "~/utils/constants/cascade";
 
 export type WindowBounds = {
 	left: number;
@@ -127,5 +128,23 @@ export const useBoundsStore = defineStore("bounds", () => {
 		bounds.value = {};
 	}
 
-	return { bounds, ensure, remove, setTarget, syncCalculated, $reset };
+	/** Diagonal-позиция от prevId; ничего/нет slot → origin. */
+	function nextCascadePosition(prevId: string | null) {
+		const slot = prevId ? bounds.value[prevId] : null;
+		if (!slot) return { left: 0, top: 0 };
+		return {
+			left: slot.target.left + CASCADE_OFFSET_X,
+			top: slot.target.top + CASCADE_OFFSET_Y,
+		};
+	}
+
+	return {
+		bounds,
+		ensure,
+		remove,
+		setTarget,
+		syncCalculated,
+		nextCascadePosition,
+		$reset,
+	};
 });

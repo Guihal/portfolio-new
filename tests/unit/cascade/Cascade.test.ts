@@ -1,0 +1,115 @@
+import { createPinia, setActivePinia } from "pinia";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+
+const callOrder: string[] = [];
+const createMock = vi.fn(async (path: string) => {
+	callOrder.push(path);
+	const w = useWindowsStore().create({
+		name: path,
+		path,
+		programType: "code",
+	});
+	void w;
+	return true;
+});
+
+vi.mock(
+	"~/components/Window/composables/lifecycle/useCreateWindowByPath",
+	() => ({
+		useCreateWindowByPath: (path: string) => createMock(path),
+	}),
+);
+
+import { useCascadeLayout } from "~/composables/useCascadeLayout";
+import { useBoundsStore } from "~/stores/bounds";
+import { useContentAreaStore } from "~/stores/contentArea";
+import { useFocusStore } from "~/stores/focus";
+import { useWindowsStore } from "~/stores/windows";
+
+beforeEach(() => {
+	setActivePinia(createPinia());
+	callOrder.length = 0;
+	createMock.mockClear();
+	useContentAreaStore().setViewport({ width: 1200, height: 800 });
+});
+
+describe("useCascadeLayout — spawnCodeWindows", () => {
+	it("спавнит окна в порядке массива (sequential await)", async () => {
+		const { spawnCodeWindows } = useCascadeLayout();
+		await spawnCodeWindows("/projects/test", [
+			{ id: "a" },
+			{ id: "b" },
+			{ id: "c" },
+		]);
+		expect(callOrder).toEqual([
+			"/projects/test/code/a",
+			"/projects/test/code/b",
+			"/projects/test/code/c",
+		]);
+	});
+
+	it("устанавливает cascade-bounds на каждое окно (left/top смещаются)", async () => {
+		const { spawnCodeWindows } = useCascadeLayout();
+		await spawnCodeWindows("/projects/p", [{ id: "x" }, { id: "y" }]);
+		const wins = useWindowsStore().list;
+		expect(wins.length).toBe(2);
+		const b = useBoundsStore();
+		const first = wins[0];
+		const second = wins[1];
+		if (!first || !second) throw new Error("windows missing");
+		expect(b.bounds[first.id]?.target.left).toBe(0);
+		expect(b.bounds[first.id]?.target.top).toBe(0);
+		expect(b.bounds[second.id]?.target.left).toBe(24);
+		expect(b.bounds[second.id]?.target.top).toBe(14);
+	});
+
+	it("focus заканчивается на последнем окне", async () => {
+		const { spawnCodeWindows } = useCascadeLayout();
+		await spawnCodeWindows("/projects/p", [{ id: "a" }, { id: "b" }]);
+		const wins = useWindowsStore().list;
+		const last = wins[wins.length - 1];
+		if (!last) throw new Error("no last");
+		expect(useFocusStore().focusedId).toBe(last.id);
+	});
+
+	it("пустой массив — no-op", async () => {
+		const { spawnCodeWindows } = useCascadeLayout();
+		await spawnCodeWindows("/projects/p", []);
+		expect(createMock).not.toHaveBeenCalled();
+		expect(useWindowsStore().list.length).toBe(0);
+	});
+
+	it("layout: tile-h первый окно (left=0, half width)", async () => {
+		const { spawnCodeWindows } = useCascadeLayout();
+		await spawnCodeWindows("/projects/p", [
+			{ id: "a", layout: "tile-h" },
+			{ id: "b" },
+		]);
+		const wins = useWindowsStore().list;
+		const first = wins[0];
+		const second = wins[1];
+		if (!first || !second) throw new Error("missing");
+		const b = useBoundsStore();
+		expect(b.bounds[first.id]?.target.left).toBe(0);
+		expect(b.bounds[first.id]?.target.width).toBe(592);
+		expect(b.bounds[second.id]?.target.left).toBe(608);
+	});
+});
+
+describe("useBoundsStore.nextCascadePosition", () => {
+	it("prevId=null → origin", () => {
+		const b = useBoundsStore();
+		expect(b.nextCascadePosition(null)).toEqual({ left: 0, top: 0 });
+	});
+
+	it("prevId без slot → origin", () => {
+		const b = useBoundsStore();
+		expect(b.nextCascadePosition("ghost")).toEqual({ left: 0, top: 0 });
+	});
+
+	it("известный slot → diagonal offset 24x14", () => {
+		const b = useBoundsStore();
+		b.setTarget("w1", { left: 100, top: 50, width: 800, height: 600 });
+		expect(b.nextCascadePosition("w1")).toEqual({ left: 124, top: 64 });
+	});
+});
