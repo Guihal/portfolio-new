@@ -1,8 +1,10 @@
 import type { Component } from "vue";
 import type { Program, ProgramType } from "~~/shared/types/filesystem";
 import about from "./about";
+import code from "./code";
 import explorer from "./explorer";
 import project from "./project";
+import showcase from "./showcase";
 import tproject from "./tproject";
 
 export type ProgramMode = ProgramType;
@@ -25,6 +27,8 @@ const REGISTRY: Partial<Record<ProgramType, ProgramView>> = {
 	project,
 	tproject,
 	about,
+	showcase,
+	code,
 };
 
 export function getProgram(type: ProgramType): ProgramView | null {

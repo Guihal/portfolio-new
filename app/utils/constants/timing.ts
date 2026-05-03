@@ -13,3 +13,6 @@ export const TOOLTIP_HIDE_DELAY_MS = 150 as const;
 // Debounce генерации превью окна (MutationObserver → html-to-image).
 // Длинный, т.к. toJpeg тяжёлый и не нужен на каждое DOM-изменение.
 export const PREVIEW_DEBOUNCE_MS = 500 as const;
+
+// Длительность отображения "Скопировано" после копирования в clipboard.
+export const COPY_FEEDBACK_MS = 2000 as const;
