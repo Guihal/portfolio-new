@@ -1,14 +1,17 @@
 <script setup lang="ts">
-    const { windowsGroupByProgram } = useWindowsGroupByProgram();
-    console.log(windowsGroupByProgram.value);
+    import { storeToRefs } from 'pinia';
+    import { useWindowsStore } from '~/stores/windows';
+
+    const store = useWindowsStore();
+    const { byProgramMap } = storeToRefs(store);
 </script>
 
 <template>
     <TransitionGroup name="taskbar__el">
         <TaskbarElementsProgram
-            v-for="(windows, programType) in windowsGroupByProgram"
+            v-for="[programType, windows] in byProgramMap"
             :key="programType"
-            :window-obs="windows ?? []"
+            :window-obs="windows"
             :program-type="programType" />
     </TransitionGroup>
 </template>

@@ -1,17 +1,36 @@
-import type { WindowOb } from '../Window';
-import { removeWindowBounds } from '~/composables/useWindowBounds';
+import { useBoundsStore } from "~/stores/bounds";
+import { useFocusStore } from "~/stores/focus";
+import { useFrameStore } from "~/stores/frame";
+import { useQueuedRouterStore } from "~/stores/queuedRouter";
+import { useWindowsStore } from "~/stores/windows";
+import { useWindowsUIStore } from "~/stores/windowsUI";
+import { useWindowLoading } from "../composables/route/useWindowLoading";
+import type { WindowOb } from "../types";
 
 /**
- * Удаляет окно из глобального хранилища allWindows.
+ * Orchestrator: каскадно очищает loaders → bounds → frame → windows + сбрасывает
+ * focus и router если удалённое окно было сфокусированным.
  *
  * @param windowOb - Объект окна для удаления
  */
 export function useRemoveWindow(windowOb: WindowOb) {
-    const { allWindows } = useAllWindows();
+	const { unregister } = useWindowLoading();
+	const focusStore = useFocusStore();
 
-    // Удаляем bounds из глобального store
-    removeWindowBounds(windowOb.id);
+	// Снимаем wasFocused ДО windows.remove (defensive read).
+	const wasFocused = focusStore.focusedId === windowOb.id;
 
-    // Удаляем окно по ID из реактивного хранилища
-    delete allWindows.value[windowOb.id];
+	// Очистка loaders ДО bounds: watchEffect в initWindowLoading может читать loaders[id]
+	unregister(windowOb.id);
+
+	// Удаляем bounds + frame observer/image + UI message из соответствующих сторов
+	useBoundsStore().remove(windowOb.id);
+	useFrameStore().remove(windowOb.id);
+	useWindowsUIStore().clear(windowOb.id);
+
+	const removed = useWindowsStore().remove(windowOb.id);
+	if (removed && wasFocused) {
+		focusStore.unFocus();
+		useQueuedRouterStore().push("/");
+	}
 }

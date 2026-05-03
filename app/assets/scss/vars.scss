@@ -7,3 +7,7 @@ $colors: (
     'default-3': #2f2626,
     'default-contrast': #cecece,
 );
+
+// Типографика — единственный шрифтовой токен.
+// Используется как `font-family: $t-default;` в компонентах.
+$t-default: 'PixCyrillic', system-ui, sans-serif;

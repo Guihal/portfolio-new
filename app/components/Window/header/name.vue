@@ -1,13 +1,14 @@
 <script setup lang="ts">
-    import { PROGRAMS } from '~/utils/constants/PROGRAMS';
-    import type { WindowOb } from '../Window';
+    import { useInjectWindow } from '~/components/Window/composables/lifecycle/useInjectWindow';
+    import { getProgram } from '~/programs';
+    import type { WindowOb } from '../types';
 
-    const windowOb = inject('windowOb') as WindowOb;
+    const windowOb = useInjectWindow();
 
     const icon = computed(() => {
         if (windowOb.file === null) return '';
 
-        const iconString = PROGRAMS[windowOb.file.programType].icon;
+        const iconString = getProgram(windowOb.file.programType)?.icon;
 
         if (!iconString) return '';
 
@@ -61,7 +62,7 @@
         }
 
         &-text {
-            font-family: Pix, system-ui;
+            font-family: $t-default;
             font-size: 15px;
             line-height: 1;
             letter-spacing: 0.02em;

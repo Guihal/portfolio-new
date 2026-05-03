@@ -1,9 +1,10 @@
 <script setup lang="ts">
-    import { useCreateAndRegisterWindow } from '~/components/Window/composables/useCreateAndRegisterWindow';
+    import { useCreateAndRegisterWindow } from '~/components/Window/composables/lifecycle/useCreateAndRegisterWindow';
     import { useIsCurrentRoute } from '../useIsCurrentRoute';
-    const aboutRoute = ref('/about-me');
 
-    const onclick = (ev) => {
+    const aboutRoute = ref('/about');
+
+    const handleClick = (ev: MouseEvent) => {
         ev.preventDefault();
 
         setTimeout(() => {
@@ -21,7 +22,7 @@
         :class="{
             active: isCurrentRoute,
         }"
-        @click="onclick">
+        @click="handleClick">
         <svg
             class="taskbar__el_img"
             width="70"

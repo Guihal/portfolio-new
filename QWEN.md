@@ -85,7 +85,7 @@ additionalData: '@use "@/assets/scss/globals.scss" as *;';
 c('color-name')  // Возвращает цвет из $colors
 
 // Миксин для типографики
-@include t($fs: 15px, $lh: 1, $cName: 'default', $fw: 400, $family: 'Ithaca')
+@include t($fs: 15px, $lh: 1, $cName: 'default', $fw: 400, $family: 'PixCyrillic')
 ```
 
 4. **Цветовая палитра:**

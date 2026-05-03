@@ -1,46 +1,28 @@
-import type { WindowOb } from '../Window';
-import {
-    getTargetBounds,
-    type WindowBoundsKey,
-} from '~/composables/useWindowBounds';
+import { useBoundsStore } from "~/stores/bounds";
+import { clamp } from "~/utils/math";
+import type { WindowOb } from "../types";
 
-// Минимальный размер окна (ширина/высота)
 export const MINSIZE = 320;
 
-/**
- * Функции ограничения (clamp) для свойств окна.
- *
- * Каждая функция принимает:
- * - value: новое значение свойства
- * - windowOb: объект окна (для доступа к другим свойствам)
- * - cw, ch: ширина и высота контентной области
- *
- * Возвращает значение в допустимых пределах.
- */
-export const clampHandlers: Record<string, ClampFn> = {
-    // Ограничение top: [0, contentHeight - minHeight]
-    top: (v, windowOb, _cw, ch) => {
-        const target = getTargetBounds(windowOb.id);
-        return Math.max(0, Math.min(v, ch - Math.min(target.height, MINSIZE)));
-    },
-
-    // Ограничение left: [0, contentWidth - minWidth]
-    left: (v, windowOb, cw, ch) => {
-        const target = getTargetBounds(windowOb.id);
-        return Math.max(0, Math.min(v, cw - Math.min(target.width, MINSIZE)));
-    },
-
-    // Ограничение width: [MINSIZE, contentWidth]
-    width: (v, windowOb, cw, ch) =>
-        Math.max(MINSIZE, Math.min(v, Math.min(v, cw))),
-
-    // Ограничение height: [MINSIZE, contentHeight]
-    height: (v, windowOb, cw, ch) => Math.max(MINSIZE, Math.min(v, ch)),
-};
-
 export type ClampFn = (
-    value: number,
-    bounds: WindowOb,
-    cw: number, // content width
-    ch: number, // content height
+	value: number,
+	bounds: WindowOb,
+	cw: number,
+	ch: number,
 ) => number;
+
+export const clampHandlers: Record<string, ClampFn> = {
+	top: (v, windowOb, _cw, ch) => {
+		const target = useBoundsStore().ensure(windowOb.id).target;
+		return clamp(v, 0, ch - Math.min(target.height, MINSIZE));
+	},
+
+	left: (v, windowOb, cw, _ch) => {
+		const target = useBoundsStore().ensure(windowOb.id).target;
+		return clamp(v, 0, cw - Math.min(target.width, MINSIZE));
+	},
+
+	width: (v, _windowOb, cw, _ch) => clamp(v, MINSIZE, cw),
+
+	height: (v, _windowOb, _cw, ch) => clamp(v, MINSIZE, ch),
+};

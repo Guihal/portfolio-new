@@ -1,0 +1,73 @@
+// Миксин t() — единая точка типографики Dimonya OS.
+//
+// Параметры:
+//   $fs     — font-size, default 15px
+//   $lh     — line-height, default 1
+//   $cName  — имя цвета из $colors (валидируется через c()), default 'default'
+//   $fw     — font-weight, default 400
+//   $family — font-family, default 'PixCyrillic'
+//
+// В проекте — единственный шрифт: PixCyrillic. Body, заголовки, badge'ы,
+// loader — всё одним пиксельным семейством. Никаких body-mono альтернатив:
+// эстетика проекта — целиком pixel-style.
+//
+// Семейство передаётся параметром только если нужен явный fallback
+// или future-локально-другой шрифт; обычный код вызывает `@include t(...)`
+// без $family.
+
+@mixin t($fs: 15px, $lh: 1, $cName: 'default', $fw: 400, $family: 'PixCyrillic') {
+    $c: c($cName);
+    color: #{$c};
+    font-family: $family, system-ui;
+    font-size: $fs;
+    font-style: normal;
+    font-weight: $fw;
+    line-height: $lh;
+}
+
+// ─── Примеры вызова ────────────────────────────────────────────────
+
+// 1. Body-текст по умолчанию (15px / 1 / default-contrast / 400 / PixCyrillic):
+//    @include t();
+.example-body {
+    @include t();
+}
+
+// 2. Заголовок 20px полужирный (About → __name, __title):
+//    @include t(20px, 1.2, 'default-contrast', 600);
+.example-title {
+    @include t(20px, 1.2, 'default-contrast', 600);
+}
+
+// 3. Параграф с line-height 1.5 (About → __text):
+//    @include t(14px, 1.5, 'default-contrast');
+.example-paragraph {
+    @include t(14px, 1.5, 'default-contrast');
+}
+
+// 4. Декоративный заголовок 40px (Explorer → .explorer__empty):
+//    @include t(40px, 1, 'default-contrast');
+.example-decor-title {
+    @include t(40px, 1, 'default-contrast');
+}
+
+// 5. Accent-цвет (для hover-state и т.п.):
+//    @include t(14px, 1, 'accent');
+.example-accent {
+    @include t(14px, 1, 'accent');
+}
+
+// ─── Прямое использование $t-default ───────────────────────────────
+//
+// $t-default = 'PixCyrillic', system-ui, sans-serif
+//
+// `font-family: $t-default;` — короткий способ задать только семейство
+// без размера/цвета (используется в компонентах, где остальные свойства
+// уже определены в родителе или нужны другие).
+//
+// Места прямого использования:
+//   - Window/header/name.vue (заголовок окна)
+//   - Window/header/breadcrumbs.vue
+//   - Programs/Explorer/index.vue (.explorer__empty)
+//   - Shortcut/Base.vue (label ярлыка)
+//   - _settings.scss (.taskbar__el_number badge, .loader__text)

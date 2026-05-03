@@ -1,7 +1,9 @@
 <script setup lang="ts">
-    import { useCollapsed } from '../../composables/useCollapsed';
-    import type { WindowOb } from '../../Window';
-    const windowOb = inject('windowOb') as WindowOb;
+    import { useInjectWindow } from '~/components/Window/composables/lifecycle/useInjectWindow';
+    import { useCollapsed } from '../../composables/collapse/useCollapsed';
+    import type { WindowOb } from '../../types';
+
+    const windowOb = useInjectWindow();
     const onclick = useCollapsed(windowOb);
 </script>
 <template>

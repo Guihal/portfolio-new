@@ -1,107 +1,51 @@
-import { OFFSET } from '~/utils/constants/OFFSET';
-import type { WindowOb } from '../Window';
-import { getTargetBounds } from '~/composables/useWindowBounds';
+import { useBoundsStore } from "~/stores/bounds";
+import { useFocusStore } from "~/stores/focus";
+import { useWindowsStore } from "~/stores/windows";
+import type { WindowOb } from "../types";
 
-/**
- * Composable для перетаскивания окна за заголовок.
- *
- * Логика:
- * 1. При pointerdown на заголовке — начинает перетаскивание
- * 2. Отслеживает pointermove — обновляет bounds.target.top/left
- * 3. Проверяет выход за границы (isOutOfBounds) — устанавливает fullscreen-ready
- * 4. При pointerup — если fullscreen-ready, включает fullscreen
- *
- * @param windowOb - Объект окна
- * @returns Обработчик pointerdown для заголовка
- */
 export function useMove(windowOb: WindowOb) {
-    // Последняя зафиксированная позиция курсора
-    const lastX = ref(0);
-    const lastY = ref(0);
+	const focusStore = useFocusStore();
+	const windowsStore = useWindowsStore();
+	const target = useBoundsStore().ensure(windowOb.id).target;
 
-    const { contentArea } = useContentArea();
-    const { focus } = useFocusWindowController();
-    const target = getTargetBounds(windowOb.id);
+	return (ev: PointerEvent) => {
+		if (windowOb.states.fullscreen) return;
+		// Re-entrance guard: drag уже активен — игнорируем второй pointerdown
+		// (multi-touch / fast double-press → orphan listener pair'ы).
+		if (windowOb.states.drag) return;
+		const el = ev.currentTarget as HTMLElement | null;
+		// SSR/jsdom guard: setPointerCapture отсутствует → drag недоступен.
+		if (!el?.setPointerCapture) return;
 
-    /**
-     * Проверяет, вышла ли позиция за пределы рабочей области.
-     * Использует OFFSET для создания "мёртвой зоны" у краёв.
-     */
-    const isOutOfBounds = () => {
-        return (
-            lastX.value < OFFSET ||
-            lastY.value < OFFSET ||
-            lastX.value > contentArea.value.width - OFFSET * 2 ||
-            lastY.value > contentArea.value.height - OFFSET * 2
-        );
-    };
+		el.setPointerCapture(ev.pointerId);
 
-    // Вызывается при изменении позиции — проверяет выход за границы
-    const callback = () => {
-        if (isOutOfBounds()) {
-            // Окно у края — готово к переходу в fullscreen
-            windowOb.states['fullscreen-ready'] = true;
-        } else {
-            delete windowOb.states['fullscreen-ready'];
-        }
-    };
+		focusStore.focus(windowOb.id);
+		windowsStore.setState(windowOb.id, "drag", true);
 
-    // Следим за позицией — сразу проверяем выход за границы
-    watch(lastX, callback, {
-        immediate: true,
-    });
+		const ctrl = new AbortController();
+		const { signal } = ctrl;
+		let lastX = ev.clientX;
+		let lastY = ev.clientY;
 
-    watch(lastY, callback, {
-        immediate: true,
-    });
+		el.addEventListener(
+			"pointermove",
+			(e: PointerEvent) => {
+				target.top += e.clientY - lastY;
+				target.left += e.clientX - lastX;
+				lastY = e.clientY;
+				lastX = e.clientX;
+			},
+			{ signal },
+		);
 
-    // Возвращаем обработчик pointerdown
-    return (ev: PointerEvent) => {
-        // Если уже в fullscreen — перетаскивание запрещено
-        if (windowOb.states.fullscreen) return;
-        focus(windowOb.id);
-        windowOb.states.drag = true;
-
-        // Запоминаем начальную позицию
-        lastY.value = ev.clientY;
-        lastX.value = ev.clientX;
-
-        // Обработчик перемещения
-        const pointerMove = (ev: PointerEvent) => {
-            // Вычисляем дельту перемещения
-            const deltaY = ev.clientY - lastY.value;
-            const deltaX = ev.clientX - lastX.value;
-
-            // Обновляем последнюю позицию
-            lastY.value = ev.clientY;
-            lastX.value = ev.clientX;
-
-            // Применяем дельту к позиции окна
-            target.top += deltaY;
-            target.left += deltaX;
-        };
-
-        // Обработчик отпускания
-        const pointerup = (ev: PointerEvent) => {
-            lastY.value = ev.clientY;
-            lastX.value = ev.clientX;
-
-            // Снимаем флаг перетаскивания
-            delete windowOb.states.drag;
-
-            // Очищаем слушатели
-            document.removeEventListener('pointermove', pointerMove);
-            document.removeEventListener('pointerup', pointerup);
-
-            // Если было fullscreen-ready — включаем fullscreen
-            if (windowOb.states['fullscreen-ready']) {
-                windowOb.states.fullscreen = true;
-            }
-
-            delete windowOb.states['fullscreen-ready'];
-        };
-
-        document.addEventListener('pointermove', pointerMove);
-        document.addEventListener('pointerup', pointerup);
-    };
+		// abort ПОСЛЕДНЯЯ строка: clearState завершается ДО listener removal,
+		// последующие fire (lostpointercapture после pointerup) — no-op.
+		const end = () => {
+			windowsStore.clearState(windowOb.id, "drag");
+			ctrl.abort();
+		};
+		el.addEventListener("pointerup", end, { signal });
+		el.addEventListener("pointercancel", end, { signal });
+		el.addEventListener("lostpointercapture", end, { signal });
+	};
 }

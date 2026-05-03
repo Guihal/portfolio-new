@@ -1,5 +1,33 @@
+@use './vars' as *;
 @use './functions' as *;
 @use './mixins' as *;
+
+// Single source of truth for theme colors. Hex form drives `c('name')`;
+// `*-rgb` channel triplets drive `c-rgba('name', $alpha)` for alpha compositing.
+// Runtime theme switch: set `data-theme` on `<html>` to override these vars.
+:root {
+    --color-accent: #db481d;
+    --color-accent-rgb: 219 72 29;
+    --color-main: #40b567;
+    --color-main-rgb: 64 181 103;
+    --color-default: #151515;
+    --color-default-rgb: 21 21 21;
+    --color-default-1: #181818;
+    --color-default-1-rgb: 24 24 24;
+    --color-default-2: #1d1a1a;
+    --color-default-2-rgb: 29 26 26;
+    --color-default-3: #2f2626;
+    --color-default-3-rgb: 47 38 38;
+    --color-default-contrast: #cecece;
+    --color-default-contrast-rgb: 206 206 206;
+}
+
+// Stub for runtime dark theme (full implementation: P7-02).
+// Keep selector present so consumers can already attach `data-theme="dark"`
+// without a no-op selector warning when overrides land.
+[data-theme='dark'] {
+    // overrides go here
+}
 
 :root,
 body,
@@ -69,16 +97,16 @@ body,
 
     @media (hover: hover) {
         &:hover {
-            background-color: rgba(c('default'), 0.6);
+            background-color: c-rgba('default', 0.6);
         }
     }
 
     &:active {
-        background-color: rgba(c('default'), 0.6);
+        background-color: c-rgba('default', 0.6);
     }
 
     &.active {
-        background-color: rgba(c('main'), 0.6);
+        background-color: c-rgba('main', 0.6);
     }
 
     &_img {
@@ -93,7 +121,7 @@ body,
     }
 
     &_number {
-        font-family: Pix, system-ui;
+        font-family: $t-default;
         position: absolute;
         color: c('default-contrast');
         font-size: 8px;
@@ -147,7 +175,7 @@ body,
     }
 
     &__text {
-        font-family: Pix, system-ui;
+        font-family: $t-default;
         color: c('default-contrast');
         font-size: 20px;
         animation: flick 1s ease-in-out infinite;

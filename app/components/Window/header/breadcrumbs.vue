@@ -1,9 +1,14 @@
 <script setup lang="ts">
-    import { useWindowLoading } from '../composables/useWindowLoading';
-    import type { WindowOb } from '../Window';
+    
+    import { useInjectWindow } from '~/components/Window/composables/lifecycle/useInjectWindow';
+import { useInjectWindowRoute } from '~/components/Window/composables/lifecycle/useInjectWindowRoute';
+    import { useWindowsStore } from '~/stores/windows';
+    import type { FsFile } from '~~/shared/types/filesystem';
+    import { useWindowLoading } from '../composables/route/useWindowLoading';
 
-    const windowRoute = inject('windowRoute') as Ref<string>;
-    const windowOb = inject('windowOb') as WindowOb;
+    const windowRoute = useInjectWindowRoute();
+    const windowOb = useInjectWindow();
+    const windowsStore = useWindowsStore();
 
     const { register } = useWindowLoading();
 
@@ -14,16 +19,13 @@
         () => `breadcrumbs-${windowRoute.value}`,
         async () => {
             isLoading.value = true;
-            let resp = undefined;
+            let resp: FsFile[] | null | undefined;
             try {
-                resp = await $fetch('/api/filesystem/breadcrumbs', {
-                    method: 'POST',
-                    body: {
-                        path: windowRoute.value,
-                    },
+                resp = await $fetch<FsFile[] | null>('/api/filesystem/breadcrumbs', {
+                    query: { path: windowRoute.value },
                 });
             } catch (err) {
-                console.error(err);
+                logger.error('[breadcrumbs]', err);
             }
             isLoading.value = false;
 
@@ -37,7 +39,7 @@
     );
 
     const goTo = (path: string) => {
-        windowOb.targetFile.value = path;
+        windowsStore.setTargetFile(windowOb.id, path);
     };
 </script>
 
@@ -84,7 +86,7 @@
         }
 
         &_el {
-            font-family: Pix, system-ui;
+            font-family: $t-default;
             font-size: 15px;
             line-height: 1;
             letter-spacing: 0.02em;

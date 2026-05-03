@@ -1,18 +1,15 @@
-import type { WindowOb } from '../Window';
-import {
-    getCalculatedBounds,
-    type WindowBoundsKey,
-} from '~/composables/useWindowBounds';
+import { useBoundsStore, type WindowBoundsKey } from "~/stores/bounds";
+import type { WindowOb } from "../types";
 
 export type SetBoundsBounds = Partial<Record<WindowBoundsKey, number>>;
 
 export function setCalculatedBounds(
-    windowOb: WindowOb,
-    bounds: SetBoundsBounds,
+	windowOb: WindowOb,
+	bounds: SetBoundsBounds,
 ) {
-    const calculated = getCalculatedBounds(windowOb.id);
-    for (const key in bounds) {
-        const typedKey = key as WindowBoundsKey;
-        calculated[typedKey] = bounds[typedKey]!;
-    }
+	const calculated = useBoundsStore().ensure(windowOb.id).calculated;
+	for (const key in bounds) {
+		const typedKey = key as WindowBoundsKey;
+		calculated[typedKey] = bounds[typedKey]!;
+	}
 }

@@ -1,50 +1,37 @@
 <script setup lang="ts">
-    import type { WindowOb } from '~/components/Window/Window';
+    import { useInjectWindow } from '~/components/Window/composables/lifecycle/useInjectWindow';
+    import { useInjectWindowRoute } from '~/components/Window/composables/lifecycle/useInjectWindowRoute';
+    import { useWindowLoading } from '~/components/Window/composables/route/useWindowLoading';
+    import { ProgramViewKey } from '~/components/Window/types';
+    import { useProgramFetch } from '~/composables/window/useProgramFetch';
 
-    const windowOb = inject('windowOb') as WindowOb;
-    const windowRoute = inject('windowRoute') as Ref<string>;
-    watchEffect(() => console.log(windowRoute.value));
-    const { windowFetch } = useWindowFetch(windowOb.id);
+    const windowOb = useInjectWindow();
+    const windowRoute = useInjectWindowRoute();
+    // P8-10: переход с string-key 'programConfig' на типизированный
+    // ProgramViewKey. ProgramView содержит config; canNavigate берём оттуда.
+    const programView = inject(ProgramViewKey, null);
 
-    const { data } = await useAsyncData(
-        () => `explorer-${windowRoute.value}f`,
-        async () => {
-            console.log(windowRoute.value);
-            if (!windowRoute.value) return [];
-
-            const result = await windowFetch(async () =>
-                $fetch<FsFile[]>('/api/filesystem/list', {
-                    body: { path: windowRoute.value },
-                    method: 'POST',
-                }),
-            );
-            return result ?? [];
-        },
-        {
-            server: import.meta.server ? true : false,
-            immediate: true,
-        },
+    const canNavigate = computed(
+        () => programView?.value?.config.canNavigate ?? true,
     );
+
+    const { data, isLoading } = await useProgramFetch({
+        path: () => windowRoute.value,
+        kind: 'list',
+    });
+    useWindowLoading().register(windowOb.id, isLoading);
+
+    const items = computed<FsFile[]>(() => data.value ?? []);
 </script>
 <template>
     <div class="explorer">
         <div class="explorer__left">
-            <ProgramsExplorerNav />
+            <ProgramsExplorerNav v-if="canNavigate" />
             <ClientOnly>
                 <ProgramsExplorerNavFacts />
             </ClientOnly>
         </div>
-        <div class="explorer__content pixel-box">
-            <template v-if="data?.length > 0">
-                <ProgramsExplorerShortcut
-                    v-for="file in data"
-                    :key="file.path"
-                    :file />
-            </template>
-            <template v-else>
-                <div class="explorer__empty">Тут ничего нет :(</div>
-            </template>
-        </div>
+        <ProgramsExplorerList :items="items" />
     </div>
 </template>
 <style lang="scss">
@@ -93,7 +80,7 @@
         }
 
         &__empty {
-            font-family: Pix, systen-ui;
+            font-family: $t-default;
             font-size: 40px;
             line-height: 100%;
             color: c('default-contrast');

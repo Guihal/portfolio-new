@@ -1,15 +1,53 @@
 {
-    "$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
-    "organizeImports": {
-        "enabled": true
-    },
-    "linter": {
-        "enabled": true,
-        "rules": {
-            "recommended": true
-        }
-    },
-    "files": {
-        "include": ["**/*.ts", "**/*.vue"]
-    }
+	"$schema": "https://biomejs.dev/schemas/2.4.4/schema.json",
+	"assist": { "actions": { "source": { "organizeImports": "on" } } },
+	"linter": {
+		"enabled": true,
+		"rules": {
+			"recommended": true,
+			"suspicious": {
+				"noConsole": {
+					"level": "error",
+					"options": { "allow": ["debug", "info", "warn", "error"] }
+				}
+			}
+		}
+	},
+	"files": {
+		"includes": [
+			"**/*.ts",
+			"**/*.vue",
+			"!.nuxt",
+			"!.output",
+			"!.nitro",
+			"!.cache",
+			"!node_modules",
+			"!server/assets",
+			"!test-results",
+			"!playwright-report"
+		]
+	},
+	"overrides": [
+		{
+			"includes": ["**/*.vue"],
+			"formatter": {
+				"enabled": false
+			}
+		},
+		{
+			"includes": [
+				"shared/utils/logger.ts",
+				"tests/unit/shared/utils/logger.test.ts",
+				"scripts/**",
+				"nuxt.config.ts"
+			],
+			"linter": {
+				"rules": {
+					"suspicious": {
+						"noConsole": "off"
+					}
+				}
+			}
+		}
+	]
 }

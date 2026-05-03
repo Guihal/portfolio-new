@@ -1,7 +1,8 @@
 <script setup lang="ts">
-    import type { WindowOb } from './Window';
+    import { useInjectWindow } from '~/components/Window/composables/lifecycle/useInjectWindow';
+    import type { WindowOb } from './types';
 
-    const windowOb = inject('windowOb') as WindowOb;
+    const windowOb = useInjectWindow();
 
     const isVisible = computed(() => {
         return (

@@ -1,0 +1,78 @@
+// Container-queries-обёртки Dimonya OS.
+//
+// Все окна (Window/index.vue) объявляют:
+//   container-type: size;
+//   container-name: window;
+//
+// → внутри окна можно адаптировать layout по размеру окна, а не viewport.
+// Это даёт консистентность в multi-window OS-стиле: компонент Explorer
+// одинаково реагирует на ширину независимо от того, в какое окно вложен.
+//
+// Брейкпоинты — единая точка: app/assets/scss/_breakpoints.scss.
+
+$breakpoints: (
+    'sm': 600px,
+    'md': 768px,
+    'lg': 1024px,
+    'xl': 1280px,
+);
+
+// Container query: ширина меньше брейкпоинта
+//   @include cw('md') { ... } → @container window (width < 768px) { ... }
+@mixin cw($name) {
+    $value: map.get($breakpoints, $name);
+    @if not $value {
+        @error "Breakpoint `#{$name}` not found. Available: #{map.keys($breakpoints)}";
+    }
+    @container window (width < #{$value}) {
+        @content;
+    }
+}
+
+// Container query: высота меньше брейкпоинта
+@mixin ch($name) {
+    $value: map.get($breakpoints, $name);
+    @if not $value {
+        @error "Breakpoint `#{$name}` not found. Available: #{map.keys($breakpoints)}";
+    }
+    @container window (height < #{$value}) {
+        @content;
+    }
+}
+
+// Container query: ширина ИЛИ высота меньше брейкпоинта
+@mixin cwh($name) {
+    $value: map.get($breakpoints, $name);
+    @if not $value {
+        @error "Breakpoint `#{$name}` not found. Available: #{map.keys($breakpoints)}";
+    }
+    @container window (height < #{$value}) or (width < #{$value}) {
+        @content;
+    }
+}
+
+// ─── Примеры ───────────────────────────────────────────────────────
+//
+// 1) Скрыть боковую панель в узком окне:
+//    .explorer__left {
+//        @include cw('md') { display: none; }
+//    }
+//
+// 2) Переключить flex-направление в узком окне:
+//    .about {
+//        @include cw('sm') { flex-direction: column-reverse; }
+//    }
+//
+// 3) Переключить поведение скролла когда окно или мало по высоте, или мало по ширине:
+//    .about__left {
+//        @include cwh('sm') {
+//            background: c('default-3');
+//            overflow-y: auto;
+//        }
+//    }
+//
+// ─── НЕ юзать @media (min/max-width: ...) ──────────────────────────
+//
+// Окна — переменного размера, viewport-medium-query даёт поломанный
+// layout в маленьких окнах большом экране и наоборот. Container queries
+// привязаны к фактическому размеру окна.

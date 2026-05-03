@@ -1,50 +1,35 @@
 <script setup lang="ts">
-    import { useWindowLoading } from '~/components/Window/composables/useWindowLoading';
-    import type { WindowOb } from '~/components/Window/Window';
+    import { useInjectWindow } from '~/components/Window/composables/lifecycle/useInjectWindow';
+    import { useInjectWindowRoute } from '~/components/Window/composables/lifecycle/useInjectWindowRoute';
+    import { useWindowLoading } from '~/components/Window/composables/route/useWindowLoading';
+    import { useProgramFetch } from '~/composables/window/useProgramFetch';
 
-    const windowOb = inject('windowOb') as WindowOb;
-    const windowRoute = inject('windowRoute') as Ref<string>;
+    const windowOb = useInjectWindow();
+    const windowRoute = useInjectWindowRoute();
 
-    const lastPath: Ref<null | string> = computed(() => {
-        if (windowRoute.value === '/') return null;
-
+    // Nav показывает листинг родительской папки. lastPath = parent of windowRoute.
+    const lastPath = computed<string>(() => {
+        if (windowRoute.value === '/') return '';
         const segments = windowRoute.value.split('/');
-
         if (segments.length > 1) {
             segments.splice(segments.length - 1, 1);
         }
-
-        const path = segments.length > 1 ? segments.join('/') : '/';
-
-        return path;
+        return segments.length > 1 ? segments.join('/') : '/';
     });
 
-    const { windowFetch } = useWindowFetch(windowOb.id);
+    const { data, isLoading } = await useProgramFetch({
+        path: () => lastPath.value,
+        kind: 'list',
+    });
+    useWindowLoading().register(windowOb.id, isLoading);
 
-    const { data } = await useAsyncData(
-        () => `explorer-${lastPath.value}`,
-        async () => {
-            if (!lastPath.value) return [];
-            const result = await windowFetch(async () =>
-                $fetch<FsFile[]>('/api/filesystem/list', {
-                    body: { path: lastPath.value },
-                    method: 'POST',
-                }),
-            );
-            return result ?? [];
-        },
-        {
-            watch: [lastPath],
-            server: import.meta.server ? true : false,
-            immediate: true,
-        },
-    );
+    const items = computed<FsFile[]>(() => data.value ?? []);
 </script>
 <template>
-    <nav class="explorer__nav pixel-box" v-if="data?.length > 0">
+    <nav v-if="items.length > 0" class="explorer__nav pixel-box">
         <div class="explorer__nav_title">Прошлая папка</div>
         <ProgramsExplorerNavShortcut
-            v-for="file in data"
+            v-for="file in items"
             :key="file.path"
             :file />
     </nav>

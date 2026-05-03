@@ -1,28 +1,16 @@
 <script setup lang="ts">
-    import { useCreateAndRegisterWindow } from './components/Window/composables/useCreateAndRegisterWindow';
+    
+    import { useAppBootstrap } from './composables/global/useAppBootstrap';
+import { useViewportObserver } from './composables/global/useViewportObserver';
 
-    const { setViewportObserver } = useContentArea();
+    useViewportObserver();
 
-    setViewportObserver();
-
-    const route = useRoute();
-    const { queuedPush } = useQueuedRouter();
-    const aboutCookie = useCookie('about_visited', {
-        maxAge: 60 * 60 * 24 * 365,
-    });
-
-    clearAllWindowsState();
-
-    if (!aboutCookie.value && route.fullPath !== '/about-me') {
-        aboutCookie.value = '1';
-        await queuedPush('/about');
-    } else {
-        if (route.fullPath !== '/') {
-            useCreateAndRegisterWindow(route.fullPath);
-        }
-    }
-
+    // SEO must wire up Pinia subscription BEFORE the top-level await — once
+    // setup suspends, the Vue instance/inject context is lost on resume and
+    // useFocusStore() errors with "no active Pinia".
     useSeoUnfocus();
+
+    await useAppBootstrap();
 </script>
 <template>
     <NuxtLayout>

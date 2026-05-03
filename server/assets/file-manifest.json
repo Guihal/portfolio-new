@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-04-02T01:00:33.787Z",
+  "generatedAt": "2026-05-03T14:39:44.456Z",
   "tree": [
     {
       "name": "projects",
@@ -10,13 +10,6 @@
         "programType": "explorer"
       },
       "children": [
-        {
-          "name": "entity.json",
-          "path": "/projects/entity.json",
-          "type": "file",
-          "ext": ".json",
-          "size": 64
-        },
         {
           "name": "griboyedov",
           "path": "/projects/griboyedov",
@@ -52,15 +45,15 @@
               "size": 53
             }
           ]
+        },
+        {
+          "name": "entity.json",
+          "path": "/projects/entity.json",
+          "type": "file",
+          "ext": ".json",
+          "size": 64
         }
       ]
-    },
-    {
-      "name": "entity.json",
-      "path": "/entity.json",
-      "type": "file",
-      "ext": ".json",
-      "size": 73
     },
     {
       "name": "about",
@@ -79,6 +72,13 @@
           "size": 60
         }
       ]
+    },
+    {
+      "name": "entity.json",
+      "path": "/entity.json",
+      "type": "file",
+      "ext": ".json",
+      "size": 73
     }
   ],
   "flatIndex": {
@@ -90,13 +90,6 @@
         "name": "Проекты",
         "programType": "explorer"
       }
-    },
-    "/projects/entity.json": {
-      "name": "entity.json",
-      "path": "/projects/entity.json",
-      "type": "file",
-      "ext": ".json",
-      "size": 64
     },
     "/projects/griboyedov": {
       "name": "griboyedov",
@@ -130,12 +123,12 @@
       "ext": ".json",
       "size": 53
     },
-    "/entity.json": {
+    "/projects/entity.json": {
       "name": "entity.json",
-      "path": "/entity.json",
+      "path": "/projects/entity.json",
       "type": "file",
       "ext": ".json",
-      "size": 73
+      "size": 64
     },
     "/about": {
       "name": "about",
@@ -152,6 +145,13 @@
       "type": "file",
       "ext": ".json",
       "size": 60
+    },
+    "/entity.json": {
+      "name": "entity.json",
+      "path": "/entity.json",
+      "type": "file",
+      "ext": ".json",
+      "size": 73
     }
   },
   "stats": {

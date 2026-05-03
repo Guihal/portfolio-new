@@ -1,5 +1,6 @@
 <script setup lang="ts">
-    import type { WindowOb } from '~/components/Window/Window';
+    import type { WindowOb } from '~/components/Window/types';
+    import { useTooltipPosition } from './useTooltipPosition';
 
     const tooltip = ref<HTMLElement | null>(null);
     const content = ref<HTMLElement | null>(null);
@@ -13,51 +14,11 @@
             mouseout: () => void;
         }>();
 
-    const tooltipBounds = ref<DOMRect | null>(null);
-    const contentBounds = ref<DOMRect | null>(null);
-
-    const setTooltipBounds = () => {
-        if (!tooltip.value) return;
-        tooltipBounds.value = tooltip.value.getBoundingClientRect();
-    };
-    const setContentBounds = () => {
-        if (!content.value) return;
-        contentBounds.value = content.value.getBoundingClientRect();
-    };
-
-    useResizeObserver(tooltip, setTooltipBounds);
-    useResizeObserver(content, setContentBounds);
-
-    const { contentArea } = useContentArea();
-
-    const maxWidth = computed(() => contentArea.value.width);
-
-    const top = computed(() => {
-        if (!containerBounds || !tooltipBounds.value) return 0;
-
-        const value = containerBounds.top - tooltipBounds.value.height;
-
-        return value;
-    });
-
-    const left = computed(() => {
-        if (!containerBounds || !tooltipBounds.value) return 0;
-
-        const value =
-            containerBounds.left +
-            containerBounds.width / 2 -
-            tooltipBounds.value.width / 2;
-
-        const valueClamped = Math.max(
-            Math.min(
-                value,
-                contentArea.value.width - tooltipBounds.value.width,
-            ),
-            0,
-        );
-
-        return valueClamped;
-    });
+    const { top, left, contentBounds, maxWidth } = useTooltipPosition(
+        tooltip,
+        content,
+        () => containerBounds,
+    );
 </script>
 
 <template>

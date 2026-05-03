@@ -1,6 +1,7 @@
 <script setup lang="ts">
-    import type { WindowOb } from '~/components/Window/Window';
-    import type { ProgramType } from '~~/shared/types/Program';
+    import { useTooltipPosition } from '~/components/Taskbar/Elements/Program/useTooltipPosition';
+    import type { WindowOb } from '~/components/Window/types';
+    import type { ProgramType } from '~~/shared/types/filesystem';
 
     const props = defineProps<{
         programType: ProgramType;
@@ -11,50 +12,13 @@
     const tooltip = ref<HTMLElement | null>(null);
     const content = ref<HTMLElement | null>(null);
 
-    const tooltipBounds = ref<DOMRect | null>(null);
-    const contentBounds = ref<DOMRect | null>(null);
+    const { top, left, contentBounds, maxWidth } = useTooltipPosition(
+        tooltip,
+        content,
+        () => props.containerBounds,
+    );
 
-    const setTooltipBounds = () => {
-        if (!tooltip.value) return;
-        tooltipBounds.value = tooltip.value.getBoundingClientRect();
-    };
-    const setContentBounds = () => {
-        if (!content.value) return;
-        contentBounds.value = content.value.getBoundingClientRect();
-    };
-
-    useResizeObserver(tooltip, setTooltipBounds);
-    useResizeObserver(content, setContentBounds);
-
-    const { contentArea } = useContentArea();
-    const { cancelHide, hide } = useTaskbarTooltips();
-
-    const maxWidth = computed(() => contentArea.value.width);
-
-    const top = computed(() => {
-        if (!props.containerBounds || !tooltipBounds.value) return 0;
-
-        return props.containerBounds.top - tooltipBounds.value.height;
-    });
-
-    const left = computed(() => {
-        if (!props.containerBounds || !tooltipBounds.value) return 0;
-
-        const value =
-            props.containerBounds.left +
-            props.containerBounds.width / 2 -
-            tooltipBounds.value.width / 2;
-
-        const valueClamped = Math.max(
-            Math.min(
-                value,
-                contentArea.value.width - tooltipBounds.value.width,
-            ),
-            0,
-        );
-
-        return valueClamped;
-    });
+    const { cancelHide, hide } = useTooltipState();
 
     const onMouseover = () => cancelHide(props.programType);
     const onMouseout = () => hide(props.programType);
@@ -70,8 +34,8 @@
             '--c-w': contentBounds?.width ?? 0,
         }"
         class="taskbar__tooltip pixel-box"
-        @mouseover="onMouseover"
-        @mouseout="onMouseout">
+        @mouseenter="onMouseover"
+        @mouseleave="onMouseout">
         <div ref="content" class="taskbar__tooltip__content">
             <TaskbarElementsProgramAllFrames :window-obs="windowObs" />
         </div>

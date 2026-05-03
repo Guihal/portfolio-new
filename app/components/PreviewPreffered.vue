@@ -1,19 +1,22 @@
 <script setup lang="ts">
-    const { contentArea } = useContentArea();
+    import { storeToRefs } from 'pinia';
+    import { useContentAreaStore } from '~/stores/contentArea';
 
-    const width = computed(() => contentArea.value.width);
-    const height = computed(() => contentArea.value.height);
+    const { area: contentArea } = storeToRefs(useContentAreaStore());
+
+    const sizeStyle = computed(() => ({
+        width: `${contentArea.value.width}px`,
+        height: `${contentArea.value.height}px`,
+    }));
 </script>
 <template>
-    <div class="preview_preffered"></div>
+    <div class="preview_preffered" :style="sizeStyle"></div>
 </template>
 <style lang="scss">
     .preview_preffered {
         position: fixed;
         left: 0;
         top: 0;
-        width: calc(v-bind(width) * 1px);
-        height: calc(v-bind(height) * 1px);
         background: c('default-contrast');
         opacity: 0;
         pointer-events: none;
