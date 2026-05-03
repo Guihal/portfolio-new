@@ -4,8 +4,8 @@ import {
 	readFileSync,
 	statSync,
 	writeFileSync,
-} from "fs";
-import { join, normalize } from "path";
+} from "node:fs";
+import { join, normalize } from "node:path";
 import { z } from "zod";
 
 const ENTRY_DIR = join(process.cwd(), "server", "assets", "entry");
