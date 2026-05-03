@@ -36,3 +36,31 @@ export function parsePathQuery(query: unknown): { path: string } {
 	}
 	return res.data;
 }
+
+const CONTENT_PATH_RE = /^[\w\-/.]+$/;
+
+export const contentPathQuerySchema = z.object({
+	path: z
+		.string()
+		.min(1, "path is required")
+		.max(200, "path too long (>200)")
+		.refine((p) => !TRAVERSAL_RE.test(p), "path traversal forbidden")
+		.refine((p) => CONTENT_PATH_RE.test(p), "invalid path format"),
+});
+
+export function parseContentPathQuery(query: unknown): { path: string } {
+	const res = contentPathQuerySchema.safeParse(query);
+	if (!res.success) {
+		throw createError({
+			statusCode: 400,
+			statusMessage: "Invalid path",
+			data: {
+				issues: res.error.issues.map((i) => ({
+					path: i.path,
+					message: i.message,
+				})),
+			},
+		});
+	}
+	return res.data;
+}

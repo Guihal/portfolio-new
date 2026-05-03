@@ -33,6 +33,16 @@ export default defineNuxtConfig({
 				"cache-control": "public, s-maxage=3600, stale-while-revalidate=60",
 			},
 		},
+		"/api/filesystem/content": {
+			headers: {
+				"cache-control": "public, s-maxage=3600, stale-while-revalidate=60",
+			},
+		},
+		"/api/filesystem/asset": {
+			headers: {
+				"cache-control": "public, s-maxage=86400, stale-while-revalidate=300",
+			},
+		},
 	},
 	runtimeConfig: {
 		public: {
