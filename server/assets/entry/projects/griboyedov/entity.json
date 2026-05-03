@@ -1,4 +1,10 @@
 {
     "name": "Фонд имени Грибоедова",
-    "programType": "explorer"
+    "programType": "explorer",
+    "year": "2024",
+    "tags": ["design", "site", "vue", "typography"],
+    "description": "Сайт фонда поддержки молодых литераторов. Каталог авторов и работ в формате длинного ленточного скролла с анимированным набором текста.",
+    "links": [
+        { "label": "griboedov-fond.ru", "href": "https://griboedov-fond.ru" }
+    ]
 }

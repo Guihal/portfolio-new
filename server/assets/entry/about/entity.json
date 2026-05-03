@@ -1,4 +1,9 @@
 {
     "name": "Обо мне",
-    "programType": "about"
+    "programType": "about",
+    "description": "Фуллстек-разработчик с фокусом на Vue-экосистему и интерактивный веб. Собираю портфолио как операционную систему.",
+    "tags": ["vue", "nuxt", "typescript", "webgl", "design-system"],
+    "links": [
+        { "label": "github.com/Guihal", "href": "https://github.com/Guihal" }
+    ]
 }

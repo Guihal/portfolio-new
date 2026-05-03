@@ -1,4 +1,11 @@
 {
     "name": "u24",
-    "programType": "explorer"
+    "programType": "explorer",
+    "year": "2023 — настоящее",
+    "tags": ["product", "vue", "three.js", "webgl", "design-system", "dashboard"],
+    "description": "Внутренний дашборд для мониторинга 24/7 операций. От аналитики realtime-стримов до alerting-движка.",
+    "links": [
+        { "label": "u24.dev", "href": "#" },
+        { "label": "Демо (требует доступ)", "href": "#" }
+    ]
 }
