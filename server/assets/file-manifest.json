@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-03T14:39:44.456Z",
+  "generatedAt": "2026-05-03T15:05:24.655Z",
   "tree": [
     {
       "name": "projects",
@@ -16,7 +16,21 @@
           "type": "directory",
           "entity": {
             "name": "Фонд имени Грибоедова",
-            "programType": "explorer"
+            "programType": "explorer",
+            "year": "2024",
+            "tags": [
+              "design",
+              "site",
+              "vue",
+              "typography"
+            ],
+            "description": "Сайт фонда поддержки молодых литераторов. Каталог авторов и работ в формате длинного ленточного скролла с анимированным набором текста.",
+            "links": [
+              {
+                "label": "griboedov-fond.ru",
+                "href": "https://griboedov-fond.ru"
+              }
+            ]
           },
           "children": [
             {
@@ -24,7 +38,7 @@
               "path": "/projects/griboyedov/entity.json",
               "type": "file",
               "ext": ".json",
-              "size": 90
+              "size": 537
             }
           ]
         },
@@ -34,7 +48,27 @@
           "type": "directory",
           "entity": {
             "name": "u24",
-            "programType": "explorer"
+            "programType": "explorer",
+            "year": "2023 — настоящее",
+            "tags": [
+              "product",
+              "vue",
+              "three.js",
+              "webgl",
+              "design-system",
+              "dashboard"
+            ],
+            "description": "Внутренний дашборд для мониторинга 24/7 операций. От аналитики realtime-стримов до alerting-движка.",
+            "links": [
+              {
+                "label": "u24.dev",
+                "href": "#"
+              },
+              {
+                "label": "Демо (требует доступ)",
+                "href": "#"
+              }
+            ]
           },
           "children": [
             {
@@ -42,7 +76,7 @@
               "path": "/projects/u24/entity.json",
               "type": "file",
               "ext": ".json",
-              "size": 53
+              "size": 508
             }
           ]
         },
@@ -61,7 +95,21 @@
       "type": "directory",
       "entity": {
         "name": "Обо мне",
-        "programType": "about"
+        "programType": "about",
+        "description": "Фуллстек-разработчик с фокусом на Vue-экосистему и интерактивный веб. Собираю портфолио как операционную систему.",
+        "tags": [
+          "vue",
+          "nuxt",
+          "typescript",
+          "webgl",
+          "design-system"
+        ],
+        "links": [
+          {
+            "label": "github.com/Guihal",
+            "href": "https://github.com/Guihal"
+          }
+        ]
       },
       "children": [
         {
@@ -69,7 +117,7 @@
           "path": "/about/entity.json",
           "type": "file",
           "ext": ".json",
-          "size": 60
+          "size": 459
         }
       ]
     },
@@ -97,7 +145,21 @@
       "type": "directory",
       "entity": {
         "name": "Фонд имени Грибоедова",
-        "programType": "explorer"
+        "programType": "explorer",
+        "year": "2024",
+        "tags": [
+          "design",
+          "site",
+          "vue",
+          "typography"
+        ],
+        "description": "Сайт фонда поддержки молодых литераторов. Каталог авторов и работ в формате длинного ленточного скролла с анимированным набором текста.",
+        "links": [
+          {
+            "label": "griboedov-fond.ru",
+            "href": "https://griboedov-fond.ru"
+          }
+        ]
       }
     },
     "/projects/griboyedov/entity.json": {
@@ -105,7 +167,7 @@
       "path": "/projects/griboyedov/entity.json",
       "type": "file",
       "ext": ".json",
-      "size": 90
+      "size": 537
     },
     "/projects/u24": {
       "name": "u24",
@@ -113,7 +175,27 @@
       "type": "directory",
       "entity": {
         "name": "u24",
-        "programType": "explorer"
+        "programType": "explorer",
+        "year": "2023 — настоящее",
+        "tags": [
+          "product",
+          "vue",
+          "three.js",
+          "webgl",
+          "design-system",
+          "dashboard"
+        ],
+        "description": "Внутренний дашборд для мониторинга 24/7 операций. От аналитики realtime-стримов до alerting-движка.",
+        "links": [
+          {
+            "label": "u24.dev",
+            "href": "#"
+          },
+          {
+            "label": "Демо (требует доступ)",
+            "href": "#"
+          }
+        ]
       }
     },
     "/projects/u24/entity.json": {
@@ -121,7 +203,7 @@
       "path": "/projects/u24/entity.json",
       "type": "file",
       "ext": ".json",
-      "size": 53
+      "size": 508
     },
     "/projects/entity.json": {
       "name": "entity.json",
@@ -136,7 +218,21 @@
       "type": "directory",
       "entity": {
         "name": "Обо мне",
-        "programType": "about"
+        "programType": "about",
+        "description": "Фуллстек-разработчик с фокусом на Vue-экосистему и интерактивный веб. Собираю портфолио как операционную систему.",
+        "tags": [
+          "vue",
+          "nuxt",
+          "typescript",
+          "webgl",
+          "design-system"
+        ],
+        "links": [
+          {
+            "label": "github.com/Guihal",
+            "href": "https://github.com/Guihal"
+          }
+        ]
       }
     },
     "/about/entity.json": {
@@ -144,7 +240,7 @@
       "path": "/about/entity.json",
       "type": "file",
       "ext": ".json",
-      "size": 60
+      "size": 459
     },
     "/entity.json": {
       "name": "entity.json",
