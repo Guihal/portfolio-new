@@ -44,12 +44,12 @@ describe("resolveContent", () => {
 
 	it("returns entity content without images when no images dir", async () => {
 		mockGetEntity.mockResolvedValue({
-			name: "u24",
+			name: "no-images",
 			programType: "explorer",
 		});
-		const r = await resolveContent("projects/u24");
+		const r = await resolveContent("__fixture-no-images__");
 		expect(r).not.toBeNull();
-		expect(r?.entity.name).toBe("u24");
+		expect(r?.entity.name).toBe("no-images");
 		expect(r?.images).toBeUndefined();
 	});
 

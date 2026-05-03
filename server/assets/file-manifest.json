@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-03T15:05:24.655Z",
+  "generatedAt": "2026-05-03T19:28:46.650Z",
   "tree": [
     {
       "name": "projects",
@@ -39,6 +39,104 @@
               "type": "file",
               "ext": ".json",
               "size": 537
+            },
+            {
+              "name": "codes",
+              "path": "/projects/griboyedov/codes",
+              "type": "directory",
+              "children": [
+                {
+                  "name": "marquee",
+                  "path": "/projects/griboyedov/codes/marquee",
+                  "type": "directory",
+                  "children": [
+                    {
+                      "name": "meta.json",
+                      "path": "/projects/griboyedov/codes/marquee/meta.json",
+                      "type": "file",
+                      "ext": ".json",
+                      "size": 139
+                    },
+                    {
+                      "name": "index.html",
+                      "path": "/projects/griboyedov/codes/marquee/index.html",
+                      "type": "file",
+                      "ext": ".html",
+                      "size": 321
+                    },
+                    {
+                      "name": "styles.css",
+                      "path": "/projects/griboyedov/codes/marquee/styles.css",
+                      "type": "file",
+                      "ext": ".css",
+                      "size": 505
+                    },
+                    {
+                      "name": "init.js",
+                      "path": "/projects/griboyedov/codes/marquee/init.js",
+                      "type": "file",
+                      "ext": ".js",
+                      "size": 416
+                    }
+                  ]
+                },
+                {
+                  "name": "cookie-banner",
+                  "path": "/projects/griboyedov/codes/cookie-banner",
+                  "type": "directory",
+                  "children": [
+                    {
+                      "name": "meta.json",
+                      "path": "/projects/griboyedov/codes/cookie-banner/meta.json",
+                      "type": "file",
+                      "ext": ".json",
+                      "size": 128
+                    },
+                    {
+                      "name": "banner.html",
+                      "path": "/projects/griboyedov/codes/cookie-banner/banner.html",
+                      "type": "file",
+                      "ext": ".html",
+                      "size": 503
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "images",
+              "path": "/projects/griboyedov/images",
+              "type": "directory",
+              "children": [
+                {
+                  "name": "01-cover.png",
+                  "path": "/projects/griboyedov/images/01-cover.png",
+                  "type": "file",
+                  "ext": ".png",
+                  "size": 6932
+                },
+                {
+                  "name": "02-slider.png",
+                  "path": "/projects/griboyedov/images/02-slider.png",
+                  "type": "file",
+                  "ext": ".png",
+                  "size": 6957
+                },
+                {
+                  "name": "03-detail.png",
+                  "path": "/projects/griboyedov/images/03-detail.png",
+                  "type": "file",
+                  "ext": ".png",
+                  "size": 7825
+                }
+              ]
+            },
+            {
+              "name": "codeWindows.json",
+              "path": "/projects/griboyedov/codeWindows.json",
+              "type": "file",
+              "ext": ".json",
+              "size": 115
             }
           ]
         },
@@ -77,6 +175,27 @@
               "type": "file",
               "ext": ".json",
               "size": 508
+            },
+            {
+              "name": "images",
+              "path": "/projects/u24/images",
+              "type": "directory",
+              "children": [
+                {
+                  "name": "01-cover.png",
+                  "path": "/projects/u24/images/01-cover.png",
+                  "type": "file",
+                  "ext": ".png",
+                  "size": 5719
+                },
+                {
+                  "name": "02-grid.png",
+                  "path": "/projects/u24/images/02-grid.png",
+                  "type": "file",
+                  "ext": ".png",
+                  "size": 5745
+                }
+              ]
             }
           ]
         },
@@ -169,6 +288,96 @@
       "ext": ".json",
       "size": 537
     },
+    "/projects/griboyedov/codes": {
+      "name": "codes",
+      "path": "/projects/griboyedov/codes",
+      "type": "directory"
+    },
+    "/projects/griboyedov/codes/marquee": {
+      "name": "marquee",
+      "path": "/projects/griboyedov/codes/marquee",
+      "type": "directory"
+    },
+    "/projects/griboyedov/codes/marquee/meta.json": {
+      "name": "meta.json",
+      "path": "/projects/griboyedov/codes/marquee/meta.json",
+      "type": "file",
+      "ext": ".json",
+      "size": 139
+    },
+    "/projects/griboyedov/codes/marquee/index.html": {
+      "name": "index.html",
+      "path": "/projects/griboyedov/codes/marquee/index.html",
+      "type": "file",
+      "ext": ".html",
+      "size": 321
+    },
+    "/projects/griboyedov/codes/marquee/styles.css": {
+      "name": "styles.css",
+      "path": "/projects/griboyedov/codes/marquee/styles.css",
+      "type": "file",
+      "ext": ".css",
+      "size": 505
+    },
+    "/projects/griboyedov/codes/marquee/init.js": {
+      "name": "init.js",
+      "path": "/projects/griboyedov/codes/marquee/init.js",
+      "type": "file",
+      "ext": ".js",
+      "size": 416
+    },
+    "/projects/griboyedov/codes/cookie-banner": {
+      "name": "cookie-banner",
+      "path": "/projects/griboyedov/codes/cookie-banner",
+      "type": "directory"
+    },
+    "/projects/griboyedov/codes/cookie-banner/meta.json": {
+      "name": "meta.json",
+      "path": "/projects/griboyedov/codes/cookie-banner/meta.json",
+      "type": "file",
+      "ext": ".json",
+      "size": 128
+    },
+    "/projects/griboyedov/codes/cookie-banner/banner.html": {
+      "name": "banner.html",
+      "path": "/projects/griboyedov/codes/cookie-banner/banner.html",
+      "type": "file",
+      "ext": ".html",
+      "size": 503
+    },
+    "/projects/griboyedov/images": {
+      "name": "images",
+      "path": "/projects/griboyedov/images",
+      "type": "directory"
+    },
+    "/projects/griboyedov/images/01-cover.png": {
+      "name": "01-cover.png",
+      "path": "/projects/griboyedov/images/01-cover.png",
+      "type": "file",
+      "ext": ".png",
+      "size": 6932
+    },
+    "/projects/griboyedov/images/02-slider.png": {
+      "name": "02-slider.png",
+      "path": "/projects/griboyedov/images/02-slider.png",
+      "type": "file",
+      "ext": ".png",
+      "size": 6957
+    },
+    "/projects/griboyedov/images/03-detail.png": {
+      "name": "03-detail.png",
+      "path": "/projects/griboyedov/images/03-detail.png",
+      "type": "file",
+      "ext": ".png",
+      "size": 7825
+    },
+    "/projects/griboyedov/codeWindows.json": {
+      "name": "codeWindows.json",
+      "path": "/projects/griboyedov/codeWindows.json",
+      "type": "file",
+      "ext": ".json",
+      "size": 115
+    },
     "/projects/u24": {
       "name": "u24",
       "path": "/projects/u24",
@@ -204,6 +413,25 @@
       "type": "file",
       "ext": ".json",
       "size": 508
+    },
+    "/projects/u24/images": {
+      "name": "images",
+      "path": "/projects/u24/images",
+      "type": "directory"
+    },
+    "/projects/u24/images/01-cover.png": {
+      "name": "01-cover.png",
+      "path": "/projects/u24/images/01-cover.png",
+      "type": "file",
+      "ext": ".png",
+      "size": 5719
+    },
+    "/projects/u24/images/02-grid.png": {
+      "name": "02-grid.png",
+      "path": "/projects/u24/images/02-grid.png",
+      "type": "file",
+      "ext": ".png",
+      "size": 5745
     },
     "/projects/entity.json": {
       "name": "entity.json",
@@ -251,7 +479,7 @@
     }
   },
   "stats": {
-    "totalFiles": 5,
-    "totalDirectories": 4
+    "totalFiles": 17,
+    "totalDirectories": 9
   }
 }

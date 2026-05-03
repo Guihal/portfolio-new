@@ -1,0 +1,7 @@
+{
+    "layout": "cascade",
+    "windows": [
+        { "id": "marquee" },
+        { "id": "cookie-banner" }
+    ]
+}

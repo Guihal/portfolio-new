@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-03T15:05:24.633Z",
+  "generatedAt": "2026-05-03T19:28:46.621Z",
   "rootEntity": {
     "name": "Рабочий стол",
     "programType": "explorer"
@@ -34,7 +34,29 @@
               }
             ]
           },
-          "children": []
+          "children": [
+            {
+              "name": "codes",
+              "path": "/projects/griboyedov/codes",
+              "children": [
+                {
+                  "name": "marquee",
+                  "path": "/projects/griboyedov/codes/marquee",
+                  "children": []
+                },
+                {
+                  "name": "cookie-banner",
+                  "path": "/projects/griboyedov/codes/cookie-banner",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "name": "images",
+              "path": "/projects/griboyedov/images",
+              "children": []
+            }
+          ]
         },
         {
           "name": "u24",
@@ -63,7 +85,13 @@
               }
             ]
           },
-          "children": []
+          "children": [
+            {
+              "name": "images",
+              "path": "/projects/u24/images",
+              "children": []
+            }
+          ]
         }
       ]
     },
@@ -122,6 +150,22 @@
         ]
       }
     },
+    "/projects/griboyedov/codes": {
+      "name": "codes",
+      "path": "/projects/griboyedov/codes"
+    },
+    "/projects/griboyedov/codes/marquee": {
+      "name": "marquee",
+      "path": "/projects/griboyedov/codes/marquee"
+    },
+    "/projects/griboyedov/codes/cookie-banner": {
+      "name": "cookie-banner",
+      "path": "/projects/griboyedov/codes/cookie-banner"
+    },
+    "/projects/griboyedov/images": {
+      "name": "images",
+      "path": "/projects/griboyedov/images"
+    },
     "/projects/u24": {
       "name": "u24",
       "path": "/projects/u24",
@@ -149,6 +193,10 @@
           }
         ]
       }
+    },
+    "/projects/u24/images": {
+      "name": "images",
+      "path": "/projects/u24/images"
     },
     "/about": {
       "name": "about",
