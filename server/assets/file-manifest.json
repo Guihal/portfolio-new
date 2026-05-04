@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-04T18:58:45.258Z",
+  "generatedAt": "2026-05-04T19:21:59.442Z",
   "tree": [
     {
       "name": "projects",
@@ -324,6 +324,45 @@
               "type": "file",
               "ext": ".json",
               "size": 176
+            }
+          ]
+        },
+        {
+          "name": "_e2e-framed",
+          "path": "/projects/_e2e-framed",
+          "type": "directory",
+          "entity": {
+            "name": "E2E Framed",
+            "programType": "project",
+            "hidden": true,
+            "tags": [
+              "framed",
+              "e2e",
+              "fixture"
+            ],
+            "description": "Тестовая сущность для showcase framed-tag e2e."
+          },
+          "children": [
+            {
+              "name": "entity.json",
+              "path": "/projects/_e2e-framed/entity.json",
+              "type": "file",
+              "ext": ".json",
+              "size": 194
+            },
+            {
+              "name": "images",
+              "path": "/projects/_e2e-framed/images",
+              "type": "directory",
+              "children": [
+                {
+                  "name": "01.png",
+                  "path": "/projects/_e2e-framed/images/01.png",
+                  "type": "file",
+                  "ext": ".png",
+                  "size": 6932
+                }
+              ]
             }
           ]
         }
@@ -670,6 +709,41 @@
       "ext": ".json",
       "size": 176
     },
+    "/projects/_e2e-framed": {
+      "name": "_e2e-framed",
+      "path": "/projects/_e2e-framed",
+      "type": "directory",
+      "entity": {
+        "name": "E2E Framed",
+        "programType": "project",
+        "hidden": true,
+        "tags": [
+          "framed",
+          "e2e",
+          "fixture"
+        ],
+        "description": "Тестовая сущность для showcase framed-tag e2e."
+      }
+    },
+    "/projects/_e2e-framed/entity.json": {
+      "name": "entity.json",
+      "path": "/projects/_e2e-framed/entity.json",
+      "type": "file",
+      "ext": ".json",
+      "size": 194
+    },
+    "/projects/_e2e-framed/images": {
+      "name": "images",
+      "path": "/projects/_e2e-framed/images",
+      "type": "directory"
+    },
+    "/projects/_e2e-framed/images/01.png": {
+      "name": "01.png",
+      "path": "/projects/_e2e-framed/images/01.png",
+      "type": "file",
+      "ext": ".png",
+      "size": 6932
+    },
     "/about": {
       "name": "about",
       "path": "/about",
@@ -709,7 +783,7 @@
     }
   },
   "stats": {
-    "totalFiles": 25,
-    "totalDirectories": 15
+    "totalFiles": 27,
+    "totalDirectories": 17
   }
 }

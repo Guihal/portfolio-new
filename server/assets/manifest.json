@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-04T18:58:45.235Z",
+  "generatedAt": "2026-05-04T19:21:59.419Z",
   "rootEntity": {
     "name": "Рабочий стол",
     "programType": "explorer"
@@ -146,6 +146,28 @@
                   "children": []
                 }
               ]
+            }
+          ]
+        },
+        {
+          "name": "_e2e-framed",
+          "path": "/projects/_e2e-framed",
+          "entity": {
+            "name": "E2E Framed",
+            "programType": "project",
+            "hidden": true,
+            "tags": [
+              "framed",
+              "e2e",
+              "fixture"
+            ],
+            "description": "Тестовая сущность для showcase framed-tag e2e."
+          },
+          "children": [
+            {
+              "name": "images",
+              "path": "/projects/_e2e-framed/images",
+              "children": []
             }
           ]
         }
@@ -300,6 +322,25 @@
     "/projects/_e2e-xss/codes/payload": {
       "name": "payload",
       "path": "/projects/_e2e-xss/codes/payload"
+    },
+    "/projects/_e2e-framed": {
+      "name": "_e2e-framed",
+      "path": "/projects/_e2e-framed",
+      "entity": {
+        "name": "E2E Framed",
+        "programType": "project",
+        "hidden": true,
+        "tags": [
+          "framed",
+          "e2e",
+          "fixture"
+        ],
+        "description": "Тестовая сущность для showcase framed-tag e2e."
+      }
+    },
+    "/projects/_e2e-framed/images": {
+      "name": "images",
+      "path": "/projects/_e2e-framed/images"
     },
     "/about": {
       "name": "about",

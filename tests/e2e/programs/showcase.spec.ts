@@ -31,18 +31,23 @@ test.describe("showcase program", () => {
 		expect(objectFit).toBe("contain");
 	});
 
-	test("framed tag applies pixel-box border to image", async ({
+	test("framed tag applies pixel-box class to image", async ({
 		page,
 		context,
 	}) => {
 		await seedVisitCookie(context);
+		await page.goto("/projects/_e2e-framed/01.png");
+		await skipLoader(page);
+		await expect(page.locator(".showcase__img")).toBeVisible();
+		await expect(page.locator(".showcase")).toHaveClass(/showcase--framed/);
+		await expect(page.locator(".showcase__img")).toHaveClass(/pixel-box/);
+	});
+
+	test("non-framed entity does not apply frame", async ({ page, context }) => {
+		await seedVisitCookie(context);
 		await page.goto("/projects/griboyedov/01-cover.png");
 		await skipLoader(page);
-		const img = page.locator(".showcase__img");
-		await expect(img).toBeVisible();
-		const hasFrame = await page
-			.locator(".showcase")
-			.evaluate((el) => el.classList.contains("showcase--framed"));
-		expect(typeof hasFrame).toBe("boolean");
+		await expect(page.locator(".showcase__img")).toBeVisible();
+		await expect(page.locator(".showcase")).not.toHaveClass(/showcase--framed/);
 	});
 });

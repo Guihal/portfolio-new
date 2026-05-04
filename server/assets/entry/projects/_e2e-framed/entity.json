@@ -1,0 +1,7 @@
+{
+	"name": "E2E Framed",
+	"programType": "project",
+	"hidden": true,
+	"tags": ["framed", "e2e", "fixture"],
+	"description": "Тестовая сущность для showcase framed-tag e2e."
+}

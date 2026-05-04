@@ -67,9 +67,7 @@ export function useCascadeLayout() {
 				skipFullscreenOnMount: true,
 			});
 			if (!ok) continue;
-			const win =
-				windowsStore.list.find((w) => w.targetFile.value === path) ??
-				windowsStore.byPath(path);
+			const win = windowsStore.byPath(path);
 			if (!win) continue;
 			boundsStore.setTarget(win.id, bounds);
 			boundsStore.syncCalculated(win.id);

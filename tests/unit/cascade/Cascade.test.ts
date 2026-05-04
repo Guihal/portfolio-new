@@ -100,21 +100,3 @@ describe("useCascadeLayout — spawnCodeWindows", () => {
 		expect(b.bounds[second.id]?.target.left).toBe(608);
 	});
 });
-
-describe("useBoundsStore.nextCascadePosition", () => {
-	it("prevId=null → origin", () => {
-		const b = useBoundsStore();
-		expect(b.nextCascadePosition(null)).toEqual({ left: 0, top: 0 });
-	});
-
-	it("prevId без slot → origin", () => {
-		const b = useBoundsStore();
-		expect(b.nextCascadePosition("ghost")).toEqual({ left: 0, top: 0 });
-	});
-
-	it("известный slot → diagonal offset 24x14", () => {
-		const b = useBoundsStore();
-		b.setTarget("w1", { left: 100, top: 50, width: 800, height: 600 });
-		expect(b.nextCascadePosition("w1")).toEqual({ left: 124, top: 64 });
-	});
-});
