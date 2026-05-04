@@ -8,13 +8,20 @@ const SNIPPET_FILENAME_RE = /^[a-zA-Z0-9._-]+$/;
 const SNIPPET_EXT_RE = /\.(html|css|js|json|txt|ts|scss)$/i;
 const MAX_SNIPPET_SIZE = 100 * 1024;
 
-const CodeWindowMetaSchema = z.object({
+const CodeSnippetMetaSchema = z.object({
 	windowTitle: z.string(),
 	description: z.string().optional(),
 	primaryLanguage: z.string().optional(),
 });
 
-export type CodeWindowMeta = z.infer<typeof CodeWindowMetaSchema>;
+export type CodeSnippetMeta = z.infer<typeof CodeSnippetMetaSchema>;
+
+const CodeWindowsConfigSchema = z.object({
+	layout: z.enum(["cascade", "tile-h"]),
+	windows: z.array(z.object({ id: z.string().regex(/^[a-z0-9-]+$/) })).min(0),
+});
+
+export type CodeWindowsConfig = z.infer<typeof CodeWindowsConfigSchema>;
 
 export type CodeFile = {
 	filename: string;
@@ -24,7 +31,7 @@ export type CodeFile = {
 
 export type CodeSnippet = {
 	id: string;
-	meta: CodeWindowMeta;
+	meta: CodeSnippetMeta;
 	files: CodeFile[];
 };
 
@@ -42,7 +49,6 @@ function extToLanguage(ext: string): string {
 			return "typescript";
 		case "scss":
 			return "scss";
-		case "txt":
 		default:
 			return "text";
 	}
@@ -105,13 +111,13 @@ export async function readCodes(
 		const sd = await statSafe(snippetDir);
 		if (!sd?.isDirectory()) continue;
 
-		let meta: CodeWindowMeta = { windowTitle: id };
+		let meta: CodeSnippetMeta = { windowTitle: id };
 		const metaPath = resolvePath(snippetDir, "meta.json");
 		const ms = await statSafe(metaPath);
 		if (ms?.isFile()) {
 			try {
 				const raw = await fs.readFile(metaPath, "utf-8");
-				meta = CodeWindowMetaSchema.parse(JSON.parse(raw));
+				meta = CodeSnippetMetaSchema.parse(JSON.parse(raw));
 			} catch (e) {
 				logger.warn("[resolveContent] invalid meta.json for", id, e);
 			}
@@ -125,14 +131,14 @@ export async function readCodes(
 
 export async function readCodeWindows(
 	dir: string,
-): Promise<CodeWindowMeta[] | undefined> {
+): Promise<CodeWindowsConfig | undefined> {
 	const cwPath = resolvePath(dir, "codeWindows.json");
 	const s = await statSafe(cwPath);
 	if (!s?.isFile()) return undefined;
 	try {
 		const raw = await fs.readFile(cwPath, "utf-8");
-		const arr = z.array(CodeWindowMetaSchema).parse(JSON.parse(raw));
-		return arr.length > 0 ? arr : undefined;
+		const config = CodeWindowsConfigSchema.parse(JSON.parse(raw));
+		return config.windows.length > 0 ? config : undefined;
 	} catch (e) {
 		logger.warn("[resolveContent] invalid codeWindows.json", e);
 		return undefined;

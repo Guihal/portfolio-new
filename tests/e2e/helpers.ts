@@ -9,7 +9,9 @@ export async function skipLoader(page: Page) {
 	} catch {
 		return;
 	}
-	await page.waitForTimeout(2100);
+	await page
+		.locator(".loader.loader--end")
+		.waitFor({ state: "visible", timeout: 10000 });
 	await loader.click({ force: true });
 	await loader.waitFor({ state: "hidden", timeout: 5000 });
 }

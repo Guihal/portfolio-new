@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-03T19:28:46.650Z",
+  "generatedAt": "2026-05-04T18:58:45.258Z",
   "tree": [
     {
       "name": "projects",
@@ -16,7 +16,7 @@
           "type": "directory",
           "entity": {
             "name": "Фонд имени Грибоедова",
-            "programType": "explorer",
+            "programType": "project",
             "year": "2024",
             "tags": [
               "design",
@@ -33,13 +33,6 @@
             ]
           },
           "children": [
-            {
-              "name": "entity.json",
-              "path": "/projects/griboyedov/entity.json",
-              "type": "file",
-              "ext": ".json",
-              "size": 537
-            },
             {
               "name": "codes",
               "path": "/projects/griboyedov/codes",
@@ -137,6 +130,13 @@
               "type": "file",
               "ext": ".json",
               "size": 115
+            },
+            {
+              "name": "entity.json",
+              "path": "/projects/griboyedov/entity.json",
+              "type": "file",
+              "ext": ".json",
+              "size": 536
             }
           ]
         },
@@ -205,6 +205,127 @@
           "type": "file",
           "ext": ".json",
           "size": 64
+        },
+        {
+          "name": "_e2e-project",
+          "path": "/projects/_e2e-project",
+          "type": "directory",
+          "entity": {
+            "name": "E2E Project",
+            "programType": "project",
+            "hidden": true,
+            "year": "2026",
+            "tags": [
+              "e2e",
+              "fixture"
+            ],
+            "description": "Тестовая сущность для e2e-тестов program=project."
+          },
+          "children": [
+            {
+              "name": "images",
+              "path": "/projects/_e2e-project/images",
+              "type": "directory",
+              "children": [
+                {
+                  "name": "01.png",
+                  "path": "/projects/_e2e-project/images/01.png",
+                  "type": "file",
+                  "ext": ".png",
+                  "size": 6932
+                },
+                {
+                  "name": "02.png",
+                  "path": "/projects/_e2e-project/images/02.png",
+                  "type": "file",
+                  "ext": ".png",
+                  "size": 6957
+                },
+                {
+                  "name": "03.png",
+                  "path": "/projects/_e2e-project/images/03.png",
+                  "type": "file",
+                  "ext": ".png",
+                  "size": 7825
+                }
+              ]
+            },
+            {
+              "name": "entity.json",
+              "path": "/projects/_e2e-project/entity.json",
+              "type": "file",
+              "ext": ".json",
+              "size": 211
+            }
+          ]
+        },
+        {
+          "name": "_e2e-empty",
+          "path": "/projects/_e2e-empty",
+          "type": "directory",
+          "entity": {
+            "name": "E2E Empty",
+            "programType": "project",
+            "hidden": true,
+            "description": "Тестовая сущность без images/codes — для empty-state и пустого cascade."
+          },
+          "children": [
+            {
+              "name": "entity.json",
+              "path": "/projects/_e2e-empty/entity.json",
+              "type": "file",
+              "ext": ".json",
+              "size": 192
+            }
+          ]
+        },
+        {
+          "name": "_e2e-xss",
+          "path": "/projects/_e2e-xss",
+          "type": "directory",
+          "entity": {
+            "name": "E2E XSS",
+            "programType": "project",
+            "hidden": true,
+            "description": "Тестовая сущность с malicious-snippet для проверки XSS-guard."
+          },
+          "children": [
+            {
+              "name": "codes",
+              "path": "/projects/_e2e-xss/codes",
+              "type": "directory",
+              "children": [
+                {
+                  "name": "payload",
+                  "path": "/projects/_e2e-xss/codes/payload",
+                  "type": "directory",
+                  "children": [
+                    {
+                      "name": "meta.json",
+                      "path": "/projects/_e2e-xss/codes/payload/meta.json",
+                      "type": "file",
+                      "ext": ".json",
+                      "size": 150
+                    },
+                    {
+                      "name": "malicious.html",
+                      "path": "/projects/_e2e-xss/codes/payload/malicious.html",
+                      "type": "file",
+                      "ext": ".html",
+                      "size": 88
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "entity.json",
+              "path": "/projects/_e2e-xss/entity.json",
+              "type": "file",
+              "ext": ".json",
+              "size": 176
+            }
+          ]
         }
       ]
     },
@@ -264,7 +385,7 @@
       "type": "directory",
       "entity": {
         "name": "Фонд имени Грибоедова",
-        "programType": "explorer",
+        "programType": "project",
         "year": "2024",
         "tags": [
           "design",
@@ -280,13 +401,6 @@
           }
         ]
       }
-    },
-    "/projects/griboyedov/entity.json": {
-      "name": "entity.json",
-      "path": "/projects/griboyedov/entity.json",
-      "type": "file",
-      "ext": ".json",
-      "size": 537
     },
     "/projects/griboyedov/codes": {
       "name": "codes",
@@ -378,6 +492,13 @@
       "ext": ".json",
       "size": 115
     },
+    "/projects/griboyedov/entity.json": {
+      "name": "entity.json",
+      "path": "/projects/griboyedov/entity.json",
+      "type": "file",
+      "ext": ".json",
+      "size": 536
+    },
     "/projects/u24": {
       "name": "u24",
       "path": "/projects/u24",
@@ -440,6 +561,115 @@
       "ext": ".json",
       "size": 64
     },
+    "/projects/_e2e-project": {
+      "name": "_e2e-project",
+      "path": "/projects/_e2e-project",
+      "type": "directory",
+      "entity": {
+        "name": "E2E Project",
+        "programType": "project",
+        "hidden": true,
+        "year": "2026",
+        "tags": [
+          "e2e",
+          "fixture"
+        ],
+        "description": "Тестовая сущность для e2e-тестов program=project."
+      }
+    },
+    "/projects/_e2e-project/images": {
+      "name": "images",
+      "path": "/projects/_e2e-project/images",
+      "type": "directory"
+    },
+    "/projects/_e2e-project/images/01.png": {
+      "name": "01.png",
+      "path": "/projects/_e2e-project/images/01.png",
+      "type": "file",
+      "ext": ".png",
+      "size": 6932
+    },
+    "/projects/_e2e-project/images/02.png": {
+      "name": "02.png",
+      "path": "/projects/_e2e-project/images/02.png",
+      "type": "file",
+      "ext": ".png",
+      "size": 6957
+    },
+    "/projects/_e2e-project/images/03.png": {
+      "name": "03.png",
+      "path": "/projects/_e2e-project/images/03.png",
+      "type": "file",
+      "ext": ".png",
+      "size": 7825
+    },
+    "/projects/_e2e-project/entity.json": {
+      "name": "entity.json",
+      "path": "/projects/_e2e-project/entity.json",
+      "type": "file",
+      "ext": ".json",
+      "size": 211
+    },
+    "/projects/_e2e-empty": {
+      "name": "_e2e-empty",
+      "path": "/projects/_e2e-empty",
+      "type": "directory",
+      "entity": {
+        "name": "E2E Empty",
+        "programType": "project",
+        "hidden": true,
+        "description": "Тестовая сущность без images/codes — для empty-state и пустого cascade."
+      }
+    },
+    "/projects/_e2e-empty/entity.json": {
+      "name": "entity.json",
+      "path": "/projects/_e2e-empty/entity.json",
+      "type": "file",
+      "ext": ".json",
+      "size": 192
+    },
+    "/projects/_e2e-xss": {
+      "name": "_e2e-xss",
+      "path": "/projects/_e2e-xss",
+      "type": "directory",
+      "entity": {
+        "name": "E2E XSS",
+        "programType": "project",
+        "hidden": true,
+        "description": "Тестовая сущность с malicious-snippet для проверки XSS-guard."
+      }
+    },
+    "/projects/_e2e-xss/codes": {
+      "name": "codes",
+      "path": "/projects/_e2e-xss/codes",
+      "type": "directory"
+    },
+    "/projects/_e2e-xss/codes/payload": {
+      "name": "payload",
+      "path": "/projects/_e2e-xss/codes/payload",
+      "type": "directory"
+    },
+    "/projects/_e2e-xss/codes/payload/meta.json": {
+      "name": "meta.json",
+      "path": "/projects/_e2e-xss/codes/payload/meta.json",
+      "type": "file",
+      "ext": ".json",
+      "size": 150
+    },
+    "/projects/_e2e-xss/codes/payload/malicious.html": {
+      "name": "malicious.html",
+      "path": "/projects/_e2e-xss/codes/payload/malicious.html",
+      "type": "file",
+      "ext": ".html",
+      "size": 88
+    },
+    "/projects/_e2e-xss/entity.json": {
+      "name": "entity.json",
+      "path": "/projects/_e2e-xss/entity.json",
+      "type": "file",
+      "ext": ".json",
+      "size": 176
+    },
     "/about": {
       "name": "about",
       "path": "/about",
@@ -479,7 +709,7 @@
     }
   },
   "stats": {
-    "totalFiles": 17,
-    "totalDirectories": 9
+    "totalFiles": 25,
+    "totalDirectories": 15
   }
 }

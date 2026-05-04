@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { copyToClipboard, isClipboardAvailable } from "~/services/clipboard";
+import { copyToClipboard } from "~/services/clipboard";
 import { COPY_FEEDBACK_MS } from "~/utils/constants/timing";
 
 const props = defineProps<{
@@ -12,7 +12,8 @@ const available = ref(false);
 let timer: ReturnType<typeof setTimeout> | null = null;
 
 onMounted(() => {
-	available.value = isClipboardAvailable();
+	available.value =
+		typeof navigator !== "undefined" && !!navigator.clipboard;
 });
 
 onUnmounted(() => {

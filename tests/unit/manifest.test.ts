@@ -1,8 +1,8 @@
 // P0-06: findNode по дереву манифеста — корень, вложенное, неизвестное.
 // P0-03: generateManifest с zod Entity schema и extended fields.
 
-import { mkdirSync, readFileSync, rmSync, writeFileSync } from "fs";
-import { join } from "path";
+import { mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { join } from "node:path";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { generateManifest } from "~~/scripts/generate-manifest";
 import { findNode } from "~~/server/utils/manifest";

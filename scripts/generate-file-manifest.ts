@@ -4,8 +4,8 @@ import {
 	readFileSync,
 	statSync,
 	writeFileSync,
-} from "fs";
-import { extname, join, normalize } from "path";
+} from "node:fs";
+import { extname, join, normalize } from "node:path";
 
 const ENTRY_DIR = join(process.cwd(), "server", "assets", "entry");
 const OUT_FILE = join(process.cwd(), "server", "assets", "file-manifest.json");
@@ -69,7 +69,7 @@ function buildTree(absDir: string, relBase = ""): ManifestNode[] {
 
 		const absPath = join(absDir, item);
 		const relPath = normalize(join(relBase, item)).replace(/\\/g, "/");
-		const routePath = "/" + relPath;
+		const routePath = `/${relPath}`;
 
 		let isDir = false;
 		try {

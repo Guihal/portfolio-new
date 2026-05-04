@@ -66,6 +66,10 @@ test.describe("code program", () => {
 				configurable: true,
 				value: undefined,
 			});
+			Object.defineProperty(document, "execCommand", {
+				configurable: true,
+				value: undefined,
+			});
 		});
 		await page.goto("/projects/griboyedov/code/marquee");
 		await skipLoader(page);

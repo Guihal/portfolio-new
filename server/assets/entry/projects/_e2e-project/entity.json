@@ -1,0 +1,8 @@
+{
+	"name": "E2E Project",
+	"programType": "project",
+	"hidden": true,
+	"year": "2026",
+	"tags": ["e2e", "fixture"],
+	"description": "Тестовая сущность для e2e-тестов program=project."
+}

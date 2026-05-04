@@ -32,15 +32,12 @@ export function useCollapseBoundsMemory(windowOb: WindowOb): void {
 				};
 			}
 
-			if (value === false) {
+			if (lastValue === true && value === false) {
 				target.left = beforeCollapsedBounds.value.left;
 				target.top = beforeCollapsedBounds.value.top;
 				target.width = beforeCollapsedBounds.value.width;
 				target.height = beforeCollapsedBounds.value.height;
 			}
-		},
-		{
-			immediate: true,
 		},
 	);
 }

@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-03T19:28:46.621Z",
+  "generatedAt": "2026-05-04T18:58:45.235Z",
   "rootEntity": {
     "name": "Рабочий стол",
     "programType": "explorer"
@@ -18,7 +18,7 @@
           "path": "/projects/griboyedov",
           "entity": {
             "name": "Фонд имени Грибоедова",
-            "programType": "explorer",
+            "programType": "project",
             "year": "2024",
             "tags": [
               "design",
@@ -92,6 +92,62 @@
               "children": []
             }
           ]
+        },
+        {
+          "name": "_e2e-project",
+          "path": "/projects/_e2e-project",
+          "entity": {
+            "name": "E2E Project",
+            "programType": "project",
+            "hidden": true,
+            "year": "2026",
+            "tags": [
+              "e2e",
+              "fixture"
+            ],
+            "description": "Тестовая сущность для e2e-тестов program=project."
+          },
+          "children": [
+            {
+              "name": "images",
+              "path": "/projects/_e2e-project/images",
+              "children": []
+            }
+          ]
+        },
+        {
+          "name": "_e2e-empty",
+          "path": "/projects/_e2e-empty",
+          "entity": {
+            "name": "E2E Empty",
+            "programType": "project",
+            "hidden": true,
+            "description": "Тестовая сущность без images/codes — для empty-state и пустого cascade."
+          },
+          "children": []
+        },
+        {
+          "name": "_e2e-xss",
+          "path": "/projects/_e2e-xss",
+          "entity": {
+            "name": "E2E XSS",
+            "programType": "project",
+            "hidden": true,
+            "description": "Тестовая сущность с malicious-snippet для проверки XSS-guard."
+          },
+          "children": [
+            {
+              "name": "codes",
+              "path": "/projects/_e2e-xss/codes",
+              "children": [
+                {
+                  "name": "payload",
+                  "path": "/projects/_e2e-xss/codes/payload",
+                  "children": []
+                }
+              ]
+            }
+          ]
         }
       ]
     },
@@ -133,7 +189,7 @@
       "path": "/projects/griboyedov",
       "entity": {
         "name": "Фонд имени Грибоедова",
-        "programType": "explorer",
+        "programType": "project",
         "year": "2024",
         "tags": [
           "design",
@@ -197,6 +253,53 @@
     "/projects/u24/images": {
       "name": "images",
       "path": "/projects/u24/images"
+    },
+    "/projects/_e2e-project": {
+      "name": "_e2e-project",
+      "path": "/projects/_e2e-project",
+      "entity": {
+        "name": "E2E Project",
+        "programType": "project",
+        "hidden": true,
+        "year": "2026",
+        "tags": [
+          "e2e",
+          "fixture"
+        ],
+        "description": "Тестовая сущность для e2e-тестов program=project."
+      }
+    },
+    "/projects/_e2e-project/images": {
+      "name": "images",
+      "path": "/projects/_e2e-project/images"
+    },
+    "/projects/_e2e-empty": {
+      "name": "_e2e-empty",
+      "path": "/projects/_e2e-empty",
+      "entity": {
+        "name": "E2E Empty",
+        "programType": "project",
+        "hidden": true,
+        "description": "Тестовая сущность без images/codes — для empty-state и пустого cascade."
+      }
+    },
+    "/projects/_e2e-xss": {
+      "name": "_e2e-xss",
+      "path": "/projects/_e2e-xss",
+      "entity": {
+        "name": "E2E XSS",
+        "programType": "project",
+        "hidden": true,
+        "description": "Тестовая сущность с malicious-snippet для проверки XSS-guard."
+      }
+    },
+    "/projects/_e2e-xss/codes": {
+      "name": "codes",
+      "path": "/projects/_e2e-xss/codes"
+    },
+    "/projects/_e2e-xss/codes/payload": {
+      "name": "payload",
+      "path": "/projects/_e2e-xss/codes/payload"
     },
     "/about": {
       "name": "about",

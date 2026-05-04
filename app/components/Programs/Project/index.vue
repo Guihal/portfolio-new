@@ -2,6 +2,8 @@
     import { useInjectWindow } from '~/components/Window/composables/lifecycle/useInjectWindow';
     import { useProjectData } from './composables/useProjectData';
     import { useSliderState } from './composables/useSliderState';
+    import Meta from './Meta.vue';
+    import Slider from './Slider.vue';
 
     const windowOb = useInjectWindow();
     const path = computed(() => windowOb.targetFile.value);

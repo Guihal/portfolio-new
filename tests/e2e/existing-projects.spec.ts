@@ -12,7 +12,7 @@ test.describe("existing projects regression", () => {
 		await expect(page).toHaveURL(/\/projects\/u24$/);
 	});
 
-	test("/projects/griboyedov renders explorer window", async ({
+	test("/projects/griboyedov renders project window", async ({
 		page,
 		context,
 	}) => {
@@ -20,7 +20,7 @@ test.describe("existing projects regression", () => {
 		await page.goto("/projects/griboyedov");
 		await skipLoader(page);
 		await expect(page.locator(".window")).toHaveCount(1);
-		await expect(page.locator(".explorer").first()).toBeVisible();
+		await expect(page.locator(".project").first()).toBeVisible();
 	});
 
 	test("/about renders about window", async ({ page, context }) => {

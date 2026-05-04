@@ -6,6 +6,7 @@ import { useGetId } from "../../utils/useGetId";
 
 interface UseCreateAndRegisterWindowOptions {
 	isForce?: boolean; // Игнорировать проверку на дубликаты
+	skipFullscreenOnMount?: boolean; // Cascade: bounds выставляются orchestrator'ом
 }
 
 /**
@@ -57,6 +58,9 @@ export function useCreateAndRegisterWindow(
 		},
 		file: realFile,
 	};
+	if (options.skipFullscreenOnMount) {
+		windowOb.skipFullscreenOnMount = true;
+	}
 
 	// Регистрируем окно в глобальном хранилище
 	windowsStore.windows[id] = windowOb;

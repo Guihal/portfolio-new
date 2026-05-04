@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { useInjectWindow } from "~/components/Window/composables/lifecycle/useInjectWindow";
+import CopyButton from "./CopyButton.vue";
 import { useCodeSnippet } from "./composables/useCodeSnippet";
+import Tabs from "./Tabs.vue";
 
 const windowOb = useInjectWindow();
 const path = computed(() => windowOb.targetFile.value);

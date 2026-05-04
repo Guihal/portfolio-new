@@ -1,10 +1,8 @@
-import { resolve } from "node:path";
-
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
 	compatibilityDate: "2025-07-15",
 	devtools: { enabled: false },
-	ssr: process.env.NUXT_TEST_SPA ? false : true,
+	ssr: !process.env.NUXT_TEST_SPA,
 	modules: ["@nuxt/eslint", "@nuxt/image", "@pinia/nuxt"],
 	typescript: {
 		tsConfig: {
@@ -67,11 +65,11 @@ export default defineNuxtConfig({
 				dir: "./server/assets/entry",
 			});
 		},
-		"builder:watch": async (event, path) => {
+		"builder:watch": async (_event, path) => {
 			if (path.includes("server/assets/entry")) {
 				console.log("[manifest] Regenerating...");
 
-				const { execSync } = await import("child_process");
+				const { execSync } = await import("node:child_process");
 				execSync("bun run generate:manifests");
 			}
 		},

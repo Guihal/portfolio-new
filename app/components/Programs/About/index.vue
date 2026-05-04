@@ -1,8 +1,5 @@
 <script setup lang="ts">
-    
-    import { ABOUT_CONTENT } from './content';
-import Profile from './Profile.vue';
-    import Sections from './Sections.vue';
+import { ABOUT_CONTENT } from './content';
 </script>
 
 <template>

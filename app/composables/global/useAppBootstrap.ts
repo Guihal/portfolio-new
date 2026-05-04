@@ -1,6 +1,7 @@
 import { isNavigationFailure } from "vue-router";
 import { callWithNuxt } from "#app";
 import { useCreateAndRegisterWindow } from "~/components/Window/composables/lifecycle/useCreateAndRegisterWindow";
+import { useCreateWindowByPath } from "~/components/Window/composables/lifecycle/useCreateWindowByPath";
 import { useBoundsStore } from "~/stores/bounds";
 import { useContentAreaStore } from "~/stores/contentArea";
 import { useFocusStore } from "~/stores/focus";
@@ -11,6 +12,13 @@ import { useWindowsUIStore } from "~/stores/windowsUI";
 
 const CANONICAL_ENTRY = "/about";
 const COOKIE_MAX_AGE = 60 * 60 * 24 * 365;
+
+// Виртуальные пути (resolve через useCreateWindowByPath, не существуют в манифесте):
+//   /<entity>/code, /<entity>/code/<id>          — code program
+//   /<entity>/code-cascade                       — cascade orchestrator
+//   /<entity>/<file>.{png,jpg,jpeg,webp,svg}     — showcase fallback
+const VIRTUAL_PATH_RE =
+	/(\/code(?:\/[\w-]+)?|\/code-cascade|\/[\w._-]+\.(png|jpg|jpeg|webp|svg))$/i;
 
 function normalizePath(p: string): string {
 	return p.length > 1 && p.endsWith("/") ? p.slice(0, -1) : p;
@@ -53,7 +61,7 @@ export async function useAppBootstrap() {
 		visited.value = "1";
 	}
 
-	await callWithNuxt(nuxtApp, () => {
+	await callWithNuxt(nuxtApp, async () => {
 		// Per-request stateless SSR render: все stores обнуляются каждый SSR hit.
 		// На клиенте (hydration + lifecycle) — НЕ clear'ить: payload корректен.
 		// Без полного reset Vercel/Nitro worker leak'ает state между запросами
@@ -69,7 +77,13 @@ export async function useAppBootstrap() {
 		}
 		if (effectivePath !== "/") {
 			try {
-				useCreateAndRegisterWindow(effectivePath);
+				if (VIRTUAL_PATH_RE.test(effectivePath)) {
+					// Resolve через useCreateWindowByPath: synth FsFile с корректным
+					// programType (code/showcase) или spawn cascade.
+					await useCreateWindowByPath(effectivePath);
+				} else {
+					useCreateAndRegisterWindow(effectivePath);
+				}
 			} catch (err) {
 				logger.error("[useAppBootstrap] register", {
 					target: effectivePath,

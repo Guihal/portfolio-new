@@ -28,11 +28,12 @@
         ref="root"
         class="project__slider pixel-box"
         :class="{ dragging }">
-        <NuxtImg
+        <img
             v-if="images[current]"
             :src="images[current]"
             class="project__slide"
-            draggable="false" />
+            draggable="false"
+            alt="" />
         <div v-else class="project__empty">
             <div class="project__empty-text">Картинок пока нет</div>
         </div>

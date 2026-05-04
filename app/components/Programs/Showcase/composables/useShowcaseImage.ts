@@ -32,7 +32,10 @@ export function useShowcaseImage(path: MaybeRefOrGetter<string>) {
 		const images = data.value?.images;
 		if (!images || !parsed.value) return null;
 		const filename = parsed.value.filename;
-		return images.find((u) => u.endsWith(`/${filename}`)) ?? null;
+		// URL-encoded paths (%2F) — decode перед matching.
+		return (
+			images.find((u) => decodeURIComponent(u).endsWith(`/${filename}`)) ?? null
+		);
 	});
 
 	return {

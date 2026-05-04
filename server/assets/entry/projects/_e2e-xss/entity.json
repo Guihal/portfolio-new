@@ -1,0 +1,6 @@
+{
+	"name": "E2E XSS",
+	"programType": "project",
+	"hidden": true,
+	"description": "Тестовая сущность с malicious-snippet для проверки XSS-guard."
+}

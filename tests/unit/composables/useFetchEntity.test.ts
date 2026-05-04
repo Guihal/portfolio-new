@@ -218,7 +218,7 @@ describe("useFetchEntity", () => {
 		// onScopeDispose добавил один вызов clearNuxtData с predicate fn.
 		const disposeCall = calls.find((c) => typeof c[0] === "function");
 		expect(disposeCall).toBeDefined();
-		const predicate = disposeCall![0] as (k: string) => boolean;
+		const predicate = disposeCall?.[0] as (k: string) => boolean;
 		expect(predicate(`window-entity-${w.id}-/a`)).toBe(true);
 		expect(predicate(`window-entity-${w.id}-/anything`)).toBe(true);
 		expect(predicate(`window-entity-other-/a`)).toBe(false);

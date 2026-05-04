@@ -4,7 +4,7 @@
 import { promises as fs } from "node:fs";
 import { resolve as resolvePath } from "node:path";
 import type { Entity } from "~~/shared/types/filesystem";
-import type { CodeSnippet, CodeWindowMeta } from "./resolveCodeContent";
+import type { CodeSnippet, CodeWindowsConfig } from "./resolveCodeContent";
 import { readCodes, readCodeWindows } from "./resolveCodeContent";
 import { getEntity } from "./resolveEntity";
 
@@ -20,7 +20,7 @@ export type EntityContent = {
 	entity: Entity;
 	images?: string[];
 	codes?: CodeSnippet[];
-	codeWindows?: CodeWindowMeta[];
+	codeWindows?: CodeWindowsConfig;
 };
 
 async function statSafe(p: string) {
@@ -56,17 +56,21 @@ async function readImages(
 export async function resolveContent(
 	path: string,
 ): Promise<EntityContent | null> {
-	const entity = await getEntity(path);
+	// Normalize: flatIndex keys всегда с ведущим `/`; принимаем оба варианта.
+	const normalized = path.startsWith("/") ? path : `/${path}`;
+	const entity = await getEntity(normalized);
 	if (!entity) return null;
 
-	const dir = resolvePath(SERVER_ASSETS_ENTRY_ROOT, path);
-	const images = await readImages(dir, path);
+	// resolvePath с абсолютным вторым аргументом игнорирует root → strip leading `/`.
+	const dir = resolvePath(
+		SERVER_ASSETS_ENTRY_ROOT,
+		normalized.replace(/^\/+/, ""),
+	);
+	const images = await readImages(dir, normalized);
 	const codeWindows = await readCodeWindows(dir);
+	const codes = await readCodes(dir);
 
-	let codes: CodeSnippet[] | undefined;
-	if (entity.programType === "code") codes = await readCodes(dir);
-
-	const result: EntityContent = { path, entity };
+	const result: EntityContent = { path: normalized, entity };
 	if (images !== undefined) result.images = images;
 	if (codes !== undefined) result.codes = codes;
 	if (codeWindows !== undefined) result.codeWindows = codeWindows;

@@ -16,8 +16,12 @@ export function useFullscreenOnMount(windowOb: WindowOb): {
 	let mountedTimer: ReturnType<typeof setTimeout> | null = null;
 
 	onMounted(() => {
-		windowsStore.setState(windowOb.id, "fullscreen", true);
-		windowsStore.clearState(windowOb.id, "fullscreen-ready");
+		// Cascade-spawned окна задают bounds через boundsStore.setTarget — auto-fullscreen
+		// клобберит их (useOnFullscreen перезаписывает target.left/top/width/height).
+		if (!windowOb.skipFullscreenOnMount) {
+			windowsStore.setState(windowOb.id, "fullscreen", true);
+			windowsStore.clearState(windowOb.id, "fullscreen-ready");
+		}
 		mountedTimer = setTimeout(() => {
 			mountedTimer = null;
 			isMounted.value = true;

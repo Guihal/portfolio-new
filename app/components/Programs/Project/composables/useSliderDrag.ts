@@ -1,7 +1,10 @@
 // P8-05 — drag logic для slider. Pointer events, threshold, direction.
 // DOM access только через ref + onMounted guard. RULES.md §4.3: константы вынесены.
 
-import { SLIDER_DRAG_THRESHOLD_PX } from "~/utils/constants/slider";
+import {
+	SLIDER_CLICK_MAX_MS,
+	SLIDER_DRAG_THRESHOLD_PX,
+} from "~/utils/constants/slider";
 
 function attachPointerListeners(
 	el: HTMLElement,
@@ -32,11 +35,21 @@ export function useSliderDrag(
 ) {
 	const dragging = ref(false);
 	let startX = 0;
+	let startTime = 0;
 	let moved = false;
 
 	function onPointerDown(e: PointerEvent): void {
 		if (!root.value) return;
+		const target = e.target as HTMLElement | null;
+		if (
+			target &&
+			(target.closest(".project__nav") ||
+				["BUTTON", "A", "INPUT"].includes(target.tagName))
+		) {
+			return;
+		}
 		startX = e.clientX;
+		startTime = Date.now();
 		moved = false;
 		attachPointerListeners(root.value, onPointerMove, onPointerUp, e.pointerId);
 	}
@@ -55,6 +68,10 @@ export function useSliderDrag(
 
 		const dx = e.clientX - startX;
 		if (moved) {
+			if (Date.now() - startTime < SLIDER_CLICK_MAX_MS) {
+				dragging.value = false;
+				return;
+			}
 			if (dx < -SLIDER_DRAG_THRESHOLD_PX) onNext();
 			else if (dx > SLIDER_DRAG_THRESHOLD_PX) onPrev();
 		}

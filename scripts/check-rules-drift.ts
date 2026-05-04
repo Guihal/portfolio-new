@@ -39,7 +39,7 @@ async function main(): Promise<void> {
 		);
 		process.exit(1);
 	}
-	const headerHash = match[1]!.slice(0, 7);
+	const headerHash = match[1]?.slice(0, 7);
 	const result = spawnSync(
 		"git",
 		["log", "-2", "--format=%h", "--", RULES_PATH],

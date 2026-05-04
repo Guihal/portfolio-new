@@ -1,7 +1,5 @@
 <script setup lang="ts">
-    
-    
-    import ShortcutBase from '~/components/Shortcut/Base.vue';
+
 import { useInjectWindow } from '~/components/Window/composables/lifecycle/useInjectWindow';
 import { useWindowsStore } from '~/stores/windows';
 

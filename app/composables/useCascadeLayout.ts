@@ -10,13 +10,9 @@ import {
 	CASCADE_OFFSET_Y,
 	TILE_H_GAP,
 } from "~/utils/constants/cascade";
+import type { CodeWindowsConfig } from "~~/server/utils/manifest/resolveCodeContent";
 
-export type CascadeLayout = "cascade" | "tile-h";
-
-export interface CascadeWindowSpec {
-	id: string;
-	layout?: CascadeLayout;
-}
+export type CascadeLayout = CodeWindowsConfig["layout"];
 
 interface BoundsRect {
 	left: number;
@@ -52,34 +48,31 @@ export function computeCascadeBounds(
 	};
 }
 
-/**
- * Sequential spawn: каждое окно создаётся через useCreateWindowByPath,
- * затем bounds приклеиваются через boundsStore. Sequential await гарантирует
- * порядок и focus на последнем окне (focus обновляется внутри регистрации
- * + явный focus после setTarget).
- */
 export function useCascadeLayout() {
 	async function spawnCodeWindows(
 		parentEntityPath: string,
-		codeWindows: CascadeWindowSpec[],
+		config: CodeWindowsConfig,
 	) {
-		if (codeWindows.length === 0) return;
-		const layout: CascadeLayout = codeWindows[0]?.layout ?? "cascade";
+		if (config.windows.length === 0) return;
 		const viewport = useContentAreaStore().area;
 		const boundsStore = useBoundsStore();
 		const windowsStore = useWindowsStore();
 		const focusStore = useFocusStore();
-
-		for (let i = 0; i < codeWindows.length; i++) {
-			const cw = codeWindows[i];
+		for (let i = 0; i < config.windows.length; i++) {
+			const cw = config.windows[i];
 			if (!cw) continue;
-			const bounds = computeCascadeBounds(layout, i, viewport);
+			const bounds = computeCascadeBounds(config.layout, i, viewport);
 			const path = `${parentEntityPath}/code/${cw.id}`;
-			const ok = await useCreateWindowByPath(path);
+			const ok = await useCreateWindowByPath(path, {
+				skipFullscreenOnMount: true,
+			});
 			if (!ok) continue;
-			const win = windowsStore.byPath(path);
+			const win =
+				windowsStore.list.find((w) => w.targetFile.value === path) ??
+				windowsStore.byPath(path);
 			if (!win) continue;
 			boundsStore.setTarget(win.id, bounds);
+			boundsStore.syncCalculated(win.id);
 			focusStore.focus(win.id);
 		}
 	}

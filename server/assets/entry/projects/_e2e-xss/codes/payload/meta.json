@@ -1,0 +1,5 @@
+{
+	"windowTitle": "XSS payload",
+	"description": "Должен быть экранирован, не выполнен.",
+	"primaryLanguage": "html"
+}

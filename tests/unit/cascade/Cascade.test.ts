@@ -36,11 +36,10 @@ beforeEach(() => {
 describe("useCascadeLayout — spawnCodeWindows", () => {
 	it("спавнит окна в порядке массива (sequential await)", async () => {
 		const { spawnCodeWindows } = useCascadeLayout();
-		await spawnCodeWindows("/projects/test", [
-			{ id: "a" },
-			{ id: "b" },
-			{ id: "c" },
-		]);
+		await spawnCodeWindows("/projects/test", {
+			layout: "cascade",
+			windows: [{ id: "a" }, { id: "b" }, { id: "c" }],
+		});
 		expect(callOrder).toEqual([
 			"/projects/test/code/a",
 			"/projects/test/code/b",
@@ -50,7 +49,10 @@ describe("useCascadeLayout — spawnCodeWindows", () => {
 
 	it("устанавливает cascade-bounds на каждое окно (left/top смещаются)", async () => {
 		const { spawnCodeWindows } = useCascadeLayout();
-		await spawnCodeWindows("/projects/p", [{ id: "x" }, { id: "y" }]);
+		await spawnCodeWindows("/projects/p", {
+			layout: "cascade",
+			windows: [{ id: "x" }, { id: "y" }],
+		});
 		const wins = useWindowsStore().list;
 		expect(wins.length).toBe(2);
 		const b = useBoundsStore();
@@ -65,7 +67,10 @@ describe("useCascadeLayout — spawnCodeWindows", () => {
 
 	it("focus заканчивается на последнем окне", async () => {
 		const { spawnCodeWindows } = useCascadeLayout();
-		await spawnCodeWindows("/projects/p", [{ id: "a" }, { id: "b" }]);
+		await spawnCodeWindows("/projects/p", {
+			layout: "cascade",
+			windows: [{ id: "a" }, { id: "b" }],
+		});
 		const wins = useWindowsStore().list;
 		const last = wins[wins.length - 1];
 		if (!last) throw new Error("no last");
@@ -74,17 +79,17 @@ describe("useCascadeLayout — spawnCodeWindows", () => {
 
 	it("пустой массив — no-op", async () => {
 		const { spawnCodeWindows } = useCascadeLayout();
-		await spawnCodeWindows("/projects/p", []);
+		await spawnCodeWindows("/projects/p", { layout: "cascade", windows: [] });
 		expect(createMock).not.toHaveBeenCalled();
 		expect(useWindowsStore().list.length).toBe(0);
 	});
 
-	it("layout: tile-h первый окно (left=0, half width)", async () => {
+	it("layout: tile-h — первое окно left=0 half width, второе — right half", async () => {
 		const { spawnCodeWindows } = useCascadeLayout();
-		await spawnCodeWindows("/projects/p", [
-			{ id: "a", layout: "tile-h" },
-			{ id: "b" },
-		]);
+		await spawnCodeWindows("/projects/p", {
+			layout: "tile-h",
+			windows: [{ id: "a" }, { id: "b" }],
+		});
 		const wins = useWindowsStore().list;
 		const first = wins[0];
 		const second = wins[1];

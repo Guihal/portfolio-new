@@ -31,11 +31,13 @@ export class WindowAnimationController implements Tickable {
 	}
 
 	start() {
-		const target = useBoundsStore().ensure(this.windowOb.id).target;
+		const store = useBoundsStore();
+		const slot = store.ensure(this.windowOb.id);
+		const target = slot.target;
 		for (const key of this.keys) {
 			const wh = watch(
 				() => target[key],
-				() => {
+				(newVal, oldVal) => {
 					this.activeKeys.add(key);
 					animationScheduler.register(this);
 				},
@@ -43,11 +45,14 @@ export class WindowAnimationController implements Tickable {
 			);
 			this.watchers.push(wh);
 		}
+		this.flushToDOM();
 	}
 
 	/** Пишет cssText в element только при изменении строки. */
 	flushToDOM() {
-		if (!this.element) return;
+		if (!this.element) {
+			return;
+		}
 		const calculated = useBoundsStore().ensure(this.windowOb.id).calculated;
 		const cssText = `translate:${calculated.left}px ${calculated.top}px;width:${calculated.width}px;height:${calculated.height}px`;
 		if (cssText === this.prevCssText) return;

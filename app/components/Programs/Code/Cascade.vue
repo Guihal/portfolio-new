@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { type CascadeWindowSpec, useCascadeLayout } from "~/composables/useCascadeLayout";
+import { useCascadeLayout } from "~/composables/useCascadeLayout";
+import type { CodeWindowsConfig } from "~~/server/utils/manifest/resolveCodeContent";
 
 interface ContentResponse {
-	codeWindows?: CascadeWindowSpec[];
+	codeWindows?: CodeWindowsConfig;
 }
 
 const props = defineProps<{ entityPath: string }>();
@@ -18,10 +19,10 @@ const { spawnCodeWindows } = useCascadeLayout();
 const triggered = ref(false);
 watchEffect(() => {
 	if (triggered.value) return;
-	const codeWindows = data.value?.codeWindows;
-	if (!codeWindows || codeWindows.length === 0) return;
+	const config = data.value?.codeWindows;
+	if (!config || config.windows.length === 0) return;
 	triggered.value = true;
-	spawnCodeWindows(props.entityPath, codeWindows);
+	spawnCodeWindows(props.entityPath, config);
 });
 </script>
 

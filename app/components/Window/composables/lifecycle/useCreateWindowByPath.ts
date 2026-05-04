@@ -1,4 +1,5 @@
 import type { FsFile } from "~~/shared/types/filesystem";
+import { tryCascade } from "./useCascadeWindow";
 import { useCreateAndRegisterWindow } from "./useCreateAndRegisterWindow";
 
 const IMAGE_PATH_RE = /\/([\w._-]+\.(?:png|jpg|jpeg|webp|svg))$/i;
@@ -34,7 +35,13 @@ async function fetchContent(
 	}
 }
 
-export async function useCreateWindowByPath(path: string): Promise<boolean> {
+export async function useCreateWindowByPath(
+	path: string,
+	options: { skipFullscreenOnMount?: boolean } = {},
+): Promise<boolean> {
+	const cascadeResult = await tryCascade(path);
+	if (cascadeResult !== null) return cascadeResult;
+
 	// Virtual code paths: /projects/x/code or /projects/x/code/<snippet-id>
 	const codeMatch = path.match(CODE_PATH_RE);
 	if (codeMatch) {
@@ -62,7 +69,9 @@ export async function useCreateWindowByPath(path: string): Promise<boolean> {
 			programType: "code",
 		};
 		try {
-			useCreateAndRegisterWindow(file);
+			useCreateAndRegisterWindow(file, {
+				skipFullscreenOnMount: options.skipFullscreenOnMount,
+			});
 			return true;
 		} catch (e) {
 			logger.error("[useCreateWindowByPath] register", e);
@@ -121,11 +130,6 @@ export async function useCreateWindowByPath(path: string): Promise<boolean> {
 			});
 		} catch (err) {
 			logger.error("[useCreateWindowByPath] content fetch", err);
-		}
-		const hasImage = content?.images?.some((u) => u.endsWith(`/${filename}`));
-		if (!hasImage) {
-			logger.error("[useCreateWindowByPath] entity not found for path", path);
-			return false;
 		}
 		entity = {
 			...parent,

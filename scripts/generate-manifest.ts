@@ -63,7 +63,7 @@ function buildTree(absDir: string, relBase = ""): ManifestNode[] {
 
 		const absPath = join(absDir, item);
 		const relPath = normalize(join(relBase, item)).replace(/\\/g, "/");
-		const routePath = "/" + relPath;
+		const routePath = `/${relPath}`;
 
 		let isDir = false;
 		try {

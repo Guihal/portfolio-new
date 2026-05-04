@@ -22,5 +22,5 @@ test("resize right handle clamped to MINSIZE", async ({ page, context }) => {
 	await page.mouse.up();
 
 	const wbAfter = await win.boundingBox();
-	expect(wbAfter!.width).toBeGreaterThanOrEqual(320);
+	expect(wbAfter?.width).toBeGreaterThanOrEqual(320);
 });

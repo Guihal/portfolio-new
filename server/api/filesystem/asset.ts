@@ -54,7 +54,6 @@ function getMimeType(ext: string): string {
 			return "application/javascript";
 		case "json":
 			return "application/json";
-		case "txt":
 		default:
 			return "text/plain";
 	}
@@ -63,14 +62,18 @@ function getMimeType(ext: string): string {
 export default defineEventHandler(async (event) => {
 	try {
 		const { path } = parseAssetQuery(getQuery(event));
-		const fullPath = resolvePath(SERVER_ASSETS_ENTRY_ROOT, path);
+		// Path может приходить с ведущим `/` — `resolve(ROOT, /abs)` игнорирует ROOT.
+		const fullPath = resolvePath(
+			SERVER_ASSETS_ENTRY_ROOT,
+			path.replace(/^\/+/, ""),
+		);
 
 		if (!fullPath.startsWith(SERVER_ASSETS_ENTRY_ROOT)) {
 			throw createError({ statusCode: 403 });
 		}
 
 		const stat = await fs.stat(fullPath).catch(() => null);
-		if (!stat || !stat.isFile()) {
+		if (!stat?.isFile()) {
 			throw createError({ statusCode: 404 });
 		}
 

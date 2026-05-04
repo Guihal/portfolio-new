@@ -9,14 +9,13 @@ interface QueueItem {
 /**
  * Глобальная обёртка над router.push с очередью и дедупликацией.
  *
- * Дедуп: игнорируем push если path совпадает с lastPushedPath (сейчас в работе)
- * или с path последнего элемента в очереди — тогда сразу резолвим.
+ * Дедуп: игнорируем push если path совпадает с последним элементом в очереди
+ * или с текущим route.path — тогда сразу резолвим.
  *
  * Очередь — плоский массив (не Ref<Array>), реактивность не нужна для логики.
- * `lastPushedPath` / `isProcessing` — refs для readable экспонирования наружу.
+ * `isProcessing` — ref для readable экспонирования наружу.
  */
 export const useQueuedRouterStore = defineStore("queuedRouter", () => {
-	const lastPushedPath = ref<string | null>(null);
 	const isProcessing = ref(false);
 	const queueLength = ref(0);
 	const queue: QueueItem[] = [];
@@ -32,9 +31,8 @@ export const useQueuedRouterStore = defineStore("queuedRouter", () => {
 
 		isProcessing.value = true;
 		try {
-			if (item.path !== lastPushedPath.value) {
-				lastPushedPath.value = item.path;
-				const router = useRouter();
+			const router = useRouter();
+			if (item.path !== router.currentRoute.value.path) {
 				await router.push(item.path);
 			}
 		} finally {
@@ -47,8 +45,12 @@ export const useQueuedRouterStore = defineStore("queuedRouter", () => {
 	};
 
 	const push = (path: string): Promise<void> => {
+		const router = useRouter();
+		if (path === router.currentRoute.value.path) {
+			return Promise.resolve();
+		}
 		const last = queue[queue.length - 1];
-		if (path === lastPushedPath.value || (last && last.path === path)) {
+		if (last && last.path === path) {
 			return Promise.resolve();
 		}
 		return new Promise((resolve) => {
@@ -66,11 +68,9 @@ export const useQueuedRouterStore = defineStore("queuedRouter", () => {
 		queue.length = 0;
 		queueLength.value = 0;
 		isProcessing.value = false;
-		lastPushedPath.value = null;
 	}
 
 	return {
-		lastPushedPath,
 		isProcessing,
 		isEmpty,
 		queue: queueRef,

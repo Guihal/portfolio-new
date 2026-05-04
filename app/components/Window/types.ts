@@ -28,6 +28,9 @@ export type WindowOb = {
 		value: string;
 	};
 	file: WindowFile;
+	// Cascade-spawned окна skip'ают auto-fullscreen-on-mount: размеры/позиция
+	// заданы через boundsStore.setTarget родительским orchestrator.
+	skipFullscreenOnMount?: boolean;
 };
 
 export const WindowObKey: InjectionKey<WindowOb> = Symbol("WindowOb");

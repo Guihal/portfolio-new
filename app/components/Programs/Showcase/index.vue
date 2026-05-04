@@ -10,11 +10,12 @@ const framed = computed(() => entity.value?.tags?.includes("framed") ?? false);
 
 <template>
 	<div class="showcase" :class="{ 'showcase--framed': framed }">
-		<NuxtImg
+		<img
 			v-if="imageUrl"
 			:src="imageUrl"
 			class="showcase__img"
 			:class="{ 'pixel-box': framed }"
+			alt=""
 		/>
 		<div v-else class="showcase__error">
 			<div class="showcase__error-text">Изображение не найдено</div>

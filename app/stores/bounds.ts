@@ -112,7 +112,8 @@ export const useBoundsStore = defineStore("bounds", () => {
 	 * до windows.remove-orchestration в P2-03).
 	 */
 	function setTarget(id: string, partial: Partial<WindowBounds>) {
-		Object.assign(ensure(id).target, partial);
+		const t = ensure(id).target;
+		Object.assign(t, partial);
 	}
 
 	function syncCalculated(id: string) {

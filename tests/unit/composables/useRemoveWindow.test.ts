@@ -16,8 +16,16 @@ let pushMock: ReturnType<typeof vi.fn>;
 beforeEach(() => {
 	pushMock = vi.fn().mockResolvedValue(undefined);
 	(
-		globalThis as unknown as { useRouter: () => { push: typeof pushMock } }
-	).useRouter = () => ({ push: pushMock });
+		globalThis as unknown as {
+			useRouter: () => {
+				push: typeof pushMock;
+				currentRoute: { value: { path: string } };
+			};
+		}
+	).useRouter = () => ({
+		push: pushMock,
+		currentRoute: { value: { path: "/" } },
+	});
 	setActivePinia(createPinia());
 	__resetFrameImages();
 });
@@ -32,6 +40,18 @@ describe("useRemoveWindow orchestrator", () => {
 		const f = useFocusStore();
 		const win = w.create(file);
 		f.focus(win.id);
+
+		(
+			globalThis as unknown as {
+				useRouter: () => {
+					push: typeof pushMock;
+					currentRoute: { value: { path: string } };
+				};
+			}
+		).useRouter = () => ({
+			push: pushMock,
+			currentRoute: { value: { path: "/about" } },
+		});
 
 		useRemoveWindow(win);
 

@@ -1,0 +1,6 @@
+{
+	"name": "E2E Empty",
+	"programType": "project",
+	"hidden": true,
+	"description": "Тестовая сущность без images/codes — для empty-state и пустого cascade."
+}
