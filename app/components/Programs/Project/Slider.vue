@@ -63,6 +63,8 @@
         display: flex;
         flex-direction: column;
         position: relative;
+        background: c('default-3');
+        padding: 10px;
         overflow: hidden;
         user-select: none;
         touch-action: pan-y;
@@ -108,13 +110,13 @@
 
     .project__nav-btn {
         @include t($fs: 16px, $lh: 1, $cName: 'default-contrast');
-        background: c('default-3');
+        background: c('default');
         border: none;
         padding: 6px 12px;
         cursor: pointer;
 
         &:hover:not(:disabled) {
-            background: c('default-2');
+            color: c('accent');
         }
 
         &:disabled {

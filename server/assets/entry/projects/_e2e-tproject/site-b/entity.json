@@ -1,0 +1,6 @@
+{
+	"name": "Site B",
+	"programType": "tproject",
+	"hidden": true,
+	"description": "Дочерний tproject для e2e-теста."
+}

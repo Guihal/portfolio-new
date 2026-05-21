@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-04T19:21:59.419Z",
+  "generatedAt": "2026-05-21T01:20:03.869Z",
   "rootEntity": {
     "name": "Рабочий стол",
     "programType": "explorer"
@@ -167,6 +167,46 @@
             {
               "name": "images",
               "path": "/projects/_e2e-framed/images",
+              "children": []
+            }
+          ]
+        },
+        {
+          "name": "_e2e-tproject",
+          "path": "/projects/_e2e-tproject",
+          "entity": {
+            "name": "E2E Tproject",
+            "programType": "tproject",
+            "hidden": true,
+            "description": "Тестовая сущность для e2e-тестов program=tproject."
+          },
+          "children": [
+            {
+              "name": "site-a",
+              "path": "/projects/_e2e-tproject/site-a",
+              "entity": {
+                "name": "Site A",
+                "programType": "tproject",
+                "hidden": true,
+                "description": "Дочерний tproject для e2e-теста.",
+                "links": [
+                  {
+                    "label": "Открыть сайт",
+                    "href": "https://example.com"
+                  }
+                ]
+              },
+              "children": []
+            },
+            {
+              "name": "site-b",
+              "path": "/projects/_e2e-tproject/site-b",
+              "entity": {
+                "name": "Site B",
+                "programType": "tproject",
+                "hidden": true,
+                "description": "Дочерний tproject для e2e-теста."
+              },
               "children": []
             }
           ]
@@ -341,6 +381,42 @@
     "/projects/_e2e-framed/images": {
       "name": "images",
       "path": "/projects/_e2e-framed/images"
+    },
+    "/projects/_e2e-tproject": {
+      "name": "_e2e-tproject",
+      "path": "/projects/_e2e-tproject",
+      "entity": {
+        "name": "E2E Tproject",
+        "programType": "tproject",
+        "hidden": true,
+        "description": "Тестовая сущность для e2e-тестов program=tproject."
+      }
+    },
+    "/projects/_e2e-tproject/site-a": {
+      "name": "site-a",
+      "path": "/projects/_e2e-tproject/site-a",
+      "entity": {
+        "name": "Site A",
+        "programType": "tproject",
+        "hidden": true,
+        "description": "Дочерний tproject для e2e-теста.",
+        "links": [
+          {
+            "label": "Открыть сайт",
+            "href": "https://example.com"
+          }
+        ]
+      }
+    },
+    "/projects/_e2e-tproject/site-b": {
+      "name": "site-b",
+      "path": "/projects/_e2e-tproject/site-b",
+      "entity": {
+        "name": "Site B",
+        "programType": "tproject",
+        "hidden": true,
+        "description": "Дочерний tproject для e2e-теста."
+      }
     },
     "/about": {
       "name": "about",

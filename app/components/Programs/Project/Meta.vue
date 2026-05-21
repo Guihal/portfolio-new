@@ -42,9 +42,11 @@
         display: flex;
         flex-direction: column;
         gap: 10px;
-        padding: 12px;
+        padding: 10px;
+        background: c('default-3');
         overflow-y: auto;
         overflow-x: hidden;
+        scrollbar-color: c('default-contrast') c('default-3');
 
         @include cw('sm') {
             width: 100%;
@@ -77,7 +79,7 @@
     .project__tag {
         @include t($fs: 12px, $lh: 1, $cName: 'default-contrast');
         padding: 4px 8px;
-        background: c('default-3');
+        background: c('default');
     }
 
     .project__description {

@@ -1,0 +1,9 @@
+{
+	"name": "Site A",
+	"programType": "tproject",
+	"hidden": true,
+	"description": "Дочерний tproject для e2e-теста.",
+	"links": [
+		{ "label": "Открыть сайт", "href": "https://example.com" }
+	]
+}

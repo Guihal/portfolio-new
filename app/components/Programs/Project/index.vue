@@ -45,8 +45,11 @@
         width: 100%;
         height: 100%;
         display: flex;
-        gap: 16px;
-        padding: 10px;
+        gap: 10px;
+
+        * {
+            scrollbar-color: c('default-contrast') c('default-3');
+        }
 
         @include cw('sm') {
             flex-direction: column-reverse;
@@ -58,6 +61,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
+        background: c('default-3');
     }
 
     .project__error-text {

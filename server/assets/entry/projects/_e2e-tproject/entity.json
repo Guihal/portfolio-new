@@ -1,0 +1,6 @@
+{
+	"name": "E2E Tproject",
+	"programType": "tproject",
+	"hidden": true,
+	"description": "Тестовая сущность для e2e-тестов program=tproject."
+}

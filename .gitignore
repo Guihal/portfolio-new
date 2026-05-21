@@ -13,6 +13,7 @@ node_modules
 # Logs
 logs
 *.log
+_.log
 
 # Misc
 .DS_Store
@@ -23,9 +24,40 @@ logs
 .env
 .env.*
 !.env.example
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
 
-# Tooling artifacts
+# AI assistant runtime directories
 .claude/
+.claude-code/
+.kimi/
+.kimi-active.*
+.openclaw/
+.openclaw-home/
+.openclaw-pilot/
+.openclaw-workspace/
+.continue/
+.continue.claude/
+
+# Session logs & temp files
+sessions/
+*.session
+
+# Playwright MCP temp files
 .playwright-mcp/
 test-results/
 playwright-report/
+
+# Tooling artifacts
+*.tsbuildinfo
+
+# Packet/wave artifacts (operator loop state)
+.packet-context.*.json
+.operator-state.*.json
+.operator-state.*.json.bak*
+.operator-state.*.json.tmp
+.operator-state.*.lock
+.operator-tick.*
+.operator-loop-context.*

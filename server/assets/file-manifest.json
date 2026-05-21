@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-04T19:21:59.442Z",
+  "generatedAt": "2026-05-21T01:20:03.893Z",
   "tree": [
     {
       "name": "projects",
@@ -361,6 +361,72 @@
                   "type": "file",
                   "ext": ".png",
                   "size": 6932
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "_e2e-tproject",
+          "path": "/projects/_e2e-tproject",
+          "type": "directory",
+          "entity": {
+            "name": "E2E Tproject",
+            "programType": "tproject",
+            "hidden": true,
+            "description": "Тестовая сущность для e2e-тестов program=tproject."
+          },
+          "children": [
+            {
+              "name": "entity.json",
+              "path": "/projects/_e2e-tproject/entity.json",
+              "type": "file",
+              "ext": ".json",
+              "size": 168
+            },
+            {
+              "name": "site-a",
+              "path": "/projects/_e2e-tproject/site-a",
+              "type": "directory",
+              "entity": {
+                "name": "Site A",
+                "programType": "tproject",
+                "hidden": true,
+                "description": "Дочерний tproject для e2e-теста.",
+                "links": [
+                  {
+                    "label": "Открыть сайт",
+                    "href": "https://example.com"
+                  }
+                ]
+              },
+              "children": [
+                {
+                  "name": "entity.json",
+                  "path": "/projects/_e2e-tproject/site-a/entity.json",
+                  "type": "file",
+                  "ext": ".json",
+                  "size": 223
+                }
+              ]
+            },
+            {
+              "name": "site-b",
+              "path": "/projects/_e2e-tproject/site-b",
+              "type": "directory",
+              "entity": {
+                "name": "Site B",
+                "programType": "tproject",
+                "hidden": true,
+                "description": "Дочерний tproject для e2e-теста."
+              },
+              "children": [
+                {
+                  "name": "entity.json",
+                  "path": "/projects/_e2e-tproject/site-b/entity.json",
+                  "type": "file",
+                  "ext": ".json",
+                  "size": 135
                 }
               ]
             }
@@ -744,6 +810,66 @@
       "ext": ".png",
       "size": 6932
     },
+    "/projects/_e2e-tproject": {
+      "name": "_e2e-tproject",
+      "path": "/projects/_e2e-tproject",
+      "type": "directory",
+      "entity": {
+        "name": "E2E Tproject",
+        "programType": "tproject",
+        "hidden": true,
+        "description": "Тестовая сущность для e2e-тестов program=tproject."
+      }
+    },
+    "/projects/_e2e-tproject/entity.json": {
+      "name": "entity.json",
+      "path": "/projects/_e2e-tproject/entity.json",
+      "type": "file",
+      "ext": ".json",
+      "size": 168
+    },
+    "/projects/_e2e-tproject/site-a": {
+      "name": "site-a",
+      "path": "/projects/_e2e-tproject/site-a",
+      "type": "directory",
+      "entity": {
+        "name": "Site A",
+        "programType": "tproject",
+        "hidden": true,
+        "description": "Дочерний tproject для e2e-теста.",
+        "links": [
+          {
+            "label": "Открыть сайт",
+            "href": "https://example.com"
+          }
+        ]
+      }
+    },
+    "/projects/_e2e-tproject/site-a/entity.json": {
+      "name": "entity.json",
+      "path": "/projects/_e2e-tproject/site-a/entity.json",
+      "type": "file",
+      "ext": ".json",
+      "size": 223
+    },
+    "/projects/_e2e-tproject/site-b": {
+      "name": "site-b",
+      "path": "/projects/_e2e-tproject/site-b",
+      "type": "directory",
+      "entity": {
+        "name": "Site B",
+        "programType": "tproject",
+        "hidden": true,
+        "description": "Дочерний tproject для e2e-теста."
+      }
+    },
+    "/projects/_e2e-tproject/site-b/entity.json": {
+      "name": "entity.json",
+      "path": "/projects/_e2e-tproject/site-b/entity.json",
+      "type": "file",
+      "ext": ".json",
+      "size": 135
+    },
     "/about": {
       "name": "about",
       "path": "/about",
@@ -783,7 +909,7 @@
     }
   },
   "stats": {
-    "totalFiles": 27,
-    "totalDirectories": 17
+    "totalFiles": 30,
+    "totalDirectories": 20
   }
 }
