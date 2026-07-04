@@ -1,0 +1,257 @@
+{
+  "version": 1,
+  "lastScanAt": "2026-05-23T22:35:00+03:00",
+  "queueCursor": 13,
+  "repos": [
+    {
+      "path": "/usr/projects/subbrain",
+      "name": "subbrain",
+      "category": "AI/infra",
+      "priority": 10,
+      "status": "scanned",
+      "notes": "Subbrain platform — main architecture project"
+    },
+    {
+      "path": "/usr/projects/portfolio-new",
+      "name": "portfolio-new",
+      "category": "portfolio",
+      "priority": 10,
+      "status": "scanned",
+      "notes": "This portfolio site itself"
+    },
+    {
+      "path": "/usr/projects/portfolio",
+      "name": "portfolio",
+      "category": "portfolio",
+      "priority": 9,
+      "status": "missing",
+      "notes": "Old portfolio — repo not found on GitHub (local-only)"
+    },
+    {
+      "path": "/usr/projects/gbrain",
+      "name": "gbrain",
+      "category": "AI/infra",
+      "priority": 9,
+      "status": "missing",
+      "notes": "Early AI assistant experiments — repo not found on GitHub (local-only)"
+    },
+    {
+      "path": "/usr/projects/qr-codes",
+      "name": "qr-codes",
+      "category": "product",
+      "priority": 8,
+      "status": "missing",
+      "notes": "QR code generator product — repo not found on GitHub (local-only)"
+    },
+    {
+      "path": "/usr/projects/qr/qr-generator",
+      "name": "qr-generator",
+      "category": "product",
+      "priority": 8,
+      "status": "missing",
+      "notes": "QR generator (client project) — repo not found on GitHub (local-only)"
+    },
+    {
+      "path": "/usr/projects/rtk-qr-front",
+      "name": "rtk-qr-front",
+      "category": "client",
+      "priority": 8,
+      "status": "scanned",
+      "notes": "RTK QR frontend — Nuxt 4/Vue 3/TypeScript/Capacitor mobile QR generator for Rostelecom client. Live at rtk-qr-front.vercel.app. 6 commits. Scanned 2026-05-23."
+    },
+    {
+      "path": "/usr/projects/user_service-main",
+      "name": "user_service-main",
+      "category": "backend",
+      "priority": 7,
+      "status": "scanned",
+      "notes": "User service backend — Python/Docker/Redis auth API quick-start. Re-scanned 2026-05-23. 6 commits, 0 stars, no live URL."
+    },
+    {
+      "path": "/usr/projects/merge/Educational-Simulator-of-Personal-Data-Protection",
+      "name": "edu-simulator-privacy",
+      "category": "education",
+      "priority": 7,
+      "status": "missing",
+      "notes": "Privacy simulator (diploma related?) — repo not found on GitHub (local-only), confirmed 2026-05-23"
+    },
+    {
+      "path": "/usr/projects/merge/mamonov.net-front",
+      "name": "mamonov.net-front",
+      "category": "client",
+      "priority": 7,
+      "status": "scanned",
+      "notes": "Mamonov.net frontend — re-scanned 2026-05-23, Nuxt 4/Vue 3 cybersecurity education platform with interactive OS simulator, 1 star, 6 commits, no live URL"
+    },
+    {
+      "path": "/usr/projects/ozon loghistic/ozon loghistic back/ozon",
+      "name": "ozon",
+      "category": "product",
+      "priority": 7,
+      "status": "scanned",
+      "notes": "Ozon logistics API — Bun/Elysia/TypeScript backend for Ozon Seller API integration with Tilda, 60 commits, scanned 2026-05-23"
+    },
+    {
+      "path": "/usr/projects/eleishkina/wordpress/wp-content/themes/eleshlenkina",
+      "name": "eleshlenkina-theme",
+      "category": "client",
+      "priority": 6,
+      "status": "missing",
+      "notes": "WordPress theme for client — NOT FOUND on GitHub (404), confirmed 2026-05-23"
+    },
+    {
+      "path": "/usr/projects/tilda/forestResident",
+      "name": "forest-resident",
+      "category": "client",
+      "priority": 7,
+      "status": "missing",
+      "notes": "Tilda — Forest Resident project — NOT FOUND on GitHub (404)"
+    },
+    {
+      "path": "/usr/projects/tilda/chadopro-v2",
+      "name": "chadopro-v2",
+      "category": "client",
+      "priority": 7,
+      "status": "missing",
+      "notes": "Tilda — Chadopro v2 — NOT FOUND on GitHub (404)"
+    },
+    {
+      "path": "/usr/projects/tilda/chadopro-v1",
+      "name": "chadopro-v1",
+      "category": "client",
+      "priority": 6,
+      "status": "missing",
+      "notes": "Tilda — Chadopro v1 — NOT FOUND on GitHub (404)"
+    },
+    {
+      "path": "/usr/projects/tilda/laelin-orig",
+      "name": "laelin-orig",
+      "category": "client",
+      "priority": 6,
+      "status": "missing",
+      "notes": "Tilda — Laelin original — NOT FOUND on GitHub (404)"
+    },
+    {
+      "path": "/usr/projects/tilda/laelin-cards-orig",
+      "name": "laelin-cards",
+      "category": "client",
+      "priority": 6,
+      "status": "missing",
+      "notes": "Tilda — Laelin cards — NOT FOUND on GitHub (404)"
+    },
+    {
+      "path": "/usr/projects/tilda/UCKLAD",
+      "name": "UCKLAD",
+      "category": "client",
+      "priority": 6,
+      "status": "scanned",
+      "notes": "Tilda — UCKLAD — scanned 2026-05-23, Vite+TypeScript+SCSS build pipeline for Tilda, 1 commit, 0 stars, no live URL, not portfolio-worthy"
+    },
+    {
+      "path": "/usr/projects/tilda/batnique",
+      "name": "batnique",
+      "category": "client",
+      "priority": 6,
+      "status": "missing",
+      "notes": "Tilda — Batnique — NOT FOUND on GitHub (404), confirmed 2026-05-23"
+    },
+    {
+      "path": "/usr/projects/tilda/chado-header",
+      "name": "chado-header",
+      "category": "client",
+      "priority": 6,
+      "status": "missing",
+      "notes": "Tilda — Chado header — NOT FOUND on GitHub (404), local-only, confirmed 2026-05-23"
+    },
+    {
+      "path": "/usr/projects/tilda/foxy-vite",
+      "name": "foxy-vite",
+      "category": "client",
+      "priority": 6,
+      "status": "missing",
+      "notes": "Tilda — Foxy Vite — NOT FOUND on GitHub (404), local build tool BasedPack, confirmed 2026-05-23"
+    },
+    {
+      "path": "/usr/projects/Диплом",
+      "name": "diploma",
+      "category": "education",
+      "priority": 8,
+      "status": "missing",
+      "notes": "University diploma project — NOT FOUND on GitHub (404), local-only, confirmed 2026-05-23"
+    },
+    {
+      "path": "/usr/projects/Плеер-онлайн/backend",
+      "name": "player-online-backend",
+      "category": "product",
+      "priority": 7,
+      "status": "scanned",
+      "notes": "Music streaming backend — ElysiaJS/Bun/PostgreSQL/Drizzle/MinIO — local-only (GitHub 404)"
+    },
+    {
+      "path": "/usr/projects/Плеер-онлайн/frontend",
+      "name": "player-online-frontend",
+      "category": "product",
+      "priority": 7,
+      "status": "missing",
+      "notes": "Online player frontend — NOT FOUND on GitHub (404), local-only"
+    },
+    {
+      "path": "/usr/projects/Плеер-онлайн/storage",
+      "name": "player-online-storage",
+      "category": "product",
+      "priority": 7,
+      "status": "missing",
+      "notes": "Online player storage — NOT FOUND on GitHub (404), local-only"
+    },
+    {
+      "path": "/usr/projects/Плеер-онлайн/Плеер/backend",
+      "name": "player-v2-backend",
+      "category": "product",
+      "priority": 7,
+      "status": "missing",
+      "notes": "Player v2 backend — NOT FOUND on GitHub (404), local-only"
+    },
+    {
+      "path": "/usr/projects/Плеер-онлайн/Плеер/frontend",
+      "name": "player-v2-frontend",
+      "category": "product",
+      "priority": 7,
+      "status": "missing",
+      "notes": "Player v2 frontend — NOT FOUND on GitHub (404), local-only"
+    },
+    {
+      "path": "/usr/projects/red-art/wordpress/wp-content/themes/redart",
+      "name": "redart-theme",
+      "category": "client",
+      "priority": 6,
+      "status": "missing",
+      "notes": "Red Art WordPress theme — NOT FOUND on GitHub (404), local-only"
+    },
+    {
+      "path": "/usr/projects/red-art/wordpress/wp-content/plugins/image-processor",
+      "name": "image-processor",
+      "category": "plugin",
+      "priority": 5,
+      "status": "scanned",
+      "notes": "WP image processor plugin — scanned 2026-05-22, PHP, 2 commits, 0 stars, no live URL, not portfolio-worthy"
+    },
+    {
+      "path": "/usr/projects/хакатон/app",
+      "name": "hackathon-app",
+      "category": "hackathon",
+      "priority": 6,
+      "status": "scanned",
+      "notes": "Hackathon app (GitHub name: app) — Nuxt starter with auth + Docker, 3 commits, 0 stars, not portfolio-worthy"
+    },
+    {
+      "path": "/usr/projects/------",
+      "name": "------",
+      "category": "product",
+      "priority": 8,
+      "status": "scanned",
+      "notes": "Task Companion — diploma project, mobile offline-first task manager with gamification. Nuxt 4/Vue 3/TypeScript/Capacitor/SQLite. 120 commits, MVP-0 complete. Scanned 2026-05-23."
+    }
+  ],
+  "outputDir": "/usr/projects/portfolio-new/.scout/repos",
+  "screenshotsDir": "/usr/projects/portfolio-new/.scout/screenshots"
+}
