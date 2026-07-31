@@ -20,6 +20,13 @@ export function useRemoveWindow(windowOb: WindowOb) {
 	// Снимаем wasFocused ДО windows.remove (defensive read).
 	const wasFocused = focusStore.focusedId === windowOb.id;
 
+	// Снимаем фокус ДО windows.remove: иначе useSetFocusState's watcher
+	// вызовет setState(id, "focused", false) после удаления окна из стора,
+	// setState рано выйдет (if (!w) return), states.focused останется true,
+	// main-watcher в useSeoWindow не сработает, clearSeo не очистит
+	// per-window SEO — title залипнет на закрытом окне.
+	if (wasFocused) focusStore.unFocus();
+
 	// Очистка loaders ДО bounds: watchEffect в initWindowLoading может читать loaders[id]
 	unregister(windowOb.id);
 
@@ -30,7 +37,6 @@ export function useRemoveWindow(windowOb: WindowOb) {
 
 	const removed = useWindowsStore().remove(windowOb.id);
 	if (removed && wasFocused) {
-		focusStore.unFocus();
 		useQueuedRouterStore().push("/");
 	}
 }
