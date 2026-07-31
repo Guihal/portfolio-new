@@ -64,4 +64,19 @@
             flex-shrink: 0;
         }
     }
+
+    // Mobile: 4-колоночная сетка (1fr+140+160+80) не влезает в узкое окно,
+    // 1fr коллапсит и имя не видно. Сворачиваем в одну колонку и прячем
+    // дату/тип/размер (они и так дублируют сущность — это видно из project
+    // detail, а в list-режиме нужны только имя+иконка).
+    @include cw('sm') {
+        --explorer-grid-columns: 1fr;
+
+        .explorer__header-cell:not(.explorer__header-cell--name),
+        :deep(.shortcut__cell--date),
+        :deep(.shortcut__cell--type),
+        :deep(.shortcut__cell--size) {
+            display: none;
+        }
+    }
 </style>
