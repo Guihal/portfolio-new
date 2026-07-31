@@ -69,13 +69,17 @@ describe("useJsonLd", () => {
 	});
 
 	it("explorer → null (нет schema)", () => {
-		const f = ref<FsFile | null>(makeFile({ name: "X", programType: "explorer" }));
+		const f = ref<FsFile | null>(
+			makeFile({ name: "X", programType: "explorer" }),
+		);
 		const { primary } = useJsonLd(f, ORIGIN);
 		expect(primary.value).toBeNull();
 	});
 
 	it("showcase → null (нет schema)", () => {
-		const f = ref<FsFile | null>(makeFile({ name: "X", programType: "showcase" }));
+		const f = ref<FsFile | null>(
+			makeFile({ name: "X", programType: "showcase" }),
+		);
 		const { primary } = useJsonLd(f, ORIGIN);
 		expect(primary.value).toBeNull();
 	});
@@ -94,7 +98,9 @@ describe("useJsonLd", () => {
 		const { breadcrumbs } = useJsonLd(f, ORIGIN);
 		expect(breadcrumbs.value).toMatchObject({ "@type": "BreadcrumbList" });
 		const items = (
-			breadcrumbs.value as { itemListElement: { position: number; name: string }[] }
+			breadcrumbs.value as {
+				itemListElement: { position: number; name: string }[];
+			}
 		).itemListElement;
 		expect(items.at(-1)?.name).toBe("U24");
 		expect(items).toHaveLength(2);
@@ -107,7 +113,9 @@ describe("useJsonLd", () => {
 		);
 		const { breadcrumbs } = useJsonLd(f, ORIGIN);
 		const items = (
-			breadcrumbs.value as { itemListElement: { position: number; name: string }[] }
+			breadcrumbs.value as {
+				itemListElement: { position: number; name: string }[];
+			}
 		).itemListElement;
 		expect(items).toHaveLength(1);
 		expect(items[0]?.name).toBe("Обо мне");

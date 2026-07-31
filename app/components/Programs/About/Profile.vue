@@ -1,6 +1,7 @@
 <script setup lang="ts">
     import { useInjectWindow } from '~/components/Window/composables/lifecycle/useInjectWindow';
     import { useBoundsStore } from '~/stores/bounds';
+    // biome-ignore lint/correctness/noUnusedImports: consumed by <template> via <script setup> auto-expose
     import { SOCIAL_LINKS } from '~/utils/constants/socials';
     import type { AboutContent } from './content';
 

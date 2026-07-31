@@ -1,9 +1,8 @@
 // P0-06: drag header за левый край → класс fullscreen на окне.
 import { expect, test } from "@playwright/test";
-import { seedVisitCookie, skipLoader } from "../helpers";
+import { skipLoader } from "../helpers";
 
-test("drag header to edge → fullscreen", async ({ page, context }) => {
-	await seedVisitCookie(context);
+test("drag header to edge → fullscreen", async ({ page }) => {
 	await page.goto("/about");
 	await skipLoader(page);
 	const win = page.locator(".window").first();

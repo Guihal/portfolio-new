@@ -31,8 +31,11 @@ export function useScale(): ScaleTriplet {
 				MAX_SIZE / Math.max(contentArea.value.width, contentArea.value.height),
 		);
 
-		scaledWidth = computed(() => contentArea.value.width * scale!.value);
-		scaledHeight = computed(() => contentArea.value.height * scale!.value);
+		// Локальный const: scale только что присвоен, гарантированно non-null.
+		// biome-ignore lint/style/noNonNullAssertion: scale assigned on previous line, narrowing to Ref<number>
+		const s = scale!;
+		scaledWidth = computed(() => contentArea.value.width * s.value);
+		scaledHeight = computed(() => contentArea.value.height * s.value);
 	}
 
 	return { scale, scaledWidth, scaledHeight } as ScaleTriplet;

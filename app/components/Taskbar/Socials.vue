@@ -1,4 +1,5 @@
 <script setup lang="ts">
+    // biome-ignore lint/correctness/noUnusedImports: consumed by <template> via <script setup> auto-expose
     import { SOCIAL_LINKS } from '~/utils/constants/socials';
 </script>
 

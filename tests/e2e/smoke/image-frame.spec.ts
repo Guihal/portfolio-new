@@ -2,7 +2,7 @@
 // иначе pixel-box-маска режет углы бокса, а не изображения.
 
 import { expect, test } from "@playwright/test";
-import { seedVisitCookie, skipLoader } from "../helpers";
+import { skipLoader } from "../helpers";
 
 type Geom = {
 	width: number;
@@ -18,7 +18,7 @@ async function measure(
 ) {
 	return page.evaluate<Geom | null, string>((sel) => {
 		const img = document.querySelector(sel) as HTMLImageElement | null;
-		if (!img || !img.parentElement || !img.naturalHeight) return null;
+		if (!img?.parentElement || !img.naturalHeight) return null;
 		const r = img.getBoundingClientRect();
 		const p = img.parentElement.getBoundingClientRect();
 		return {
@@ -50,8 +50,7 @@ const CASES: { name: string; path: string; selector: string }[] = [
 ];
 
 for (const { name, path, selector } of CASES) {
-	test(`${name}: бокс картинки без letterbox`, async ({ page, context }) => {
-		await seedVisitCookie(context);
+	test(`${name}: бокс картинки без letterbox`, async ({ page }) => {
 		await page.goto(path);
 		await skipLoader(page);
 		await page.locator(selector).waitFor({ state: "visible" });

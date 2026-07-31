@@ -1,6 +1,5 @@
 <script setup lang="ts">
-    
-    import ShortcutBase from '~/components/Shortcut/Base.vue';
+
     import { useCreateAndRegisterWindow } from '~/components/Window/composables/lifecycle/useCreateAndRegisterWindow';
 import type { FsFile } from '~~/shared/types/filesystem';
 

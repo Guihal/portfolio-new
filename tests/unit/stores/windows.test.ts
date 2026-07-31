@@ -1,5 +1,5 @@
 import { createPinia, setActivePinia } from "pinia";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import { useBoundsStore } from "~/stores/bounds";
 import { useFocusStore } from "~/stores/focus";
 import { useFrameStore } from "~/stores/frame";

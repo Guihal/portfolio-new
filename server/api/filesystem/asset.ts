@@ -49,7 +49,6 @@ function getMimeType(ext: string): string {
 			return "application/javascript";
 		case "json":
 			return "application/json";
-		case "txt":
 		default:
 			return "text/plain";
 	}
@@ -64,7 +63,7 @@ export default defineEventHandler(async (event) => {
 		}
 
 		const stat = await fs.stat(fullPath).catch(() => null);
-		if (!stat || !stat.isFile()) {
+		if (!stat?.isFile()) {
 			throw createError({ statusCode: 404 });
 		}
 

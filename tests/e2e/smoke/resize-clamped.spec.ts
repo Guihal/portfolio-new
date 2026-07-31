@@ -1,9 +1,8 @@
 // P0-06: resize внутрь не уводит ширину ниже MINSIZE=320.
 import { expect, test } from "@playwright/test";
-import { seedVisitCookie, skipLoader } from "../helpers";
+import { skipLoader } from "../helpers";
 
-test("resize right handle clamped to MINSIZE", async ({ page, context }) => {
-	await seedVisitCookie(context);
+test("resize right handle clamped to MINSIZE", async ({ page }) => {
 	await page.goto("/about");
 	await skipLoader(page);
 	const win = page.locator(".window").first();
@@ -22,5 +21,5 @@ test("resize right handle clamped to MINSIZE", async ({ page, context }) => {
 	await page.mouse.up();
 
 	const wbAfter = await win.boundingBox();
-	expect(wbAfter!.width).toBeGreaterThanOrEqual(320);
+	expect(wbAfter?.width).toBeGreaterThanOrEqual(320);
 });

@@ -1,7 +1,9 @@
 <script setup lang="ts">
-    
+    // biome-ignore lint/correctness/noUnusedImports: consumed by <template> via <script setup> auto-expose
     import { ABOUT_CONTENT } from './content';
-import Profile from './Profile.vue';
+    // biome-ignore lint/correctness/noUnusedImports: consumed by <template> via <script setup> auto-expose
+    import Profile from './Profile.vue';
+    // biome-ignore lint/correctness/noUnusedImports: consumed by <template> via <script setup> auto-expose
     import Sections from './Sections.vue';
 </script>
 

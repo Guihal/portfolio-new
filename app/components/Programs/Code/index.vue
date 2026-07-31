@@ -1,9 +1,6 @@
 <script setup lang="ts">
 import { useInjectWindow } from "~/components/Window/composables/lifecycle/useInjectWindow";
 import { useCodeSnippet } from "./composables/useCodeSnippet";
-// Явные импорты: auto-import даёт префиксные имена (ProgramsCodeTabs).
-import CopyButton from "./CopyButton.vue";
-import Tabs from "./Tabs.vue";
 
 const windowOb = useInjectWindow();
 const path = computed(() => windowOb.targetFile.value);

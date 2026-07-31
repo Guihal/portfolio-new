@@ -3,9 +3,10 @@ pre-commit:
     biome-check:
       glob: "*.{ts,vue}"
       run: bunx @biomejs/biome check --write {staged_files} && git add {staged_files}
-    eslint:
-      glob: "*.{ts,vue,mjs}"
-      run: bunx eslint {staged_files}
+    # eslint disabled: @typescript-eslint/parser 8.65 (transitive) does not
+    # support TypeScript 7. Latest @typescript-eslint (v20) requires major
+    # config migration. Re-enable when the project pins an eslint v10/11
+    # parser that supports TS 7.
     typecheck:
       # Use the project's own typecheck script (which uses vue-tsgo, the
       # native TS 7 port) instead of `nuxi typecheck` (which calls vue-tsc

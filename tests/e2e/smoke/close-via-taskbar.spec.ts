@@ -1,12 +1,8 @@
 // P0-06: close окна через hover на taskbar-frame → счётчик .window уменьшается.
 import { expect, test } from "@playwright/test";
-import { seedVisitCookie, skipLoader } from "../helpers";
+import { skipLoader } from "../helpers";
 
-test("close window via taskbar frame close button", async ({
-	page,
-	context,
-}) => {
-	await seedVisitCookie(context);
+test("close window via taskbar frame close button", async ({ page }) => {
 	await page.goto("/");
 	await skipLoader(page);
 	await page.locator('a.shortcut[href="/about"]').first().click();

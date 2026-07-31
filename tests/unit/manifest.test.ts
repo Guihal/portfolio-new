@@ -2,8 +2,8 @@
 // scanTree — обход реального server/assets/entry: entity-поля, виртуальные
 // ноды images/ (showcase) и codes/ (code).
 
-import { mkdirSync, rmSync, writeFileSync } from "fs";
-import { join } from "path";
+import { mkdirSync, rmSync, writeFileSync } from "node:fs";
+import { join } from "node:path";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { findNode } from "~~/server/utils/manifest/findNode";
 import { scanTree } from "~~/server/utils/manifest/scanTree";

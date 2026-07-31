@@ -1,9 +1,8 @@
 // P0-06: клик по ярлыку about → одно окно + URL (ловит дубликат из P1-01).
 import { expect, test } from "@playwright/test";
-import { seedVisitCookie, skipLoader } from "../helpers";
+import { skipLoader } from "../helpers";
 
-test("shortcut click opens exactly one window", async ({ page, context }) => {
-	await seedVisitCookie(context);
+test("shortcut click opens exactly one window", async ({ page }) => {
 	await page.goto("/");
 	await skipLoader(page);
 	const shortcut = page.locator('a.shortcut[href="/about"]').first();
@@ -15,9 +14,7 @@ test("shortcut click opens exactly one window", async ({ page, context }) => {
 
 test("double dblclick on same shortcut does not spawn duplicate window", async ({
 	page,
-	context,
 }) => {
-	await seedVisitCookie(context);
 	await page.goto("/");
 	await skipLoader(page);
 	const shortcut = page.locator('a.shortcut[href="/about"]').first();

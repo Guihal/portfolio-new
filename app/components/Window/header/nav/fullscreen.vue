@@ -3,7 +3,6 @@
     import { useBoundsStore } from '~/stores/bounds';
     import { useWindowsStore } from '~/stores/windows';
     import { OFFSET } from '~/utils/constants/offset';
-    import type { WindowOb } from '../../types';
     import { setSize } from '../../utils/setSize';
 
     const windowOb = useInjectWindow();

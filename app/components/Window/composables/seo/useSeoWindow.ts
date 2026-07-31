@@ -65,9 +65,20 @@ export function useSeoWindow(windowOb: WindowOb) {
 
 		// JSON-LD: Person/CreativeWork/SoftwareSourceCode + BreadcrumbList.
 		// Unhead v2 JsonLdScript: type='application/ld+json' + textContent.
-		const scripts: Array<{ type: "application/ld+json"; textContent: Record<string, unknown> }> = [];
-		if (jsonLdPrimary.value) scripts.push({ type: "application/ld+json", textContent: jsonLdPrimary.value });
-		if (jsonLdBreadcrumbs.value) scripts.push({ type: "application/ld+json", textContent: jsonLdBreadcrumbs.value });
+		const scripts: Array<{
+			type: "application/ld+json";
+			textContent: Record<string, unknown>;
+		}> = [];
+		if (jsonLdPrimary.value)
+			scripts.push({
+				type: "application/ld+json",
+				textContent: jsonLdPrimary.value,
+			});
+		if (jsonLdBreadcrumbs.value)
+			scripts.push({
+				type: "application/ld+json",
+				textContent: jsonLdBreadcrumbs.value,
+			});
 		useHead({ script: scripts });
 	}
 

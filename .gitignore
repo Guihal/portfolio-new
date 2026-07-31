@@ -41,3 +41,5 @@ app.db
 
 # pi rules queue (injected at runtime, not source)
 .pi/
+.env.deploy
+!.env.deploy.example

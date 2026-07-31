@@ -4,9 +4,9 @@
 
 import { mount } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
-import { defineComponent, h, ref, type Ref } from "vue";
-import type { FsFile } from "~~/shared/types/filesystem";
+import { defineComponent, h, type Ref, ref } from "vue";
 import { useWindowTitle } from "~/composables/global/useWindowTitle";
+import type { FsFile } from "~~/shared/types/filesystem";
 
 function withFile(file: Ref<FsFile | null | undefined>) {
 	return mount(
@@ -78,7 +78,12 @@ describe("useWindowTitle", () => {
 	});
 
 	it("ogType = 'article' для project/showcase/code/explorer", () => {
-		for (const programType of ["project", "showcase", "code", "explorer"] as const) {
+		for (const programType of [
+			"project",
+			"showcase",
+			"code",
+			"explorer",
+		] as const) {
 			const file = ref<FsFile | null>({
 				path: "/x",
 				name: "x",

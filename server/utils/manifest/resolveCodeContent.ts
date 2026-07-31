@@ -42,7 +42,6 @@ function extToLanguage(ext: string): string {
 			return "typescript";
 		case "scss":
 			return "scss";
-		case "txt":
 		default:
 			return "text";
 	}

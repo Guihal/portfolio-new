@@ -2,7 +2,7 @@
 export default defineNuxtConfig({
 	compatibilityDate: "2025-07-15",
 	devtools: { enabled: false },
-	ssr: process.env.NUXT_TEST_SPA ? false : true,
+	ssr: !process.env.NUXT_TEST_SPA,
 	modules: ["@nuxt/eslint", "@nuxt/image", "@pinia/nuxt"],
 	app: {
 		head: {
@@ -26,8 +26,14 @@ export default defineNuxtConfig({
 					property: "og:description",
 					content: "Портфолио fullstack-разработчика: проекты, код, контакты.",
 				},
-				{ property: "og:image", content: `${process.env.NUXT_PUBLIC_URL || "https://dimonya.studio"}/og/index.png` },
-				{ property: "og:url", content: `${process.env.NUXT_PUBLIC_URL || "https://dimonya.studio"}/` },
+				{
+					property: "og:image",
+					content: `${process.env.NUXT_PUBLIC_URL || "https://dimonya.studio"}/og/index.png`,
+				},
+				{
+					property: "og:url",
+					content: `${process.env.NUXT_PUBLIC_URL || "https://dimonya.studio"}/`,
+				},
 				{ property: "og:locale", content: "ru_RU" },
 				{ name: "twitter:card", content: "summary_large_image" },
 				{
@@ -39,9 +45,7 @@ export default defineNuxtConfig({
 					content: "Портфолио fullstack-разработчика: проекты, код, контакты.",
 				},
 			],
-			link: [
-				{ rel: "icon", type: "image/svg+xml", href: "/favicon.svg" },
-			],
+			link: [{ rel: "icon", type: "image/svg+xml", href: "/favicon.svg" }],
 		},
 	},
 	typescript: {

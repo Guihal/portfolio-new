@@ -42,8 +42,8 @@
         canvas.value.height = height;
 
         // CSS-размеры остаются в логических пикселях
-        canvas.value.style.width = elementBounds.value.width + 'px';
-        canvas.value.style.height = elementBounds.value.height + 'px';
+        canvas.value.style.width = `${elementBounds.value.width}px`;
+        canvas.value.style.height = `${elementBounds.value.height}px`;
 
         // Масштабируем контекст для правильного отображения на retina
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0);

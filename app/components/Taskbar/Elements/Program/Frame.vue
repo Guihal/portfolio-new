@@ -4,7 +4,6 @@
     import { useRemoveWindow } from '~/components/Window/utils/removeWindow';
     import { useFocusStore } from '~/stores/focus';
     import { useScale } from '../../useScale';
-    import FrameCloseButton from './FrameCloseButton.vue';
     import { useTaskbarFramePosition } from './useTaskbarFramePosition';
     import { useWindowPreview } from './useWindowPreview';
 

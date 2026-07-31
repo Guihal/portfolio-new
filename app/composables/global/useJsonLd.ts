@@ -40,11 +40,21 @@ function creativeWorkLd(file: FsFile, origin: string) {
 }
 
 const KNOWN_LANGS = new Set([
-	"js", "ts", "vue", "py", "go", "rs", "cpp", "java", "php",
+	"js",
+	"ts",
+	"vue",
+	"py",
+	"go",
+	"rs",
+	"cpp",
+	"java",
+	"php",
 ]);
 
 function sourceCodeLd(file: FsFile, origin: string) {
-	const langs = (file.tags ?? []).filter((t) => KNOWN_LANGS.has(t.toLowerCase()));
+	const langs = (file.tags ?? []).filter((t) =>
+		KNOWN_LANGS.has(t.toLowerCase()),
+	);
 	return {
 		"@context": "https://schema.org",
 		"@type": "SoftwareSourceCode",
@@ -81,10 +91,14 @@ export function useJsonLd(file: Ref<FsFile | null>, origin: Ref<string>) {
 		if (!file.value) return null;
 		const o = origin.value;
 		switch (file.value.programType) {
-			case "about": return personLd(file.value, o);
-			case "project": return creativeWorkLd(file.value, o);
-			case "code": return sourceCodeLd(file.value, o);
-			default: return null;
+			case "about":
+				return personLd(file.value, o);
+			case "project":
+				return creativeWorkLd(file.value, o);
+			case "code":
+				return sourceCodeLd(file.value, o);
+			default:
+				return null;
 		}
 	});
 

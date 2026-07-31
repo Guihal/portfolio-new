@@ -1,7 +1,11 @@
-// P8-XX useAppBootstrap: cookie-онбординг (302 на /about) → 404-check →
-// preload entity для per-window SEO → store reset на SSR → register window.
+// useAppBootstrap: 404-check → preload entity для per-window SEO → store reset
+// на SSR → register window.
+//
+// Раньше здесь был cookie-онбординг с 302 на /about при первом заходе. Удалён:
+// юзер остаётся на URL, на который пришёл (включая /, который рендерит
+// workbench без окон). Документация по старому механизму —
+// docs/refactor/P1-02-fix-onboarding-flow.md (историческая).
 
-import { isNavigationFailure } from "vue-router";
 import { callWithNuxt } from "#app";
 import { useCreateAndRegisterWindow } from "~/components/Window/composables/lifecycle/useCreateAndRegisterWindow";
 import { useBoundsStore } from "~/stores/bounds";
@@ -13,33 +17,6 @@ import { useWindowsStore } from "~/stores/windows";
 import { useWindowsUIStore } from "~/stores/windowsUI";
 import type { FsFile } from "~~/shared/types/filesystem";
 
-const CANONICAL_ENTRY = "/about";
-const COOKIE_MAX_AGE = 60 * 60 * 24 * 365;
-
-// Token-based UA sniff: exact-match по бот-токенам. Избегает false-positives
-// "notgooglebot" / "googlebot-fake". Содержит основных crawler'ов + шеринг
-// ботов. Расширяется по мере появления новых.
-const CRAWLER_BOTS = new Set([
-	"googlebot",
-	"bingbot",
-	"yandex",
-	"duckduckbot",
-	"applebot",
-	"facebookexternalhit",
-	"twitterbot",
-	"linkedinbot",
-	"slurp",
-	"baiduspider",
-	"ahrefsbot",
-	"semrushbot",
-]);
-
-function isCrawler(userAgent: string): boolean {
-	if (!userAgent) return false;
-	const tokens = userAgent.toLowerCase().split(/[\s/;()[\],]+/);
-	return tokens.some((t) => CRAWLER_BOTS.has(t));
-}
-
 function normalizePath(p: string): string {
 	return p.length > 1 && p.endsWith("/") ? p.slice(0, -1) : p;
 }
@@ -47,7 +24,7 @@ function normalizePath(p: string): string {
 // Heuristic: path содержит точку → статика (asset с расширением: .png, .svg,
 // .js, .css, .jpg, .webp, .mp3, .woff2, .json). Программные entity-пути
 // (типа "/about", "/projects/u24") точки не содержат. Используется чтобы
-// пропустить cookie-онбординг и 404-check на статических asset-запросах.
+// пропустить 404-check и register на статических asset-запросах.
 function isAssetPath(p: string): boolean {
 	return p.includes(".");
 }
@@ -67,9 +44,8 @@ async function assertPathExists(path: string): Promise<void> {
 
 async function preloadWindowEntity(path: string): Promise<void> {
 	// Синхронно подгружаем entity до useSeoWindow (иначе file=null на SSR →
-	// title/description идут через path-fallback: "about" вместо
-	// "Информация о системе — Обо мне"). Только SSR: на client модуль не
-	// загружается, иначе server-side scanTree через process.cwd() валил бы
+	// title/description идут через path-fallback). Только SSR: на client модуль
+	// не загружается, иначе server-side scanTree через process.cwd() валил бы
 	// client bundle.
 	if (!import.meta.server) return;
 	const windowOb = useWindowsStore().byPath(path);
@@ -83,56 +59,14 @@ async function preloadWindowEntity(path: string): Promise<void> {
 export async function useAppBootstrap() {
 	const nuxtApp = useNuxtApp();
 	const route = useRoute();
-	const router = useRouter();
-	const visited = useCookie("about_visited", { maxAge: COOKIE_MAX_AGE });
+	const effectivePath = normalizePath(route.path);
 
-	const isFirstVisit = !visited.value;
-	const currentPath = normalizePath(route.path);
-	const onCanonical = currentPath === CANONICAL_ENTRY;
+	// Asset-URL (/og/default.png, /_nuxt/foo.js, /favicon.svg, /imgs/me.jpg):
+	// никакого 404-check, никакого register. Asset-пути — это не entity,
+	// не программа. Если asset не существует, Nitro сам отдаст 404.
+	if (isAssetPath(effectivePath)) return;
 
-	let effectivePath = currentPath;
-
-	// Строгий guard для asset-URL (/og/default.png, /_nuxt/foo.js, /favicon.svg,
-	// /imgs/me.jpg): никакого cookie, никакого 404-check, никакого register.
-	// Asset-пути — это не entity, не программа. Если asset не существует, Nitro
-	// сам отдаст 404. Выставление cookie здесь сломало бы онбординг: бот или
-	// юзер, начавший сессию с asset-URL, потерял бы 302 на /about.
-	if (isAssetPath(currentPath)) return;
-
-	if (isFirstVisit && !onCanonical) {
-		const ua = import.meta.server ? (useRequestHeader("user-agent") ?? "") : "";
-		if (isCrawler(ua)) {
-			// Crawler / share-bot: cookie молча, render в target (НЕ редирект).
-			// Googlebot должен видеть SSR-контент /projects/u24 иначе он
-			// проиндексирует только /about (redirect target), а sitemap
-			// публикует /projects/u24 как самостоятельный URL — конфликт.
-			visited.value = "1";
-			// effectivePath остаётся currentPath.
-		} else if (import.meta.server) {
-			visited.value = "1";
-			return await navigateTo(CANONICAL_ENTRY, { redirectCode: 302 });
-		} else {
-			try {
-				const nav = await router.push(CANONICAL_ENTRY);
-				if (!isNavigationFailure(nav)) {
-					visited.value = "1";
-					effectivePath = normalizePath(router.currentRoute.value.path);
-				} else {
-					logger.warn("[useAppBootstrap] push navigation failure", nav);
-				}
-			} catch (err) {
-				logger.error("[useAppBootstrap] push", err);
-			}
-		}
-	} else if (isFirstVisit && onCanonical) {
-		visited.value = "1";
-	}
-
-	if (
-		import.meta.server &&
-		effectivePath !== "/" &&
-		!isAssetPath(effectivePath)
-	) {
+	if (import.meta.server && effectivePath !== "/") {
 		await assertPathExists(effectivePath);
 	}
 

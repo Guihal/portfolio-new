@@ -131,7 +131,8 @@ export async function scanTree(): Promise<Manifest> {
 			entity: {
 				name: "Рабочий стол",
 				programType: "explorer",
-				summary: "Корневой каталог портфолио — рабочий стол с ярлыками на разделы.",
+				summary:
+					"Корневой каталог портфолио — рабочий стол с ярлыками на разделы.",
 			},
 			mtime: rootStat.mtime.toISOString(),
 		};

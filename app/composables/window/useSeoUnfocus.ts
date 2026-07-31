@@ -45,9 +45,7 @@ export function useSeoUnfocus() {
 	const rootDescription = computed(() => {
 		if (focusedId.value) return undefined;
 		return (
-			data.value?.description ??
-			data.value?.summary ??
-			FALLBACK_DESCRIPTION
+			data.value?.description ?? data.value?.summary ?? FALLBACK_DESCRIPTION
 		);
 	});
 
@@ -64,7 +62,14 @@ export function useSeoUnfocus() {
 		twitterDescription: rootDescription,
 	});
 
-	useHead({ link: [{ rel: "canonical", href: computed(() => (focusedId.value ? undefined : canonical.value)) }] });
+	useHead({
+		link: [
+			{
+				rel: "canonical",
+				href: computed(() => (focusedId.value ? undefined : canonical.value)),
+			},
+		],
+	});
 
 	// WebSite JSON-LD — только когда фокус-null. На focused окне useSeoWindow
 	// пишет per-window JSON-LD, чтобы не было двух schema-блоков в head.
@@ -87,7 +92,12 @@ export function useSeoUnfocus() {
 	useHead({
 		script: computed(() => {
 			if (!rootWebSite.value) return [];
-			return [{ type: "application/ld+json" as const, textContent: rootWebSite.value }];
+			return [
+				{
+					type: "application/ld+json" as const,
+					textContent: rootWebSite.value,
+				},
+			];
 		}),
 	});
 }
