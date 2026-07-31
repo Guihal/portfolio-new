@@ -17,7 +17,9 @@
             {{ fallbackPath }}
         </div>
         <ul v-if="tags?.length" class="project__tags">
-            <li v-for="tag in tags" :key="tag" class="project__tag">{{ tag }}</li>
+            <li v-for="tag in tags" :key="tag" class="project__tag pixel-box">
+                {{ tag }}
+            </li>
         </ul>
         <p v-if="description" class="project__description">{{ description }}</p>
         <ul v-if="links?.length" class="project__links">
@@ -37,12 +39,14 @@
 <style lang="scss">
     .project__meta {
         box-sizing: border-box;
-        width: 260px;
+        width: 200px;
         flex-shrink: 0;
         display: flex;
         flex-direction: column;
         gap: 10px;
-        padding: 12px;
+        padding: 10px;
+        // Без фона pixel-box-маска не читается: сквозь панель виден фон окна.
+        background: c('default-3');
         overflow-y: auto;
         overflow-x: hidden;
 
@@ -77,7 +81,8 @@
     .project__tag {
         @include t($fs: 12px, $lh: 1, $cName: 'default-contrast');
         padding: 4px 8px;
-        background: c('default-3');
+        // На панели c('default-3') тег того же цвета не читался.
+        background: c('default-2');
     }
 
     .project__description {

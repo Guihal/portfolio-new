@@ -1,0 +1,12 @@
+{
+    "name": "Zuchelkueche",
+    "year": "2024",
+    "tags": [
+        "wordpress",
+        "elementor",
+        "woocommerce",
+        "i18n"
+    ],
+    "description": "Двуязычный интернет-магазин производителя кухонь в Польше, сделан в кооперации со студией SEOLEO. Магазин на WordPress и Elementor; моего кода немного — виджет поиска магазина и попапы, остальное собрано в конструкторе.",
+    "programType": "project"
+}

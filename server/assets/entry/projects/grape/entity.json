@@ -1,0 +1,19 @@
+{
+    "name": "Grape Careers",
+    "year": "2023",
+    "tags": [
+        "gulp",
+        "scss",
+        "javascript",
+        "php",
+        "landing"
+    ],
+    "description": "Карьерный сайт компании: шесть страниц — главная, о компании, команда, вакансии, страница роли. Около 5 100 строк своего JS и SCSS на Gulp-сборке, отправка форм через PHPMailer.",
+    "links": [
+        {
+            "label": "grapecareers.com",
+            "href": "https://grapecareers.com"
+        }
+    ],
+    "programType": "project"
+}

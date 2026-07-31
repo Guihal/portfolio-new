@@ -3,15 +3,11 @@
 
 import { promises as fs } from "node:fs";
 import { resolve as resolvePath } from "node:path";
+import { resolveEntryPath } from "~~/server/utils/entryPath";
 import type { Entity } from "~~/shared/types/filesystem";
 import type { CodeSnippet, CodeWindowMeta } from "./resolveCodeContent";
 import { readCodes, readCodeWindows } from "./resolveCodeContent";
 import { getEntity } from "./resolveEntity";
-
-const SERVER_ASSETS_ENTRY_ROOT = resolvePath(
-	process.cwd(),
-	"server/assets/entry",
-);
 
 const IMAGE_RE = /^[a-zA-Z0-9._-]+\.(png|jpg|jpeg|webp|svg)$/i;
 
@@ -59,12 +55,15 @@ export async function resolveContent(
 	const entity = await getEntity(path);
 	if (!entity) return null;
 
-	const dir = resolvePath(SERVER_ASSETS_ENTRY_ROOT, path);
+	const dir = resolveEntryPath(path);
+	if (!dir) return null;
+
 	const images = await readImages(dir, path);
 	const codeWindows = await readCodeWindows(dir);
 
-	let codes: CodeSnippet[] | undefined;
-	if (entity.programType === "code") codes = await readCodes(dir);
+	// Сниппеты читаются всегда: их запрашивает дочерний путь `<entity>/code/<id>`,
+	// у самой сущности programType при этом обычно project/explorer.
+	const codes = await readCodes(dir);
 
 	const result: EntityContent = { path, entity };
 	if (images !== undefined) result.images = images;

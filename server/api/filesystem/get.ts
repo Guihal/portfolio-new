@@ -1,7 +1,7 @@
 import { isError } from "h3";
 import { ENTITY_CACHE_MAX_AGE } from "~~/server/utils/cacheLifetime";
 import { notFound, serverError } from "~~/server/utils/errors";
-import { getEntity } from "~~/server/utils/manifest";
+import { getEntity } from "~~/server/utils/manifest/resolveEntity";
 import { parsePathQuery } from "~~/server/utils/validation";
 
 export default defineCachedEventHandler(
@@ -16,6 +16,7 @@ export default defineCachedEventHandler(
 			throw serverError(e);
 		}
 	},
+
 	{
 		name: "fs-get",
 		maxAge: ENTITY_CACHE_MAX_AGE,

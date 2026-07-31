@@ -1,4 +1,5 @@
 {
     "name": "Рабочий стол",
-    "programType": "explorer"
+    "programType": "explorer",
+    "summary": "Корневой каталог портфолио — рабочий стол с ярлыками на разделы."
 }

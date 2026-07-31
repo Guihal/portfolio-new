@@ -3,8 +3,18 @@
         items: FsFile[];
     }>();
 </script>
+
 <template>
     <div class="explorer__content pixel-box">
+        <div class="explorer__header">
+            <div class="explorer__header-cell explorer__header-cell--name">
+                <span class="explorer__header-spacer" />
+                <span>Имя</span>
+            </div>
+            <div class="explorer__header-cell">Дата изменения</div>
+            <div class="explorer__header-cell">Тип</div>
+            <div class="explorer__header-cell explorer__header-cell--size">Размер</div>
+        </div>
         <template v-if="items.length > 0">
             <ProgramsExplorerShortcut
                 v-for="file in items"
@@ -16,3 +26,42 @@
         </template>
     </div>
 </template>
+
+<style lang="scss">
+    .explorer__header {
+        display: grid;
+        grid-template-columns: var(--explorer-grid-columns);
+        align-items: center;
+        min-height: 32px;
+        padding: 0;
+        font-size: 14px;
+        color: c('default-contrast');
+        opacity: 0.6;
+        border-bottom: 1px solid c-rgba('default-contrast', 0.2);
+
+        &-cell {
+            display: flex;
+            align-items: center;
+            padding: var(--explorer-cell-padding);
+            min-height: 32px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+
+            &--name {
+                gap: 8px;
+            }
+
+            &--size {
+                justify-content: flex-end;
+            }
+        }
+
+        &-spacer {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            flex-shrink: 0;
+        }
+    }
+</style>

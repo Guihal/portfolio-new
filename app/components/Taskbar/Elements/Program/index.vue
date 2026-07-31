@@ -1,75 +1,34 @@
 <script setup lang="ts">
-    import type { WindowOb } from '~/components/Window/types';
-    import { getProgram } from '~/programs';
-    import { useFocusStore } from '~/stores/focus';
-    import type { ProgramType } from '~~/shared/types/filesystem';
+    import type { TaskbarItem } from '../../useTaskbarItems';
+    import { useTaskbarElement } from './useTaskbarElement';
 
-    const { programType, windowObs } = defineProps<{
-        programType: ProgramType;
-        windowObs: WindowOb[];
-    }>();
-
-    const icon = computed(() => getProgram(programType)?.icon ?? '');
-
-    const focusStore = useFocusStore();
-    const focus = (id: string) => focusStore.focus(id);
-
-    const currentIndex = ref(0);
-
-    const { register, unregister, setContainer, show, hide, updateWindowObs } =
-        useTooltipState();
+    const { item } = defineProps<{ item: TaskbarItem }>();
 
     const container = ref<HTMLElement | null>(null);
 
-    onMounted(() => {
-        register(programType, windowObs);
-        setContainer(programType, container.value);
-    });
-
-    watch(
-        () => windowObs,
-        (obs) => updateWindowObs(programType, obs),
-    );
-
-    onBeforeUnmount(() => {
-        unregister(programType);
-    });
-
-    watch(currentIndex, () => {
-        if (currentIndex.value > windowObs.length - 1) {
-            currentIndex.value = 0;
-            return;
-        }
-
-        const windowOb = windowObs[currentIndex.value];
-        if (!windowOb) return;
-
-        focus(windowOb.id);
-    });
-
-    watch(
-        () => windowObs.length,
-        (len) => {
-            if (len === 0) hide(programType);
-        },
-    );
-
-    const onClick = () => {
-        currentIndex.value++;
-    };
-    const onMouseenter = () => show(programType);
-    const onMouseleave = () => hide(programType);
+    const {
+        icon,
+        isActive,
+        isRunning,
+        tag,
+        onClick,
+        onMouseenter,
+        onMouseleave,
+    } = useTaskbarElement(() => item, container);
 </script>
 
 <template>
-    <button
+    <component
+        :is="tag"
         ref="container"
         class="taskbar__el"
+        :class="{ active: isActive, 'taskbar__el--running': isRunning }"
+        :href="item.path ?? undefined"
         @click="onClick"
         @mouseenter="onMouseenter"
         @mouseleave="onMouseleave">
         <div class="taskbar__el_img" v-html="icon"></div>
-    </button>
+    </component>
 </template>
 
 <style lang="scss"></style>

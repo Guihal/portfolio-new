@@ -1,11 +1,12 @@
-// P0-06: findNode по дереву манифеста — корень, вложенное, неизвестное.
-// P0-03: generateManifest с zod Entity schema и extended fields.
+// findNode по дереву — корень, вложенное, неизвестное.
+// scanTree — обход реального server/assets/entry: entity-поля, виртуальные
+// ноды images/ (showcase) и codes/ (code).
 
-import { mkdirSync, readFileSync, rmSync, writeFileSync } from "fs";
+import { mkdirSync, rmSync, writeFileSync } from "fs";
 import { join } from "path";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import { generateManifest } from "~~/scripts/generate-manifest";
-import { findNode } from "~~/server/utils/manifest";
+import { findNode } from "~~/server/utils/manifest/findNode";
+import { scanTree } from "~~/server/utils/manifest/scanTree";
 import type { ManifestNode } from "~~/shared/types/filesystem";
 
 const tree: ManifestNode[] = [
@@ -37,25 +38,17 @@ describe("findNode", () => {
 	});
 });
 
-describe("generateManifest", () => {
-	const tmpDir = join(process.cwd(), "tests", "unit", "tmp-manifest");
-	const outFile = join(tmpDir, "manifest.json");
+describe("scanTree", () => {
+	const entryRoot = join(process.cwd(), "server", "assets", "entry");
+	const fixture = join(entryRoot, "scan-fixture");
 
 	beforeAll(() => {
-		rmSync(tmpDir, { recursive: true, force: true });
-		mkdirSync(tmpDir, { recursive: true });
+		rmSync(fixture, { recursive: true, force: true });
+		mkdirSync(join(fixture, "images"), { recursive: true });
+		mkdirSync(join(fixture, "codes", "demo-snippet"), { recursive: true });
 
-		// Root entity
 		writeFileSync(
-			join(tmpDir, "entity.json"),
-			JSON.stringify({ name: "Root", programType: "explorer" }),
-		);
-
-		// Subdir with extended fields
-		const subDir = join(tmpDir, "project-x");
-		mkdirSync(subDir, { recursive: true });
-		writeFileSync(
-			join(subDir, "entity.json"),
+			join(fixture, "entity.json"),
 			JSON.stringify({
 				name: "Project X",
 				programType: "project",
@@ -65,46 +58,72 @@ describe("generateManifest", () => {
 				links: [{ label: "GitHub", href: "https://github.com/x" }],
 			}),
 		);
+		writeFileSync(join(fixture, "images", "01-cover.png"), "");
+		writeFileSync(
+			join(fixture, "codes", "demo-snippet", "meta.json"),
+			JSON.stringify({ windowTitle: "Demo" }),
+		);
+		writeFileSync(join(fixture, "codes", "demo-snippet", "index.ts"), "");
 	});
 
 	afterAll(() => {
-		rmSync(tmpDir, { recursive: true, force: true });
+		rmSync(fixture, { recursive: true, force: true });
 	});
 
-	it("manifest includes extended Entity fields", () => {
-		generateManifest(tmpDir, outFile);
-		const manifest = JSON.parse(readFileSync(outFile, "utf-8")) as {
-			flatIndex: Record<
-				string,
-				{
-					entity?: {
-						year?: string;
-						tags?: string[];
-						description?: string;
-						links?: { label: string; href: string }[];
-					};
-				}
-			>;
-		};
-
-		const entry = manifest.flatIndex["/project-x"];
-		expect(entry).toBeDefined();
-		expect(entry.entity?.year).toBe("2024");
-		expect(entry.entity?.tags).toEqual(["web", "vue"]);
-		expect(entry.entity?.description).toBe("A test project");
-		expect(entry.entity?.links).toEqual([
+	it("entity-поля попадают в flatIndex", async () => {
+		const { flatIndex } = await scanTree();
+		const entry = flatIndex["/scan-fixture"];
+		expect(entry?.entity?.year).toBe("2024");
+		expect(entry?.entity?.tags).toEqual(["web", "vue"]);
+		expect(entry?.entity?.description).toBe("A test project");
+		expect(entry?.entity?.links).toEqual([
 			{ label: "GitHub", href: "https://github.com/x" },
 		]);
 	});
-});
 
-describe("builder:watch glob covers entry subtree", () => {
-	it("nuxt.config.ts builder:watch triggers on server/assets/entry changes", () => {
-		const configSource = readFileSync(
-			join(process.cwd(), "nuxt.config.ts"),
-			"utf-8",
+	it("mtime — ISO 8601 у директории и файла; size — только у файла", async () => {
+		const { flatIndex, tree: scanned } = await scanTree();
+		const dirEntry = flatIndex["/scan-fixture"];
+		expect(dirEntry?.mtime).toMatch(
+			/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/,
 		);
-		expect(configSource).toContain('"builder:watch"');
-		expect(configSource).toContain("server/assets/entry");
+		expect(dirEntry?.size).toBeUndefined();
+
+		const node = findNode(scanned, "/scan-fixture");
+		const image = node?.children.find(
+			(c) => c.path === "/scan-fixture/01-cover.png",
+		);
+		expect(image?.mtime).toMatch(
+			/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/,
+		);
+		expect(image?.size).toBe(0);
+
+		const code = node?.children.find(
+			(c) => c.path === "/scan-fixture/code/demo-snippet",
+		);
+		expect(code?.mtime).toMatch(
+			/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/,
+		);
+		expect(code?.size).toBeUndefined();
+	});
+
+	it("images/ и codes/ поднимаются в children как showcase/code", async () => {
+		const { tree: scanned } = await scanTree();
+		const node = findNode(scanned, "/scan-fixture");
+		const paths = node?.children.map((c) => c.path);
+
+		expect(paths).toContain("/scan-fixture/01-cover.png");
+		expect(paths).toContain("/scan-fixture/code/demo-snippet");
+		expect(paths).not.toContain("/scan-fixture/images");
+
+		const image = node?.children.find(
+			(c) => c.path === "/scan-fixture/01-cover.png",
+		);
+		expect(image?.entity?.programType).toBe("showcase");
+
+		const code = node?.children.find(
+			(c) => c.path === "/scan-fixture/code/demo-snippet",
+		);
+		expect(code?.entity).toEqual({ name: "Demo", programType: "code" });
 	});
 });

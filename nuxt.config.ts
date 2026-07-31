@@ -1,11 +1,49 @@
-import { resolve } from "node:path";
-
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
 	compatibilityDate: "2025-07-15",
 	devtools: { enabled: false },
 	ssr: process.env.NUXT_TEST_SPA ? false : true,
 	modules: ["@nuxt/eslint", "@nuxt/image", "@pinia/nuxt"],
+	app: {
+		head: {
+			htmlAttrs: { lang: "ru" },
+			title: "Портфолио Дмитрия Стаценко — fullstack-разработчик",
+			meta: [
+				{
+					name: "description",
+					content:
+						"Портфолио fullstack-разработчика Дмитрия Стаценко (Nuxt, Vue, TypeScript, Pinia, WebGL): проекты, код, контакты. Сделано в стиле десктопной ОС.",
+				},
+				{ name: "theme-color", content: "#151515" },
+				{ name: "robots", content: "index, follow" },
+				{ property: "og:type", content: "website" },
+				{ property: "og:site_name", content: "Dimonya OS" },
+				{
+					property: "og:title",
+					content: "Портфолио Дмитрия Стаценко — fullstack-разработчик",
+				},
+				{
+					property: "og:description",
+					content: "Портфолио fullstack-разработчика: проекты, код, контакты.",
+				},
+				{ property: "og:image", content: `${process.env.NUXT_PUBLIC_URL || "https://dimonya.studio"}/og/index.png` },
+				{ property: "og:url", content: `${process.env.NUXT_PUBLIC_URL || "https://dimonya.studio"}/` },
+				{ property: "og:locale", content: "ru_RU" },
+				{ name: "twitter:card", content: "summary_large_image" },
+				{
+					name: "twitter:title",
+					content: "Портфолио Дмитрия Стаценко — fullstack-разработчик",
+				},
+				{
+					name: "twitter:description",
+					content: "Портфолио fullstack-разработчика: проекты, код, контакты.",
+				},
+			],
+			link: [
+				{ rel: "icon", type: "image/svg+xml", href: "/favicon.svg" },
+			],
+		},
+	},
 	typescript: {
 		tsConfig: {
 			compilerOptions: {
@@ -15,7 +53,9 @@ export default defineNuxtConfig({
 		},
 	},
 	nitro: {
-		preset: "vercel",
+		// Self-host: node-server preset → .output/server/index.mjs,
+		// запускается `node .output/server/index.mjs` или `bun run preview`.
+		preset: "node-server",
 	},
 	routeRules: {
 		"/api/filesystem/list": {
@@ -61,19 +101,8 @@ export default defineNuxtConfig({
 		},
 	},
 	hooks: {
-		"nitro:build:before"(nitro) {
-			nitro.options.serverAssets.push({
-				baseName: "entry",
-				dir: "./server/assets/entry",
-			});
-		},
-		"builder:watch": async (event, path) => {
-			if (path.includes("server/assets/entry")) {
-				console.log("[manifest] Regenerating...");
-
-				const { execSync } = await import("child_process");
-				execSync("bun run generate:manifests");
-			}
-		},
+		// Postbuild: server/assets/entry копируется в .output/server/assets/entry
+		// через scripts/copy-entry.ts (см. package.json#postbuild). Nitro serverAssets
+		// не используется — scanTree идёт прямым fs.readdir от process.cwd().
 	},
 });

@@ -3,11 +3,14 @@
 import { vi } from "vitest";
 import {
 	computed,
+	defineAsyncComponent,
 	inject,
+	onBeforeUnmount,
 	onMounted,
 	onScopeDispose,
 	onUnmounted,
 	provide,
+	readonly,
 	ref,
 	shallowRef,
 	watch,
@@ -34,11 +37,14 @@ import {
 // идентификаторы (Nuxt unimport на dev/build). В тестах подмешиваем в global.
 Object.assign(globalThis, {
 	computed,
+	defineAsyncComponent,
 	inject,
+	onBeforeUnmount,
 	onMounted,
 	onScopeDispose,
 	onUnmounted,
 	provide,
+	readonly,
 	ref,
 	shallowRef,
 	watch,

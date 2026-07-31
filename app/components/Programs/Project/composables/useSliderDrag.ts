@@ -36,6 +36,10 @@ export function useSliderDrag(
 
 	function onPointerDown(e: PointerEvent): void {
 		if (!root.value) return;
+		// Только основная кнопка и только сам root: setPointerCapture перенаправляет
+		// цель последующего click на root, из-за чего @click на вложенных кнопках
+		// навигации не срабатывал. У картинки pointer-events: none → target = root.
+		if (e.button !== 0 || e.target !== root.value) return;
 		startX = e.clientX;
 		moved = false;
 		attachPointerListeners(root.value, onPointerMove, onPointerUp, e.pointerId);

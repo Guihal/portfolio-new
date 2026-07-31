@@ -56,7 +56,7 @@
         ref="workbench"
         class="workbench"
         :style="gridStyle"
-        @click="unFocus">
+        @click.self="unFocus">
         <WorkbenchShortcut
             v-for="file in data"
             :key="file.path"

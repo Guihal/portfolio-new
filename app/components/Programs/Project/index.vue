@@ -2,6 +2,10 @@
     import { useInjectWindow } from '~/components/Window/composables/lifecycle/useInjectWindow';
     import { useProjectData } from './composables/useProjectData';
     import { useSliderState } from './composables/useSliderState';
+    // Явные импорты: auto-import даёт префиксные имена (ProgramsProjectSlider),
+    // а <Meta> без импорта резолвится в head-компонент Nuxt.
+    import Meta from './Meta.vue';
+    import Slider from './Slider.vue';
 
     const windowOb = useInjectWindow();
     const path = computed(() => windowOb.targetFile.value);
@@ -43,8 +47,7 @@
         width: 100%;
         height: 100%;
         display: flex;
-        gap: 16px;
-        padding: 10px;
+        gap: 10px;
 
         @include cw('sm') {
             flex-direction: column-reverse;

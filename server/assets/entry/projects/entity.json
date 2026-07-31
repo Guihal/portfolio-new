@@ -1,4 +1,5 @@
 {
     "name": "Проекты",
-    "programType": "explorer"
+    "programType": "explorer",
+    "summary": "Список проектов Дмитрия Стаценко: fullstack, webgl, агентные пайплайны."
 }

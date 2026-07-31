@@ -1,0 +1,14 @@
+{
+    "name": "Subbrain",
+    "year": "2026",
+    "tags": [
+        "bun",
+        "elysia",
+        "typescript",
+        "sqlite",
+        "llm",
+        "docker"
+    ],
+    "description": "AI-прокси с собственной памятью: FTS5 + векторный поиск поверх SQLite, автономные агенты, arbitration room для согласования их решений, ночной цикл обслуживания базы. Личный продукт и самый крупный мой проект — около 56 000 строк.",
+    "programType": "project"
+}

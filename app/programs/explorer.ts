@@ -9,6 +9,10 @@ const program: ProgramView = {
 		showBreadcrumbs: true,
 		canNavigate: true,
 	},
+	seo: {
+		defaultDescription:
+			"Проводник портфолио — список проектов, разделов и сущностей.",
+	},
 	component: defineAsyncComponent(
 		() => import("@/components/Programs/Explorer/index.vue"),
 	),

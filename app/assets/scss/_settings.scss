@@ -39,6 +39,8 @@ body,
 :root {
     background: #{c('default')};
     --container-padding: 20px;
+    --explorer-grid-columns: minmax(0, 1fr) 140px 160px 80px;
+    --explorer-cell-padding: 6px 10px;
 
     @media (width < 768px) {
         --container-padding: 10px;
@@ -107,6 +109,26 @@ body,
 
     &.active {
         background-color: c-rgba('main', 0.6);
+    }
+
+    // Иконка на активном фоне: без инверсии c('main') сливается с c-rgba('main', 0.6).
+    &.active &_img svg {
+        --icon-color: #{c('default')};
+    }
+
+    // Индикатор «программа запущена». Без скруглений — пиксельный стиль.
+    &--running::after {
+        content: '';
+        position: absolute;
+        left: 10px;
+        right: 10px;
+        bottom: 4px;
+        height: 3px;
+        background: c('main');
+    }
+
+    &--running.active::after {
+        background: c('default');
     }
 
     &_img {

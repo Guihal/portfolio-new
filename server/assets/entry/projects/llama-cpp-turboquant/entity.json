@@ -1,0 +1,14 @@
+{
+    "name": "llama.cpp TurboQuant",
+    "year": "2026",
+    "tags": [
+        "c++",
+        "cuda",
+        "metal",
+        "vulkan",
+        "cmake",
+        "llm"
+    ],
+    "description": "Форк llama.cpp со своими форматами квантизации TQ2/TQ3/TQ4 и ядрами под CUDA, Metal и Vulkan. Около 14 800 строк собственного кода плюс свой CI релизных сборок. Профилирую инференс там, где он упирается в железо, а не в код.",
+    "programType": "project"
+}

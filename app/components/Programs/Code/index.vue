@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { useInjectWindow } from "~/components/Window/composables/lifecycle/useInjectWindow";
 import { useCodeSnippet } from "./composables/useCodeSnippet";
+// Явные импорты: auto-import даёт префиксные имена (ProgramsCodeTabs).
+import CopyButton from "./CopyButton.vue";
+import Tabs from "./Tabs.vue";
 
 const windowOb = useInjectWindow();
 const path = computed(() => windowOb.targetFile.value);
@@ -18,7 +21,7 @@ const activeFile = computed(() => snippet.value?.files[activeIdx.value] ?? null)
 		<div v-else-if="notFound" class="code__error">Сниппет не найден</div>
 		<template v-else-if="snippet">
 			<header class="code__header">
-				<div class="code__title">{{ snippet.meta.windowTitle }}</div>
+				<h1 class="code__title">{{ snippet.meta.windowTitle }}</h1>
 				<CopyButton v-if="activeFile" :text="activeFile.source" />
 			</header>
 			<p v-if="snippet.meta.description" class="code__desc">

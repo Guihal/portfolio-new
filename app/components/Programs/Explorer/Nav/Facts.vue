@@ -28,7 +28,7 @@
 </script>
 <template>
     <div class="explorer__facts pixel-box">
-        <div class="explorer__facts_title">Интересные факты</div>
+        <h2 class="explorer__facts_title">Интересные факты</h2>
         <div class="explorer__facts_text">
             <AnimatedText :target-text="currentFact" :simbols-per-second="40" />
         </div>

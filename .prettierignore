@@ -1,0 +1,10 @@
+.nuxt
+.output
+.nitro
+.cache
+.vercel
+public
+node_modules
+bun.lock
+test-results
+playwright-report

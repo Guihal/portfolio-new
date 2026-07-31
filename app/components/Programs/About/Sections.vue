@@ -6,8 +6,18 @@
 
 <template>
     <div class="about__content pixel-box">
+        <div class="about__neofetch">
+            <span class="about__prompt">$ neofetch</span>
+            <dl class="about__specs">
+                <template v-for="([key, value], idx) in data.neofetch" :key="idx">
+                    <dt class="about__spec-key">{{ key }}</dt>
+                    <dd class="about__spec-value">{{ value }}</dd>
+                </template>
+            </dl>
+        </div>
+        <p class="about__text">{{ data.intro }}</p>
         <template v-for="(section, idx) in data.sections" :key="idx">
-            <h3 class="about__title">{{ section.title }}</h3>
+            <h2 class="about__title">{{ section.title }}</h2>
             <p
                 v-for="(p, pIdx) in section.paragraphs"
                 :key="pIdx"
@@ -36,6 +46,32 @@
                 flex-shrink: 0;
                 padding-bottom: 0;
             }
+        }
+
+        &__neofetch {
+            margin-bottom: 20px;
+        }
+
+        &__prompt {
+            @include t(14px, 1.5, 'main');
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        &__specs {
+            display: grid;
+            grid-template-columns: max-content 1fr;
+            gap: 2px 12px;
+            margin: 0;
+        }
+
+        &__spec-key {
+            @include t(14px, 1.5, 'accent');
+        }
+
+        &__spec-value {
+            @include t(14px, 1.5, 'default-contrast');
+            margin: 0;
         }
 
         &__title {

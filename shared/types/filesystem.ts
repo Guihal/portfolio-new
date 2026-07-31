@@ -29,10 +29,18 @@ export type Entity = {
 	year?: string;
 	tags?: string[];
 	description?: string;
+	summary?: string;
 	links?: EntityLink[];
 };
 
-export type FsFile = Entity & { path: string };
+// FsFile — то, что API возвращает клиенту. mtime/size живут на уровне FS-ноды
+// (не Entity), потому что это не контент-метаданные из entity.json, а свойства
+// сканированной директории/файла.
+export type FsFile = Entity & {
+	path: string;
+	mtime?: string;
+	size?: number;
+};
 
 // P8-03 — алиасы для FsClient API. Сервер /api/filesystem/list возвращает FsFile[],
 // /api/filesystem/breadcrumbs возвращает FsFile[]. Отдельные имена сохраняют
@@ -45,6 +53,11 @@ export type ManifestEntry = {
 	name: string;
 	path: string;
 	entity?: Entity;
+	// ISO 8601 (UTC) mtime из fs.stat. Прокидывается до клиента для колонки
+	// «Дата изменения» в Explorer.
+	mtime?: string;
+	// bytes; только для regular files. Для директорий — undefined (UI показывает —).
+	size?: number;
 };
 
 export type ManifestNode = ManifestEntry & {

@@ -27,7 +27,7 @@
 </script>
 <template>
     <nav v-if="items.length > 0" class="explorer__nav pixel-box">
-        <div class="explorer__nav_title">Прошлая папка</div>
+        <h2 class="explorer__nav_title">Прошлая папка</h2>
         <ProgramsExplorerNavShortcut
             v-for="file in items"
             :key="file.path"

@@ -16,3 +16,7 @@ export const PREVIEW_DEBOUNCE_MS = 500 as const;
 
 // Длительность отображения "Скопировано" после копирования в clipboard.
 export const COPY_FEEDBACK_MS = 2000 as const;
+
+// Тик часов в трее. Секунда, а не минута: иначе смена минуты запаздывает
+// на случайную дельту до 60с относительно системного времени.
+export const CLOCK_TICK_MS = 1000 as const;

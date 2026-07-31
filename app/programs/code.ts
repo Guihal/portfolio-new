@@ -10,6 +10,9 @@ const program: ProgramView = {
 		showBreadcrumbs: true,
 		canNavigate: false,
 	},
+	seo: {
+		defaultDescription: "Сниппет кода из портфолио Дмитрия Стаценко.",
+	},
 	component: defineAsyncComponent(
 		() => import("@/components/Programs/Code/index.vue"),
 	),

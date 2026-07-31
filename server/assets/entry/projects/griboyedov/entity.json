@@ -1,10 +1,18 @@
 {
     "name": "Фонд имени Грибоедова",
-    "programType": "explorer",
-    "year": "2024",
-    "tags": ["design", "site", "vue", "typography"],
-    "description": "Сайт фонда поддержки молодых литераторов. Каталог авторов и работ в формате длинного ленточного скролла с анимированным набором текста.",
+    "year": "2026",
+    "tags": [
+        "three.js",
+        "webpack",
+        "animation",
+        "realtime"
+    ],
+    "description": "Одностраничник фонда: вращается планета, играет радио разных городов мира, и по реальным данным считается, сколько людей прямо сейчас делают то или иное. Свой анимационный движок, а не обвязка над готовой библиотекой.",
     "links": [
-        { "label": "griboedov-fond.ru", "href": "https://griboedov-fond.ru" }
-    ]
+        {
+            "label": "griboyedov.org",
+            "href": "https://griboyedov.org"
+        }
+    ],
+    "programType": "project"
 }

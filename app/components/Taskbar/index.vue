@@ -17,10 +17,14 @@
     <nav ref="taskbar" class="taskbar pixel-box">
         <div class="taskbar__bg" @click="unFocus"></div>
         <ul class="taskbar__list">
-            <TaskbarElementsAbout />
             <TaskbarAllPrograms />
         </ul>
-        <div class="taskbar__list taskbar__list--left"></div>
+        <div class="taskbar__list taskbar__list--tray">
+            <TaskbarSocials />
+            <ClientOnly>
+                <TaskbarClock />
+            </ClientOnly>
+        </div>
     </nav>
 </template>
 <style lang="scss">
@@ -49,7 +53,7 @@
             width: fit-content;
             display: flex;
 
-            &--left {
+            &--tray {
                 justify-content: end;
             }
         }

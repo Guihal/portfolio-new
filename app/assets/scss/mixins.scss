@@ -1,5 +1,6 @@
 @use './functions' as *;
 @use './breakpoints' as bp;
+@use './utils/visually-hidden' as vh;
 @use 'sass:map';
 
 @mixin t($fs: 15px, $lh: 1, $cName: 'default', $fw: 400, $family: 'PixCyrillic') {

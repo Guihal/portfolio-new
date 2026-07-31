@@ -21,7 +21,7 @@
                 class="about__photo-img pixel-box" />
         </div>
         <div class="about__info pixel-box">
-            <h2 class="about__name">{{ data.name }}</h2>
+            <h1 class="about__name">{{ data.name }}</h1>
             <div class="about__socials">
                 <a
                     v-for="social in SOCIAL_LINKS"

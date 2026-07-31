@@ -5,9 +5,14 @@ const program: ProgramView = {
 	id: "project",
 	label: "Просмотр проектов",
 	icon,
+	extension: "prjt",
 	config: {
 		showBreadcrumbs: true,
 		canNavigate: true,
+	},
+	seo: {
+		defaultDescription:
+			"Проект из портфолио Дмитрия Стаценко: описание, стек, ссылки.",
 	},
 	component: defineAsyncComponent(
 		() => import("@/components/Programs/Project/index.vue"),

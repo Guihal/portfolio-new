@@ -49,12 +49,12 @@
 <style lang="scss">
     .taskbar__frame {
         position: relative;
-        border: 1px solid rgba(c('default-contrast'), 0.2);
+        border: 1px solid c-rgba('default-contrast', 0.2);
         transition: border-color 0.3s ease-in-out;
         cursor: pointer;
         user-select: none;
 
-        &--active { border-color: rgba(c('default-contrast'), 0.8); }
+        &--active { border-color: c-rgba('default-contrast', 0.8); }
         &_name {
             font-size: 10px;
             max-width: 100%;

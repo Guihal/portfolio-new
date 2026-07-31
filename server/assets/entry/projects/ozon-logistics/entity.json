@@ -1,0 +1,12 @@
+{
+    "name": "Ozon Seller API",
+    "year": "2026",
+    "tags": [
+        "backend",
+        "oauth",
+        "api",
+        "cache"
+    ],
+    "description": "Интеграция Ozon Seller API: OAuth-авторизация, свой rate limiter, кэш пунктов выдачи. 3 026 строк с документацией.",
+    "programType": "project"
+}

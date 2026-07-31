@@ -28,25 +28,32 @@
         ref="root"
         class="project__slider pixel-box"
         :class="{ dragging }">
-        <NuxtImg
-            v-if="images[current]"
-            :src="images[current]"
-            class="project__slide"
-            draggable="false" />
-        <div v-else class="project__empty">
-            <div class="project__empty-text">Картинок пока нет</div>
+        <!-- Stage центрирует кадр. Без него img — flex-item слайдера, и
+             flex-grow растягивал бокс сверх аспекта → letterbox под маской. -->
+        <div class="project__stage">
+            <!-- Обычный img: ipx не проксирует /api/filesystem/asset (403),
+                 а картинки в entry уже сжаты в webp. -->
+            <img
+                v-if="images[current]"
+                :src="images[current]"
+                alt=""
+                class="project__slide pixel-box"
+                draggable="false" />
+            <div v-else class="project__empty">
+                <div class="project__empty-text">Картинок пока нет</div>
+            </div>
         </div>
-        <div v-if="!dragging && total > 0" class="project__nav">
+        <div v-if="!dragging && total > 0" class="project__nav pixel-box">
             <button
                 :disabled="prevDisabled"
-                class="project__nav-btn"
+                class="project__nav-btn pixel-box"
                 @click="emit('prev')">
                 &#8592;
             </button>
             <span class="project__nav-counter">{{ current + 1 }} / {{ total }}</span>
             <button
                 :disabled="nextDisabled"
-                class="project__nav-btn"
+                class="project__nav-btn pixel-box"
                 @click="emit('next')">
                 &#8594;
             </button>
@@ -61,6 +68,9 @@
         min-width: 0;
         display: flex;
         flex-direction: column;
+        gap: 10px;
+        padding: 10px;
+        background: c('default-3');
         position: relative;
         overflow: hidden;
         user-select: none;
@@ -75,17 +85,28 @@
         }
     }
 
-    .project__slide {
-        width: 100%;
-        height: 100%;
-        object-fit: contain;
+    .project__stage {
         flex: 1;
         min-height: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        // useSliderDrag ставит capture только при e.target === root слайдера,
+        // иначе drag ломается — stage не должен перехватывать pointer.
         pointer-events: none;
     }
 
+    .project__slide {
+        // Нативный sizing replaced-элемента: бокс img == кадр по обеим осям,
+        // letterbox нулевой → pixel-box режет углы самой картинки.
+        display: block;
+        width: auto;
+        height: auto;
+        max-width: 100%;
+        max-height: 100%;
+    }
+
     .project__empty {
-        flex: 1;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -100,8 +121,11 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 12px;
-        padding: 8px;
+        gap: 10px;
+        padding: 6px 10px;
+        width: fit-content;
+        margin: 0 auto;
+        background: c('default-2');
         flex-shrink: 0;
     }
 

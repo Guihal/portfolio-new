@@ -10,6 +10,10 @@ const program: ProgramView = {
 		showBreadcrumbs: true,
 		canNavigate: true,
 	},
+	seo: {
+		defaultDescription:
+			"Проект на Tilda из портфолио Дмитрия Стаценко: описание, ссылки.",
+	},
 	component: defineAsyncComponent(
 		() => import("@/components/Programs/Explorer/index.vue"),
 	),

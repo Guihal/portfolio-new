@@ -1,11 +1,20 @@
 {
-    "name": "u24",
-    "programType": "explorer",
-    "year": "2023 — настоящее",
-    "tags": ["product", "vue", "three.js", "webgl", "design-system", "dashboard"],
-    "description": "Внутренний дашборд для мониторинга 24/7 операций. От аналитики realtime-стримов до alerting-движка.",
+    "name": "U24",
+    "year": "2025",
+    "tags": [
+        "nuxt",
+        "pinia",
+        "tailwind",
+        "wordpress",
+        "headless",
+        "bff"
+    ],
+    "description": "Многостраничник компании, организующей мероприятия по всему миру: главная, проекты, команда, вехи истории, карьера, контакты, две локали.\n\nNuxt 3 поверх headless WordPress — свой REST-namespace u24/v1 и BFF-слой из десяти кэширующих эндпоинтов на стороне Nuxt.",
     "links": [
-        { "label": "u24.dev", "href": "#" },
-        { "label": "Демо (требует доступ)", "href": "#" }
-    ]
+        {
+            "label": "u24.services",
+            "href": "https://u24.services"
+        }
+    ],
+    "programType": "project"
 }

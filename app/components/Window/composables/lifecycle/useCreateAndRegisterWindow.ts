@@ -61,7 +61,12 @@ export function useCreateAndRegisterWindow(
 	// Регистрируем окно в глобальном хранилище
 	windowsStore.windows[id] = windowOb;
 
+	// Сразу фокусируем — иначе на SSR windowOb.states.focused остаётся false,
+	// useSeoWindow не сработает, и в head уйдёт root-meta из useSeoUnfocus
+	// (например «Рабочий стол» для всех страниц). На клиенте focus() идемпотентен
+	// — повторный вызов из useFocusOnClick не сломает state.
+	focusStore.focus(id);
+
 	// Bounds создаются лениво в bounds-сторе при первом обращении
-	// Фокусируем новое окно (focus вызывается извне после монтирования — см. Window/index.vue)
 	return windowOb;
 }

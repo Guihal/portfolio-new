@@ -1,7 +1,7 @@
 import { isError } from "h3";
 import { ENTITY_CACHE_MAX_AGE } from "~~/server/utils/cacheLifetime";
 import { serverError } from "~~/server/utils/errors";
-import { listChildren } from "~~/server/utils/manifest";
+import { listChildren } from "~~/server/utils/manifest/resolveEntity";
 import { parsePathQuery } from "~~/server/utils/validation";
 
 export default defineCachedEventHandler(

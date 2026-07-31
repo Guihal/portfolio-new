@@ -99,4 +99,56 @@
         @extend .shortcut--list;
         border: none;
     }
+
+    &--table {
+        display: grid;
+        grid-template-columns: var(--explorer-grid-columns);
+        align-items: center;
+        min-height: 32px;
+        padding: 0;
+        font-size: 14px;
+        line-height: 1.2;
+        --shortcut-color: #{c('default-contrast')};
+
+        @media (hover: hover) {
+            &:hover {
+                --shortcut-color: #{c('accent')};
+            }
+        }
+
+        &:active {
+            --shortcut-color: #{c('accent')};
+        }
+
+        .shortcut__cell {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            padding: var(--explorer-cell-padding);
+            min-height: 32px;
+            display: flex;
+            align-items: center;
+            border-right: 1px solid c-rgba('default-contrast', 0.2);
+
+            &:last-child {
+                border-right: none;
+                justify-content: flex-end;
+            }
+        }
+
+        .shortcut__cell--name {
+            gap: 8px;
+
+            .shortcut__icon {
+                flex-shrink: 0;
+                width: 20px;
+                height: 20px;
+            }
+
+            .shortcut__text {
+                font-size: inherit;
+                line-height: inherit;
+            }
+        }
+    }
 }

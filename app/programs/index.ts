@@ -1,3 +1,7 @@
+// Programs registry: re-exports + helpers. ProgramView теперь содержит
+// `seo` (defaultDescription, defaultOgImage) — fallback для useWindowTitle
+// когда entity.description не задан в entity.json.
+
 import type { Component } from "vue";
 import type { Program, ProgramType } from "~~/shared/types/filesystem";
 import about from "./about";
@@ -14,12 +18,18 @@ export type ProgramConfig = {
 	canNavigate: boolean;
 };
 
+export type ProgramSeo = {
+	defaultDescription: string;
+	defaultOgImage?: string;
+};
+
 export type ProgramView = Program & {
 	id: ProgramType;
 	label: string;
 	icon: string;
 	component: Component;
 	config: ProgramConfig;
+	seo: ProgramSeo;
 };
 
 const REGISTRY: Partial<Record<ProgramType, ProgramView>> = {

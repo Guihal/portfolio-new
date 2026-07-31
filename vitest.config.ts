@@ -12,6 +12,8 @@ export default defineConfig({
 	},
 	resolve: {
 		alias: {
+			// Nuxt даёт "@" и "~" на srcDir; программы импортят иконки через "@".
+			"@": fileURLToPath(new URL("./app", import.meta.url)),
 			"~": fileURLToPath(new URL("./app", import.meta.url)),
 			"~~": fileURLToPath(new URL(".", import.meta.url)),
 		},

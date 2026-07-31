@@ -1,5 +1,20 @@
 {
   // https://nuxt.com/docs/guide/concepts/typescript
+  //
+  // `compilerOptions.paths` нужен чтобы standalone bun-скрипты (вне .nuxt/
+  // context, как scripts/make-og-images.ts) резолвили `~~`-алиасы. Без них
+  // Bun не знает где `~~/server/utils/manifest/scanTree`.
+  //
+  // Nuxt 4 references (.nuxt/tsconfig.app.json и т.д.) живут независимо и
+  // имеют свои paths — добавление paths в root не ломает Nuxt typecheck.
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "~~/*": ["./*"],
+      "~/*": ["./app/*"],
+      "@/*": ["./app/*"]
+    }
+  },
   "files": [],
   "references": [
     {

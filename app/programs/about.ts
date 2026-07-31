@@ -10,6 +10,10 @@ const program: ProgramView = {
 		showBreadcrumbs: false,
 		canNavigate: false,
 	},
+	seo: {
+		defaultDescription:
+			"Информация о Дмитрии Стаценко: опыт, стек, контакты, проекты. Fullstack-разработчик, Nuxt / Vue / TypeScript.",
+	},
 	component: defineAsyncComponent(
 		() => import("@/components/Programs/About/index.vue"),
 	),

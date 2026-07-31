@@ -1,18 +1,15 @@
 <script setup lang="ts">
-    import { storeToRefs } from 'pinia';
-    import { useWindowsStore } from '~/stores/windows';
+    import { useTaskbarItems } from './useTaskbarItems';
 
-    const store = useWindowsStore();
-    const { byProgramMap } = storeToRefs(store);
+    const items = useTaskbarItems();
 </script>
 
 <template>
     <TransitionGroup name="taskbar__el">
         <TaskbarElementsProgram
-            v-for="[programType, windows] in byProgramMap"
-            :key="programType"
-            :window-obs="windows"
-            :program-type="programType" />
+            v-for="item in items"
+            :key="item.type"
+            :item="item" />
     </TransitionGroup>
 </template>
 

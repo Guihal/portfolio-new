@@ -18,5 +18,5 @@ import { useWindowsStore } from '~/stores/windows';
 </script>
 
 <template>
-    <ShortcutBase :file="file" variant="list" :on-activate="activate" />
+    <ShortcutBase :file="file" variant="table" :on-activate="activate" />
 </template>

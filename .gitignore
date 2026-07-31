@@ -33,3 +33,11 @@ playwright-report/
 # Local databases (test fixtures / caches)
 *.db
 app.db
+
+# pi-subagents runtime artifacts (critic/transcript logs)
+.pi-subagents/
+.pi-loop.json
+.pi-loop.json.lock
+
+# pi rules queue (injected at runtime, not source)
+.pi/

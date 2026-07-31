@@ -1,12 +1,7 @@
 import { createReadStream, promises as fs } from "node:fs";
-import { resolve as resolvePath } from "node:path";
 import { isError } from "h3";
+import { resolveEntryPath } from "~~/server/utils/entryPath";
 import { serverError } from "~~/server/utils/errors";
-
-const SERVER_ASSETS_ENTRY_ROOT = resolvePath(
-	process.cwd(),
-	"server/assets/entry",
-);
 
 const ASSET_PATH_RE =
 	/^[\w\-/.]+\.(png|jpg|jpeg|webp|svg|html|css|js|json|txt)$/i;
@@ -63,9 +58,8 @@ function getMimeType(ext: string): string {
 export default defineEventHandler(async (event) => {
 	try {
 		const { path } = parseAssetQuery(getQuery(event));
-		const fullPath = resolvePath(SERVER_ASSETS_ENTRY_ROOT, path);
-
-		if (!fullPath.startsWith(SERVER_ASSETS_ENTRY_ROOT)) {
+		const fullPath = resolveEntryPath(path);
+		if (!fullPath) {
 			throw createError({ statusCode: 403 });
 		}
 
