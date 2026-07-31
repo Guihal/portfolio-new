@@ -20,12 +20,16 @@ export function useRemoveWindow(windowOb: WindowOb) {
 	// Снимаем wasFocused ДО windows.remove (defensive read).
 	const wasFocused = focusStore.focusedId === windowOb.id;
 
-	// Снимаем фокус ДО windows.remove: иначе useSetFocusState's watcher
-	// вызовет setState(id, "focused", false) после удаления окна из стора,
-	// setState рано выйдет (if (!w) return), states.focused останется true,
-	// main-watcher в useSeoWindow не сработает, clearSeo не очистит
-	// per-window SEO — title залипнет на закрытом окне.
-	if (wasFocused) focusStore.unFocus();
+	// Снимаем фокус ДО windows.remove, но ТОЛЬКО если окно реально в сторе:
+	// useSetFocusState's watcher вызывает setState(id, "focused", false),
+	// который рано выходит на удалённом окне (if (!w) return). Если
+	// setState не отработает, states.focused останется true → main-watcher в
+	// useSeoWindow не сработает → clearSeo не очистит per-window SEO →
+	// <title> залипнет на закрытом окне. Ghost-окна (нет в сторе) —
+	// защита: focus не трогаем, иначе сбросим чужой focus по совпавшему id.
+	if (wasFocused && useWindowsStore().byId(windowOb.id)) {
+		focusStore.unFocus();
+	}
 
 	// Очистка loaders ДО bounds: watchEffect в initWindowLoading может читать loaders[id]
 	unregister(windowOb.id);
