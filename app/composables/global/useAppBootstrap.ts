@@ -11,8 +11,6 @@ import { useFrameStore } from "~/stores/frame";
 import { useQueuedRouterStore } from "~/stores/queuedRouter";
 import { useWindowsStore } from "~/stores/windows";
 import { useWindowsUIStore } from "~/stores/windowsUI";
-import { findNode } from "~~/server/utils/manifest/findNode";
-import { scanTree } from "~~/server/utils/manifest/scanTree";
 import type { FsFile } from "~~/shared/types/filesystem";
 
 const CANONICAL_ENTRY = "/about";
@@ -22,9 +20,18 @@ const COOKIE_MAX_AGE = 60 * 60 * 24 * 365;
 // "notgooglebot" / "googlebot-fake". Содержит основных crawler'ов + шеринг
 // ботов. Расширяется по мере появления новых.
 const CRAWLER_BOTS = new Set([
-	"googlebot", "bingbot", "yandex", "duckduckbot", "applebot",
-	"facebookexternalhit", "twitterbot", "linkedinbot", "slurp",
-	"baiduspider", "ahrefsbot", "semrushbot",
+	"googlebot",
+	"bingbot",
+	"yandex",
+	"duckduckbot",
+	"applebot",
+	"facebookexternalhit",
+	"twitterbot",
+	"linkedinbot",
+	"slurp",
+	"baiduspider",
+	"ahrefsbot",
+	"semrushbot",
 ]);
 
 function isCrawler(userAgent: string): boolean {
@@ -50,21 +57,27 @@ async function assertPathExists(path: string): Promise<void> {
 		query: { path },
 	}).catch(() => null);
 	if (!exists) {
-		throw createError({ statusCode: 404, statusMessage: "Not Found", fatal: true });
+		throw createError({
+			statusCode: 404,
+			statusMessage: "Not Found",
+			fatal: true,
+		});
 	}
 }
 
 async function preloadWindowEntity(path: string): Promise<void> {
 	// Синхронно подгружаем entity до useSeoWindow (иначе file=null на SSR →
 	// title/description идут через path-fallback: "about" вместо
-	// "Информация о системе — Обо мне"). scanTree — server-side util, на
-	// client не вызывается.
+	// "Информация о системе — Обо мне"). Только SSR: на client модуль не
+	// загружается, иначе server-side scanTree через process.cwd() валил бы
+	// client bundle.
 	if (!import.meta.server) return;
 	const windowOb = useWindowsStore().byPath(path);
 	if (!windowOb) return;
-	const m = await scanTree();
-	const node = findNode(m.tree, path);
-	if (node?.entity) windowOb.file = { ...node.entity, path };
+	const file = await $fetch<FsFile | null>("/api/filesystem/get", {
+		query: { path },
+	}).catch(() => null);
+	if (file) windowOb.file = file;
 }
 
 export async function useAppBootstrap() {
@@ -115,7 +128,11 @@ export async function useAppBootstrap() {
 		visited.value = "1";
 	}
 
-	if (import.meta.server && effectivePath !== "/" && !isAssetPath(effectivePath)) {
+	if (
+		import.meta.server &&
+		effectivePath !== "/" &&
+		!isAssetPath(effectivePath)
+	) {
 		await assertPathExists(effectivePath);
 	}
 
@@ -133,7 +150,10 @@ export async function useAppBootstrap() {
 			try {
 				useCreateAndRegisterWindow(effectivePath);
 			} catch (err) {
-				logger.error("[useAppBootstrap] register", { target: effectivePath, err });
+				logger.error("[useAppBootstrap] register", {
+					target: effectivePath,
+					err,
+				});
 			}
 		}
 	});

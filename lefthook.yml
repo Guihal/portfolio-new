@@ -7,7 +7,11 @@ pre-commit:
       glob: "*.{ts,vue,mjs}"
       run: bunx eslint {staged_files}
     typecheck:
-      run: bunx nuxi typecheck
+      # Use the project's own typecheck script (which uses vue-tsgo, the
+      # native TS 7 port) instead of `nuxi typecheck` (which calls vue-tsc
+      # under the hood; vue-tsc 3.x still resolves typescript/lib/tsc, which
+      # TS 7 removed from its exports field).
+      run: bunx nuxi prepare && bun run scripts/typecheck.ts
     vue-sfc-size:
       glob: "*.vue"
       run: bun run scripts/check-vue-sfc-size.ts --strict {staged_files}
