@@ -29,3 +29,7 @@ logs
 .playwright-mcp/
 test-results/
 playwright-report/
+
+# Local databases (test fixtures / caches)
+*.db
+app.db
