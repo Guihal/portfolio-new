@@ -25,7 +25,7 @@
         gap: 10px;
 
         @include cw('sm') {
-            flex-direction: column-reverse;
+            flex-direction: column;
             overflow-y: auto;
             overflow-x: hidden;
             background: c('default-3');
