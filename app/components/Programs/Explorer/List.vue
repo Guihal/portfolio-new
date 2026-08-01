@@ -74,10 +74,16 @@
             --explorer-grid-columns: 1fr;
         }
 
-        .explorer__header-cell:not(.explorer__header-cell--name),
-        :deep(.shortcut__cell--date),
-        :deep(.shortcut__cell--type),
-        :deep(.shortcut__cell--size) {
+        .explorer__header-cell:not(.explorer__header-cell--name) {
+            display: none;
+        }
+
+        // Стиль List.vue не scoped, поэтому :deep() здесь не компилится
+        // (эмитится буквально и не матчит). Бьём специфичностью:
+        // .shortcut--table .shortcut__cell (0,2,0) display:flex.
+        .explorer__content .shortcut--table .shortcut__cell--date,
+        .explorer__content .shortcut--table .shortcut__cell--type,
+        .explorer__content .shortcut--table .shortcut__cell--size {
             display: none;
         }
     }
