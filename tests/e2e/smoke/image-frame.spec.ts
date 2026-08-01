@@ -44,7 +44,7 @@ const CASES: { name: string; path: string; selector: string }[] = [
 	},
 	{
 		name: "showcase",
-		path: "/projects/blue-lagoon/02.webp",
+		path: "/projects/blue-lagoon/02.avif",
 		selector: ".showcase__img",
 	},
 ];

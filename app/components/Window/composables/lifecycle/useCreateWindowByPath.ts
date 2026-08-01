@@ -1,7 +1,7 @@
 import type { FsFile } from "~~/shared/types/filesystem";
 import { useCreateAndRegisterWindow } from "./useCreateAndRegisterWindow";
 
-const IMAGE_PATH_RE = /\/([\w._-]+\.(?:png|jpg|jpeg|webp|svg))$/i;
+const IMAGE_PATH_RE = /\/([\w._-]+\.(?:png|jpg|jpeg|webp|avif|svg))$/i;
 
 const CODE_PATH_RE = /^(.+)\/code(?:\/[\w-]+)?$/;
 

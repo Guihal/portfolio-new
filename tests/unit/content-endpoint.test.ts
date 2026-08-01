@@ -60,7 +60,7 @@ describe("resolveContent", () => {
 		});
 		const r = await resolveContent("/projects/u24");
 		expect(r?.images?.length).toBeGreaterThan(0);
-		expect(r?.images?.[0]).toContain("images%2F01.webp");
+		expect(r?.images?.[0]).toContain("images%2F01.avif");
 	});
 
 	it("returns undefined codes for non-code programType", async () => {

@@ -32,7 +32,7 @@
              flex-grow растягивал бокс сверх аспекта → letterbox под маской. -->
         <div class="project__stage">
             <!-- Обычный img: ipx не проксирует /api/filesystem/asset (403),
-                 а картинки в entry уже сжаты в webp. -->
+                 а картинки в entry уже сжаты в avif. -->
             <img
                 v-if="images[current]"
                 :src="images[current]"

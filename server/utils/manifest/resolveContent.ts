@@ -9,7 +9,7 @@ import type { CodeSnippet, CodeWindowMeta } from "./resolveCodeContent";
 import { readCodes, readCodeWindows } from "./resolveCodeContent";
 import { getEntity } from "./resolveEntity";
 
-const IMAGE_RE = /^[a-zA-Z0-9._-]+\.(png|jpg|jpeg|webp|svg)$/i;
+const IMAGE_RE = /^[a-zA-Z0-9._-]+\.(png|jpg|jpeg|webp|avif|svg)$/i;
 
 export type EntityContent = {
 	path: string;

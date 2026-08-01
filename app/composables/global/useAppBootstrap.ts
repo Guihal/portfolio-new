@@ -22,7 +22,7 @@ function normalizePath(p: string): string {
 }
 
 // Heuristic: path содержит точку → статика (asset с расширением: .png, .svg,
-// .js, .css, .jpg, .webp, .mp3, .woff2, .json). Программные entity-пути
+// .js, .css, .jpg, .avif, .mp3, .woff2, .json). Программные entity-пути
 // (типа "/about", "/projects/u24") точки не содержат. Используется чтобы
 // пропустить 404-check и register на статических asset-запросах.
 function isAssetPath(p: string): boolean {

@@ -9,7 +9,7 @@ import { ENTRY_ROOT } from "~~/server/utils/entryPath";
 import type { Manifest, ManifestNode } from "~~/shared/types/filesystem";
 import { readEntity } from "./entitySchema";
 
-const IMAGE_RE = /^[a-zA-Z0-9._-]+\.(png|jpg|jpeg|webp|svg)$/i;
+const IMAGE_RE = /^[a-zA-Z0-9._-]+\.(png|jpg|jpeg|webp|avif|svg)$/i;
 const CODE_ID_RE = /^[a-z0-9-]+$/;
 
 // Картинки из images/ → ноды `<parent>/<file>` с programType showcase.

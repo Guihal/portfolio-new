@@ -4,7 +4,7 @@ import { resolveEntryPath } from "~~/server/utils/entryPath";
 import { serverError } from "~~/server/utils/errors";
 
 const ASSET_PATH_RE =
-	/^[\w\-/.]+\.(png|jpg|jpeg|webp|svg|html|css|js|json|txt)$/i;
+	/^[\w\-/.]+\.(png|jpg|jpeg|webp|avif|svg|html|css|js|json|txt)$/i;
 
 function parseAssetQuery(query: unknown): { path: string } {
 	if (typeof query !== "object" || query === null) {
@@ -39,6 +39,8 @@ function getMimeType(ext: string): string {
 			return "image/jpeg";
 		case "webp":
 			return "image/webp";
+		case "avif":
+			return "image/avif";
 		case "svg":
 			return "image/svg+xml";
 		case "html":

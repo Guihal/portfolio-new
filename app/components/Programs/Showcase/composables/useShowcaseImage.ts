@@ -12,7 +12,7 @@ interface ParsedImagePath {
 export function useShowcaseImage(path: MaybeRefOrGetter<string>) {
 	const parsed = computed<ParsedImagePath | null>(() => {
 		const p = toValue(path);
-		const m = p.match(/^(.*)\/([\w._-]+\.(?:png|jpg|jpeg|webp|svg))$/i);
+		const m = p.match(/^(.*)\/([\w._-]+\.(?:png|jpg|jpeg|webp|avif|svg))$/i);
 		if (!m) return null;
 		const entityPath = m[1];
 		const filename = m[2];
