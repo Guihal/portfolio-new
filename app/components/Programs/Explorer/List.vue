@@ -70,7 +70,9 @@
     // дату/тип/размер (они и так дублируют сущность — это видно из project
     // detail, а в list-режиме нужны только имя+иконка).
     @include cw('sm') {
-        --explorer-grid-columns: 1fr;
+        .explorer__content {
+            --explorer-grid-columns: 1fr;
+        }
 
         .explorer__header-cell:not(.explorer__header-cell--name),
         :deep(.shortcut__cell--date),
