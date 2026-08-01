@@ -1,3 +1,4 @@
+import githubIcon from "~/assets/icons/socials/github.svg?raw";
 import hhIcon from "~/assets/icons/socials/hh.svg?raw";
 import maxIcon from "~/assets/icons/socials/max.svg?raw";
 import telegramIcon from "~/assets/icons/socials/telegram.svg?raw";
@@ -12,6 +13,12 @@ import type { SocialLink } from "~~/shared/types/filesystem";
 // - квадратный viewBox обязателен;
 // - БЕЗ width/height на <svg> — размер задаёт CSS (30px таскбар / 20px About).
 export const SOCIAL_LINKS: SocialLink[] = [
+	{
+		id: "github",
+		label: "GitHub",
+		url: "https://github.com/Guihal",
+		icon: githubIcon,
+	},
 	{
 		id: "telegram",
 		label: "Telegram",
