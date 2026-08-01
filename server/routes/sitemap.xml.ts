@@ -1,24 +1,11 @@
-// Sitemap: генерируется из scanTree() на каждый запрос (Nitro кеширует
-// ответ через routeRules, если потребуется — добавить). Root "/" эмитится
-// unconditional, чтобы он был в sitemap даже если server/assets/entry/entity.json
-// отсутствует.
+// Sitemap: генерируется из scanTree() на каждый запрос. Список URL строит
+// чистая buildSitemapUrls (server/utils/manifest/sitemap.ts) — фильтрует
+// showcase-ноды (картинки). Root "/" эмитится unconditional, чтобы он был
+// в sitemap даже если server/assets/entry/entity.json отсутствует.
 
 import { setResponseHeader } from "h3";
 import { scanTree } from "~~/server/utils/manifest/scanTree";
-import type { Entity, ProgramType } from "~~/shared/types/filesystem";
-
-const PRIORITY: Record<ProgramType, number> = {
-	about: 1.0,
-	project: 0.8,
-	showcase: 0.8,
-	code: 0.6,
-	explorer: 0.5,
-	tproject: 0.5,
-};
-
-function priorityFor(entity: Entity): number {
-	return PRIORITY[entity.programType] ?? 0.5;
-}
+import { buildSitemapUrls } from "~~/server/utils/manifest/sitemap";
 
 function escapeXml(s: string): string {
 	return s
@@ -33,21 +20,7 @@ export default defineEventHandler(async (event) => {
 	const url = new URL(getRequestURL(event));
 	const origin = url.origin;
 	const { flatIndex } = await scanTree();
-
-	const urls: { loc: string; lastmod?: string; priority: number }[] = [];
-
-	// Root — всегда.
-	urls.push({ loc: `${origin}/`, priority: 1.0 });
-
-	for (const [path, entry] of Object.entries(flatIndex)) {
-		if (!entry?.entity) continue;
-		if (path === "/") continue; // уже добавлен выше
-		urls.push({
-			loc: `${origin}${path}`,
-			lastmod: entry.mtime,
-			priority: priorityFor(entry.entity),
-		});
-	}
+	const urls = buildSitemapUrls(flatIndex, origin);
 
 	const body = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">

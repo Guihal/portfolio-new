@@ -9,6 +9,7 @@
 import { storeToRefs } from "pinia";
 import { useFocusStore } from "~/stores/focus";
 import { ogSlug } from "~/utils/ogSlug";
+import { SEO_SUFFIX } from "~/utils/seo";
 import type { FsFile } from "~~/shared/types/filesystem";
 
 const FALLBACK_TITLE = "Портфолио Дмитрия Стаценко — fullstack-разработчик";
@@ -39,7 +40,8 @@ export function useSeoUnfocus() {
 
 	const rootTitle = computed(() => {
 		if (focusedId.value) return undefined;
-		return data.value?.name ?? FALLBACK_TITLE;
+		const name = data.value?.name;
+		return name ? `${name} — ${SEO_SUFFIX}` : FALLBACK_TITLE;
 	});
 
 	const rootDescription = computed(() => {
@@ -75,16 +77,26 @@ export function useSeoUnfocus() {
 	// пишет per-window JSON-LD, чтобы не было двух schema-блоков в head.
 	const rootWebSite = computed(() => {
 		if (focusedId.value) return null;
+		const description =
+			data.value?.description ?? data.value?.summary ?? FALLBACK_DESCRIPTION;
 		return {
 			"@context": "https://schema.org",
 			"@type": "WebSite",
 			name: "Dimonya OS",
+			description,
 			url: url.origin,
 			inLanguage: "ru-RU",
 			publisher: {
 				"@type": "Person",
 				name: "Дмитрий Стаценко",
 				url: "https://github.com/Guihal",
+			},
+			mainEntity: {
+				"@type": "Person",
+				name: "Дмитрий Стаценко",
+				jobTitle: "Fullstack-разработчик",
+				url: `${url.origin}/about`,
+				sameAs: ["https://github.com/Guihal"],
 			},
 		} as Record<string, unknown>;
 	});

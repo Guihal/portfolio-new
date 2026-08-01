@@ -11,6 +11,7 @@
 import { useJsonLd } from "~/composables/global/useJsonLd";
 import { getProgram } from "~/programs";
 import { ogSlug } from "~/utils/ogSlug";
+import { SEO_SUFFIX } from "~/utils/seo";
 import type { WindowOb } from "../../types";
 
 const FALLBACK_DESCRIPTION =
@@ -37,9 +38,11 @@ export function useSeoWindow(windowOb: WindowOb) {
 		if (!windowOb.states.focused) return;
 		const file = windowOb.file;
 		const program = file ? getProgram(file.programType) : null;
-		const label = program?.label ?? "";
 		const name = file?.name ?? nameFromPath(windowOb.targetFile.value);
-		const title = [label, name].filter(Boolean).join(" — ") || "Портфолио";
+		// SEO-title: "{name} — Дмитрий Стаценко, fullstack-разработчик".
+		// label ("Проводник", "Информация о системе") остаётся в UI-заголовках
+		// (useWindowTitle) — в title он уводит длину за ~60 и прячет ключевые слова.
+		const title = [name, SEO_SUFFIX].filter(Boolean).join(" — ") || "Портфолио";
 		const description =
 			file?.description ??
 			file?.summary ??
