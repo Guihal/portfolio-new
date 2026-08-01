@@ -12,6 +12,13 @@ export function useProjectData(path: MaybeRefOrGetter<string>) {
 			query: { path: resolvedPath },
 			key: () => `content:${toValue(path)}`,
 			server: true,
+			// SSR положил content в Nuxt payload (ключ `content:<path>`).
+			// Дефолтный getCachedData читает payload только пока идёт
+			// isHydrating, а setup окна выполняется внутри Suspense после
+			// основного hydration-pass → payload пропускается и клиент
+			// рендерит path-fallback (hydration mismatch с SSR). Явно
+			// читаем payload всегда, чтобы entity была синхронно.
+			getCachedData: (key, nuxtApp) => nuxtApp.payload.data[key],
 		},
 	);
 

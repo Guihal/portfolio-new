@@ -113,6 +113,15 @@ export async function useFetchEntity(
 			watch: [isNeedLoading],
 			immediate: true,
 			server: import.meta.server,
+			// Entity уже в windowOb: на SSR — preload (useAppBootstrap.
+			// preloadWindowEntity), на клиенте — pinia payload. Отдаём её как
+			// initial cached data, чтобы гидрация отрендерила то же, что SSR
+			// (иначе mismatch: SSR с entity, клиент с path-fallback до того,
+			// как async fetch закончится).
+			getCachedData: (key, nuxtApp) => {
+				if (windowOb.file?.path === windowRoute.value) return windowOb.file;
+				return nuxtApp.payload.data[key];
+			},
 		},
 	);
 
