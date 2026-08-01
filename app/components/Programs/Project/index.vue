@@ -14,14 +14,14 @@
 
 <template>
     <div class="project">
-        <Meta
+        <ProgramsProjectMeta
             :title="entity?.name ?? path"
             :year="entity?.year"
             :tags="entity?.tags"
             :description="entity?.description"
             :links="entity?.links"
             :fallback-path="path" />
-        <Slider
+        <ProgramsProjectSlider
             v-if="!error"
             :images="images"
             :current="sliderState.current.value"
