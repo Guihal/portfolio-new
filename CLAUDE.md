@@ -62,6 +62,12 @@ bun run test:unit    # Vitest
 bun run test:e2e     # Playwright
 ```
 
+**Деплой — автоматический, после каждого пуша в `master`**: GitHub webhook
+на VPS (`soulteary/webhook`, HMAC-подпись) запускает `/srv/portfolio/scripts/deploy.sh`.
+Локально ничего запускать не надо; ручной деплой (когда вебхук недоступен) —
+`bun scripts/deploy-remote.sh` или ssh-команда из `docs/runbooks/portfolio-deploy.md`.
+После пуша дождись завершения деплоя (проверка: сайт отвечает новой версией).
+
 ## Архитектура окон
 
 **Единственная точка создания окна** — `useCreateAndRegisterWindow(targetPath)` (`app/components/Window/composables/`). Вызывается из: `useAppBootstrap` (boot по URL), `app/error.vue` (fallback), taskbar-иконки (клик по закреплённой без открытых окон), `Workbench/Shortcut/index.vue`, `useCreateWindowByPath` (навигация внутри окна).
