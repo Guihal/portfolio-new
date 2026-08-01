@@ -86,5 +86,10 @@
         .explorer__content .shortcut--table .shortcut__cell--size {
             display: none;
         }
+
+        // Одна колонка — вертикальный разделитель ни к чему.
+        .explorer__content .shortcut--table .shortcut__cell {
+            border-right: none;
+        }
     }
 </style>
