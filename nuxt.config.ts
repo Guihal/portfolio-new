@@ -87,6 +87,38 @@ export default defineNuxtConfig({
 				"cache-control": "public, s-maxage=86400, stale-while-revalidate=300",
 			},
 		},
+		// Статические ассеты: неизменяемые файлы кешируются надолго, og
+		// перегенерируется при деплое (короткий max-age + stale-while-revalidate).
+		"/imgs/**": {
+			headers: {
+				"cache-control": "public, max-age=31536000, immutable",
+			},
+		},
+		"/loading-end.mp3": {
+			headers: {
+				"cache-control": "public, max-age=31536000, immutable",
+			},
+		},
+		"/favicon.svg": {
+			headers: {
+				"cache-control": "public, max-age=604800",
+			},
+		},
+		"/og/**": {
+			headers: {
+				"cache-control": "public, max-age=86400, stale-while-revalidate=604800",
+			},
+		},
+		"/robots.txt": {
+			headers: {
+				"cache-control": "public, max-age=3600",
+			},
+		},
+		"/sitemap.xml": {
+			headers: {
+				"cache-control": "public, max-age=3600",
+			},
+		},
 	},
 	runtimeConfig: {
 		public: {
