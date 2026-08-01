@@ -10,7 +10,7 @@
 
     const { cellsInElement, realCell, subscribe } = useGridCells(workbench, {
         width: 100,
-        height: 100,
+        height: 110,
     });
 
     const gridStyle = computed(() => ({
